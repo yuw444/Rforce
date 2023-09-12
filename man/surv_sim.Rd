@@ -25,8 +25,7 @@ surv_sim(
 
 \item{scale_weibull}{scale parameter for baseline hazard of weibull distribution}
 
-\item{shape_weibull}{shape parameter of weibull,
-shape_weibull < 1 decreasing hazard, shape_weibull > 1 increasing hazard, shape_weibull=1 constant hazard}
+\item{shape_weibull}{shape parameter of weibull, shape_weibull < 1 decreasing hazard, shape_weibull > 1 increasing hazard, shape_weibull=1 constant hazard}
 
 \item{beta}{Fixed effect parameter, could control noise variable by set beta\link{i} = 0}
 

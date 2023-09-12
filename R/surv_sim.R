@@ -4,8 +4,7 @@
 #' @param n_vars number of covariates
 #' @param vars_cate vector of "continuous", "binary"
 #' @param scale_weibull scale parameter for baseline hazard of weibull distribution
-#' @param shape_weibull shape parameter of weibull,
-#'  shape_weibull < 1 decreasing hazard, shape_weibull > 1 increasing hazard, shape_weibull=1 constant hazard
+#' @param shape_weibull shape parameter of weibull, shape_weibull < 1 decreasing hazard, shape_weibull > 1 increasing hazard, shape_weibull=1 constant hazard
 #' @param beta Fixed effect parameter, could control noise variable by set beta[i] = 0
 #' @param rateC censoring rate,
 #' @param seed seed
