@@ -9,7 +9,7 @@ compo_sim(
   n_vars = 10,
   vars_cate = c(rep("binary", 6), rep("continuous", 4)),
   true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
-  lambda = 1e-05,
+  lambda = 0.01,
   constant_baseline_hazard = TRUE,
   a_shape_weibull = 4,
   sigma_scale_weibull = 4,
