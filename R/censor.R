@@ -2,7 +2,7 @@
 #'
 #' @import dplyr
 #' @description censoring the given dataset based on the given quantile of observed time
-#' @param data_to_convert the dataset to be converted
+#' @param data_to_convert the dataset to be converted; including the columns of `Id`, `Status` and `Time`
 #' @param censoring_quantile the quantile of observed time to be censored
 #' @return the censored dataset
 #' @export

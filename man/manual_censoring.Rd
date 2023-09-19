@@ -7,7 +7,7 @@
 manual_censoring(data_to_convert, censoring_quantile)
 }
 \arguments{
-\item{data_to_convert}{the dataset to be converted}
+\item{data_to_convert}{the dataset to be converted; including the columns of \code{Id}, \code{Status} and \code{Time}}
 
 \item{censoring_quantile}{the quantile of observed time to be censored}
 }
