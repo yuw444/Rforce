@@ -21,7 +21,7 @@ compo_sim <- function(
     n_vars = 10,
     vars_cate = c(rep("binary", 6), rep("continuous", 4)),
     true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
-    lambda = 1e-5,
+    lambda = 1e-2,
     constant_baseline_hazard = TRUE,
     a_shape_weibull = 4,
     sigma_scale_weibull = 4,
