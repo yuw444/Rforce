@@ -42,6 +42,7 @@ data frame with columns: Id, HazardWOBaseline, Time, Censor, X, Status, x1, x2, 
 Survival data generation using either weibull or inverse CDF method
 }
 \examples{
+library(survival)
 set.seed(926)
 nsim <- 100
 beta_true <- c(0, 0.8, -0.8, -1.5, 0, 3, 0, -1, 0.8, 1.5, 3, 0, -0.8, 0, -3)

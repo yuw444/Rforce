@@ -1,4 +1,5 @@
 #' @title composite event generator for simulation
+#' @export
 #' @description composite event generator for simulation by non-homogenuous Poisson process
 #' @return a list of simulated data and parameters
 #' @param n_patients  number of patients

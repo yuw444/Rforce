@@ -7,7 +7,7 @@
 #' @return the censored dataset
 #' @export
 #' @examples
-#' list_data_to_convert <- compo_sim( )
+#' list_data_to_convert <- compo_sim()
 #' df_converted <- manual_censoring(
 #'     list_data_to_convert$dataset,
 #'     0.9
