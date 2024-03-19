@@ -1,6 +1,6 @@
 #' @title composite event generator for simulation
 #' @export
-#' @description composite event generator for simulation by non-homogenuous Poisson process
+#' @description composite event generator for simulation by non-homogeneous Poisson process
 #' @return a list of simulated data and parameters
 #' @param n_patients  number of patients
 #' @param n_vars  number of covariates

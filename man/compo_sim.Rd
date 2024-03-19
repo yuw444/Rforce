@@ -48,7 +48,7 @@ compo_sim(
 a list of simulated data and parameters
 }
 \description{
-composite event generator for simulation by non-homogenuous Poisson process
+composite event generator for simulation by non-homogeneous Poisson process
 }
 \examples{
 # example
