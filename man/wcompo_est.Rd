@@ -20,7 +20,6 @@ This function is a fast implementation of Lu Mao's Wcompo method by Kim So Young
 \examples{
 data_list <- compo_sim(
   n_patients = 500,
-  constant_baseline_hazard = FALSE,
   seed = 926,
   verbose = FALSE
 )
@@ -28,6 +27,7 @@ library(dplyr)
 df_train <- data_list[[1]] \%>\%
   dplyr::mutate(X = Time) \%>\%
   dplyr::select(-c("Time"))
+
 estimate_list <- wcompo_est(
   data = df_train,
   weight = c(1, 1)

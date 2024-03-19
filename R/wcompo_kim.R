@@ -10,7 +10,6 @@
 #' @examples
 #' data_list <- compo_sim(
 #'   n_patients = 500,
-#'   constant_baseline_hazard = FALSE,
 #'   seed = 926,
 #'   verbose = FALSE
 #' )
@@ -18,6 +17,7 @@
 #' df_train <- data_list[[1]] %>%
 #'   dplyr::mutate(X = Time) %>%
 #'   dplyr::select(-c("Time"))
+#'
 #' estimate_list <- wcompo_est(
 #'   data = df_train,
 #'   weight = c(1, 1)
@@ -33,9 +33,12 @@ wcompo_est <- function(
     msg = "`data` must have `Id`, `X` and `Status` column"
   )
   n_status <- length(unique(data$Status))
+  if(0 %in% unique(data$Status)){
+    n_status <- n_status - 1
+  }
   assertthat::assert_that(
     assertthat::see_if(
-      n_status - 1 == length(weight)
+      n_status == length(weight)
     ),
     msg = "The weight must have the same length as the number of unique `Status` in `data`"
   )
