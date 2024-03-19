@@ -210,7 +210,7 @@ counts_by_interval_and_id <- function(event_times,
 }
 
 #' convert the recorded event time per patient to the number of events per interval per patient
-#' @import dplyr assertthat
+#' @import dplyr assertthat tidyr
 #' @param data_to_convert: a data frame with columns of Id, X, Status, Time
 #' @param units_of_cpiu: a vector of units of CPIU
 #' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
@@ -225,7 +225,6 @@ patients_to_cpius <- function(data_to_convert,
   assertthat::assert_that("Id" %in% colnames(data_to_convert))
   assertthat::assert_that("X" %in% colnames(data_to_convert))
   assertthat::assert_that("Status" %in% colnames(data_to_convert))
-  # assertthat::assert_that("Time" %in% colnames(data_to_convert))
   assertthat::assert_that(assertthat::see_if(sum(units_of_cpiu) >= max(data_to_convert$X),
                                              msg = "units couldn't cover the entire observed time"))
   assertthat::assert_that(
@@ -403,10 +402,10 @@ add_wt <- function(data_to_convert,
     stepfun(Gt$unique_time, c(1, Gt$surv_prop), right = FALSE)
 
   # calculate the number of event by each time point for each patient
-  df_terminal$eventByTime <- data_to_convert %>%
+  df_terminal$Y_observe <- data_to_convert %>%
     dplyr::group_by(`Id`) %>%
-    dplyr::summarise(`eventByTime` = sum(`Events`[`X` <= time_point])) %>%
-    dplyr::select(`eventByTime`) %>%
+    dplyr::summarise(`Y_observe` = sum(`Events`[`X` <= time_point])) %>%
+    dplyr::select(`Y_observe`) %>%
     unlist()
 
   df_terminal$wt <- apply(df_terminal, 1, function(x) {
@@ -424,16 +423,6 @@ add_wt <- function(data_to_convert,
   return(df_terminal)
 }
 
-#' Calculate the predicted number of events at given time points
-#' @param lambdas a vector of predicted hazard rates at each interval
-#' @param interval_lengths a vector of lengths for each interval, same length with `lambdas`
-#' @param time_points a vector of time points that been evaluated
-#' @return a vector of predicted number of events for each `time_points`
-#' @export
-#' @examples
-#' lambdas <- 1:10
-#' intervals <- rep(3, 10)
-#' Y_hat_by_time(lambdas, intervals, c(3, 6, 9))
 Y_hat_by_time <- function(lambdas,
                           interval_lengths,
                           time_points) {
@@ -445,6 +434,26 @@ Y_hat_by_time <- function(lambdas,
   out <-
     sapply(time_points, function(t)
       integrate(step_func, 0, t, subdivisions = 2000)$value)
+  return(out)
+}
+
+#' Calculate the predicted number of events at given time points
+#' @param lambda_pred a matrix of predicted hazard rates at each interval for multiple subjects
+#' @param interval_cpius a vector of lengths for each CPIU, same length with `ncol(lambda_pred)`
+#' @param time_points a vector of time points that been evaluated
+#' @return a matrix of predicted number of events at each `time_points` for multiple subjects
+#' @export
+#' @examples
+#' lambdas <- matrix(1:10, nrow = 2, byrow = TRUE)
+#' intervals <- rep(3,5)
+#' add_Y_hat(lambdas, intervals, c(3, 6, 9))
+add_Y_hat <- function(
+    lambda_pred,
+    length_cpius,
+    time_points) {
+  out <- apply(lambda_pred, 1, function(x) {
+    Y_hat_by_time(x, length_cpius, time_points)
+  })
   return(out)
 }
 
@@ -504,7 +513,7 @@ true_Y_numerical_form <- function(t,
 #' @param time_points the time points that need to be evaluated
 #' @return a data frame (n_subject x length(time_point))
 #' @export
-trueY <- function(compo_sim_list,
+true_Y <- function(compo_sim_list,
                   time_points) {
   rst <- sapply(time_points,
                 function(x) {
@@ -521,3 +530,41 @@ trueY <- function(compo_sim_list,
                 })
   return(rst)
 }
+
+#' Calculate the WRSS
+#' @details
+#' Calculate the WRSS(Gerds T. 2006) to evaluate the performance of `lambda_pred` when the true Y is unknown
+#' @param df_test a data frame contains composite event observations
+#' @param weights_by_status a vector, the weights assign to each event type
+#' @param lambda_pred a matrix contains the predicated hazard rate for each subject at each interval
+#' @param length_cpius a vector, the length of each CPIU
+#' @param time_point a scalar, the time point to evaluate WRSS
+#' @return a data frame contains WRSS for each subject
+#' @export
+add_wrss <- function(
+    df_test,
+    weights_by_status,
+    lambda_pred,
+    length_cpius,
+    time_point) {
+
+  t1 <- add_wt(
+    df_test,
+    weights_by_status,
+    time_point
+  )
+
+  t1$Y_hat <- add_Y_hat(
+    lambda_pred,
+    length_cpius,
+    time_point
+  )
+
+  t1 <- t1 %>%
+    dplyr::mutate(
+      `WRSS` = (`Y_observe` - `Y_hat`)^2 * `wt`
+    )
+
+  return(t1)
+}
+
