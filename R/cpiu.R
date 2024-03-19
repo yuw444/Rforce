@@ -1,0 +1,523 @@
+#' fit kaplan meier survival function
+#' @param time: time to event
+#' @param status: event status, 0 is censored, 1 is terminal event
+#' @return a list of unique time and survival probability
+
+km_fit <- function(time,
+                   status) {
+  unique_time <- sort(unique(time[status == 1]))
+  if (unique_time[1] != 0) {
+    unique_time <- c(0, unique_time)
+  }
+  if (unique_time[length(unique_time)] != max(time)) {
+    unique_time <- c(unique_time, max(time))
+  }
+
+  n_at_risks <- sapply(unique_time, function(x) {
+    sum(x <= time)
+  })
+
+  n_deaths <- sapply(unique_time, function(x) {
+    sum(x == time)
+  })
+
+  surv_prop <- rep(-1, length(unique_time))
+
+  surv_prop[1] <- 1
+
+  for (i in 2:length(unique_time)) {
+    surv_prop[i] <- surv_prop[i - 1] * (1 - n_deaths[i] / n_at_risks[i])
+  }
+
+  return(list(unique_time = unique_time,
+              surv_prop = surv_prop))
+}
+
+#' calculate pseudo risk time at the given interval
+#' @import assertthat
+#' @param Gt: a list of unique time and survival probability of Censoring
+#' @param X: the time point associated with the Status
+#' @param Status: the event status at the time point X
+#' @param low: the lower bound of the interval
+#' @param high: the upper bound of the interval
+#' @return: the pseudo risk time at the given interval
+#' @examples
+#' # example code
+#'  Gt <- list(unique_time = c(0, 1, 1.8, 3.5, 4),
+#'             surv_prop = c(1, 0.8,0.6, 0.3, 0.1))
+#' pseudo_risk_time(Gt, X =1.5 , Status = 1, low =0.5, high=1.9)
+
+pseudo_risk_time <- function(Gt,
+                             X,
+                             Status = 0,
+                             low = 1,
+                             high = 3) {
+  assertthat::assert_that(
+    assertthat::see_if(low < high &
+                         low >= 0 &
+                         high >= 0 &
+                         X >= 0, msg = "recheck the range of \"low\", \"high\" and \"X\" ")
+  )
+  assertthat::assert_that(assertthat::see_if(Status %in% c(0, 1), msg = " \"Status\" must be either 0 or 1"))
+  assertthat::assert_that(assertthat::see_if(sum(
+    names(Gt) %in% c("unique_time", "surv_prop")
+  ) == 2, msg = "The format of Gt is incorrect"))
+
+  if (Status == 0 && low >= X) {
+    return(0)
+  }
+
+  if (high <= X) {
+    return(high - low)
+  }
+
+  if (Status == 0 && low < X) {
+    return(X - low)
+  }
+
+  if (Status == 1) {
+    wt <-
+      data.frame(t = c(0, Gt$unique_time[(sum(Gt$unique_time < X) + 1):length(Gt$unique_time)]),
+                 w = Gt$surv_prop[(sum(Gt$unique_time < X)):length(Gt$unique_time)] /
+                   Gt$surv_prop[sum(Gt$unique_time < X)])
+
+    low_order <- sum(low >= wt$t)
+
+    wt_used <- wt[low_order:nrow(wt),]
+
+    wt_used[1, 1] <- low
+
+    high_order <- sum(high >= wt_used$t)
+
+    wt_updated <- wt_used[1:high_order,]
+
+    # par(mfrow=c(1,2))
+    # plot(wt, type = "s", xlim = c(0,5),ylim=c(0,1))
+    # plot(wt_updated, type = "s", xlim = c(0,5),ylim=c(0,1))
+    # dev.off()
+
+    return(sum(diff(c(
+      wt_updated$t, high
+    )) * wt_updated$w))
+  }
+}
+
+#' calculate observed risk time at the given interval
+#' @param Gt: a list of unique time and survival probability of Censoring
+#' @param X: the time point associated with the Status
+#' @param Status: the event status at the time point X
+#' @param low: the lower bound of the interval
+#' @param high: the upper bound of the interval
+#' @return: the observed risk time at the given interval
+#'
+observed_risk_time <- function(Gt,
+                               X,
+                               Status = 0,
+                               low = 1,
+                               high = 3) {
+  assertthat::assert_that(
+    assertthat::see_if(low < high &
+                         low >= 0 &
+                         high >= 0 &
+                         X >= 0, msg = "recheck the range of \"low\", \"high\" and \"X\" ")
+  )
+  assertthat::assert_that(assertthat::see_if(Status %in% c(0, 1), msg = " \"Status\" must be either 0 or 1"))
+  assertthat::assert_that(assertthat::see_if(sum(
+    names(Gt) %in% c("unique_time", "surv_prop")
+  ) == 2, msg = "The format of Gt is incorrect"))
+
+  if (low >= X) {
+    return(0)
+  }
+  if (high <= X) {
+    return(high - low)
+  }
+  if (X >= low) {
+    return(X - low)
+  }
+}
+
+#' break the given length into several intervals with the given intervals
+#' @import assertthat
+#' @export
+#' @param length: the length to be broken
+#' @param interval: the given intervals
+#' @return: a vector of length of each interval
+#' @examples
+#' # example code
+#'  break_length_by_interval(100, 20:26)
+break_length_by_interval <- function(length,
+                                     interval) {
+  assertthat::assert_that(
+    assertthat::see_if(sum(interval) >= length,
+                       msg = "provided break points is not suitable for the interval!")
+  )
+  out <- interval[cumsum(interval) < length]
+
+  if (sum(out) < length) {
+    out <- c(out, length - sum(out))
+  }
+
+  return(out)
+}
+
+#' calculate the number of events in each interval
+#' @import assertthat
+#' @param event_times: a vector of event times
+#' @param ids: a vector of ids
+#' @param status: a vector of status
+#' @param weights_by_status: a vector of weights by status
+#' @param interval: a vector of intervals
+#' @return a matrix of number of events in each interval by id, row is id, column is interval
+#'
+counts_by_interval_and_id <- function(event_times,
+                                      ids,
+                                      status,
+                                      weights_by_status,
+                                      interval) {
+  assertthat::assert_that(
+    assertthat::see_if(length(unique(status)) == length(weights_by_status),
+                       msg = "The length of weights_by_status must be same with length of unique status!"),
+    assertthat::are_equal(length(event_times), length(ids)),
+    assertthat::are_equal(length(event_times), length(status)),
+    assertthat::are_equal(length(ids), length(status))
+  )
+
+  n_interval <- length(interval)
+  break_points <- cumsum(interval)
+  n_ids <- length(unique(ids))
+  unique_status <- sort(unique(status))
+
+  for (s in 1:length(unique_status))
+  {
+    status[status == unique_status[s]] <- weights_by_status[s]
+  }
+
+  out <- matrix(nrow = n_ids, ncol = n_interval)
+
+  for (i in 1:n_ids)
+  {
+    event_times_per_id <- event_times[ids == i]
+    status_per_id <- status[ids == i]
+    for (j in 1:n_interval)
+    {
+      out[i, j] <-
+        sum(status_per_id[event_times_per_id < break_points[j]])
+    }
+  }
+
+  return(out)
+}
+
+#' convert the recorded event time per patient to the number of events per interval per patient
+#' @import dplyr assertthat
+#' @param data_to_convert: a data frame with columns of Id, X, Status, Time
+#' @param units_of_cpiu: a vector of units of CPIU
+#' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
+#' @param pseudo_risk: a boolean value indicating whether to use pseudo risk time
+#' @return: a dataframe with number of events in each interval by id, row is id, column is interval
+#'
+patients_to_cpius <- function(data_to_convert,
+                              units_of_cpiu,
+                              weights_by_status = c(0, 1, 1),
+                              pseudo_risk = TRUE,
+                              wide_format = TRUE) {
+  assertthat::assert_that("Id" %in% colnames(data_to_convert))
+  assertthat::assert_that("X" %in% colnames(data_to_convert))
+  assertthat::assert_that("Status" %in% colnames(data_to_convert))
+  # assertthat::assert_that("Time" %in% colnames(data_to_convert))
+  assertthat::assert_that(assertthat::see_if(sum(units_of_cpiu) >= max(data_to_convert$X),
+                                             msg = "units couldn't cover the entire observed time"))
+  assertthat::assert_that(
+    assertthat::see_if(length(unique(
+      data_to_convert$Status
+    )) == length(weights_by_status),
+    msg = "The length of weights_by_status must be same with length of unique status!")
+  )
+
+  list_status <- sort(unique(data_to_convert$Status))
+  data_to_convert$Events <- data_to_convert$Status
+
+  for (i in 1:length(list_status)) {
+    data_to_convert$Events[data_to_convert$Status == list_status[i]] <-
+      weights_by_status[i]
+  }
+
+  # 0. size of CPIUs, number of patients
+  size_cpius <- length(units_of_cpiu)
+  n_patients <- length(unique(data_to_convert$Id))
+
+  # create a template based on given units
+  # 1. grab the maximum of observed time(X) for each Id
+  df_terminal <- data_to_convert %>%
+    dplyr::group_by(Id) %>%
+    dplyr::filter(row_number() == n()) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(X, Status)
+
+  Gt <- km_fit(df_terminal$X, 1 - df_terminal$Status)
+
+  interval_breaks <- c(0, cumsum(units_of_cpiu))
+
+  # 2. create template and nthInterval and riskTime
+  template_for_convert <- data_to_convert %>%
+    dplyr::group_by(Id) %>%
+    dplyr::slice_tail() %>%
+    dplyr::ungroup() %>%
+    dplyr::slice(rep(1:n(), each = size_cpius)) %>%
+    dplyr::mutate(nthInterval = rep(1:size_cpius, times = n_patients))
+
+  if (pseudo_risk == TRUE) {
+    risk_time <- sapply(1:n_patients, function(n) {
+      sapply(1:size_cpius, function(b) {
+        pseudo_risk_time(
+          Gt,
+          X = df_terminal$X[n],
+          Status = df_terminal$Status[n],
+          low = interval_breaks[b],
+          high = interval_breaks[b + 1]
+        )
+      })
+    })
+  } else {
+    risk_time <- sapply(1:n_patients, function(n) {
+      sapply(1:size_cpius, function(b) {
+        observed_risk_time(
+          Gt,
+          X = df_terminal$X[n],
+          Status = df_terminal$Status[n],
+          low = interval_breaks[b],
+          high = interval_breaks[b + 1]
+        )
+      })
+    })
+  }
+
+  # 3. number of events calculation
+
+  df_event <- data_to_convert %>%
+    dplyr::group_by(Id) %>%
+    dplyr::filter(X <= interval_breaks[2]) %>%
+    dplyr::tally(Events)
+
+  if (size_cpius >= 2) {
+    for (i in 2:size_cpius) {
+      df_event <- data_to_convert %>%
+        dplyr::group_by(Id) %>%
+        dplyr::filter(X <= interval_breaks[i + 1]) %>%
+        dplyr::tally(Events) %>%
+        dplyr::left_join(., df_event, "Id")
+    }
+  }
+
+  colnames(df_event)[1:size_cpius + 1] <-
+    paste0("nEvents", size_cpius:1)
+
+  df_event <- df_event %>%
+    replace(is.na(.), 0)
+
+  n_events <-
+    apply(df_event[, 1:size_cpius + 1], 1, function(x) {
+      diff(c(0, rev(x)))
+    })
+
+  # 4. data frame to return
+  template_for_convert <- template_for_convert %>%
+    dplyr::mutate(pseudo_risk_time = c(risk_time),
+                  nEvents = c(n_events)) %>%
+    dplyr::filter(pseudo_risk_time > 0)
+
+  if (wide_format == TRUE) {
+    template_to_return <- template_for_convert %>%
+      tidyr::pivot_wider(names_from = nthInterval,
+                         values_from = c(pseudo_risk_time, nEvents)) %>%
+      dplyr::mutate(dplyr::across(everything(), ~ tidyr::replace_na(.x, 0)))
+
+    designMatrix_Y <- template_to_return %>%
+      dplyr::select(
+        dplyr::starts_with("binary"),
+        dplyr::starts_with("contin"),
+        dplyr::starts_with("nEvents")
+      )
+
+    temp <- data_to_convert %>%
+      dplyr::group_by(Id) %>%
+      dplyr::slice_tail() %>%
+      dplyr::ungroup()
+
+    auxiliaryFeatures <- template_to_return %>%
+      dplyr::select(c(Id, dplyr::starts_with("pseudo_risk_time"))) %>%
+      dplyr::mutate(X = temp$X, Status = temp$Status)
+
+    return(list(designMatrix_Y = designMatrix_Y,
+                auxiliaryFeatures = auxiliaryFeatures))
+  }
+
+  designMatrix_Y <- template_for_convert %>%
+    dplyr::select(
+      dplyr::starts_with("binary"),
+      dplyr::starts_with("contin"),
+      nthInterval,
+      nEvents
+    )
+
+  auxiliaryFeatures <- template_for_convert %>%
+    dplyr::select(c(Id, pseudo_risk_time))
+
+  return(list(designMatrix_Y = designMatrix_Y,
+              auxiliaryFeatures = auxiliaryFeatures))
+}
+#' convert the recorded event time per patient to the number of events and wt at the given time point per patient
+#' @param data_to_convert: a data frame with columns of Id, X, Status
+#' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
+#' @param time: the time point to calculate the number of events and wt
+#' @return a dataframe with number of events and wt at the given time point per patient
+add_wt <- function(data_to_convert,
+                   weights_by_status,
+                   time_point) {
+  assertthat::assert_that("Id" %in% colnames(data_to_convert))
+  assertthat::assert_that("X" %in% colnames(data_to_convert))
+  assertthat::assert_that("Status" %in% colnames(data_to_convert))
+
+  list_status <- sort(unique(data_to_convert$Status))
+  data_to_convert$Events <- data_to_convert$Status
+
+  for (i in seq_along(list_status)) {
+    data_to_convert$Events[data_to_convert$Status == list_status[i]] <-
+      weights_by_status[i]
+  }
+
+  # 0. size of CPIUs, number of patients
+  n_patients <- length(unique(data_to_convert$Id))
+
+  # create a template based on given units
+  # 1. grab the maximum of observed time(X) for each Id
+  df_terminal <- data_to_convert %>%
+    dplyr::group_by(`Id`) %>%
+    dplyr::arrange(`X`) %>%
+    dplyr::slice_tail() %>%
+    dplyr::ungroup()
+
+  Gt <- km_fit(df_terminal$X, 1 - df_terminal$Status)
+  Gt_step <-
+    stepfun(Gt$unique_time, c(1, Gt$surv_prop), right = FALSE)
+
+  # calculate the number of event by each time point for each patient
+  df_terminal$eventByTime <- data_to_convert %>%
+    dplyr::group_by(`Id`) %>%
+    dplyr::summarise(`eventByTime` = sum(`Events`[`X` <= time_point])) %>%
+    dplyr::select(`eventByTime`) %>%
+    unlist()
+
+  df_terminal$wt <- apply(df_terminal, 1, function(x) {
+    if (x["X"] <= time_point) {
+      if (x["Status"] == 0) {
+        return(0)
+      } else {
+        return(1 / Gt_step(x["X"]))
+      }
+    } else {
+      return(1 / Gt_step(time_point))
+    }
+  })
+
+  return(df_terminal)
+}
+
+#' Calculate the predicted number of events at given time points
+#' @param lambdas a vector of predicted hazard rates at each interval
+#' @param interval_lengths a vector of lengths for each interval, same length with `lambdas`
+#' @param time_points a vector of time points that been evaluated
+#' @return a vector of predicted number of events for each `time_points`
+#' @export
+#' @examples
+#' lambdas <- 1:10
+#' intervals <- rep(3, 10)
+#' Y_hat_by_time(lambdas, intervals, c(3, 6, 9))
+Y_hat_by_time <- function(lambdas,
+                          interval_lengths,
+                          time_points) {
+  interval_lengths <- interval_lengths[seq_along(lambdas)]
+  step_func <-
+    stepfun(cumsum(interval_lengths), c(lambdas, 0), right = FALSE)
+  if(max(time_points) > sum(interval_lengths))
+    stop("Error: The maximum of time point exceeds the given intervals, check the range of `interval_length` and `time_points`")
+  out <-
+    sapply(time_points, function(t)
+      integrate(step_func, 0, t, subdivisions = 2000)$value)
+  return(out)
+}
+
+#' Numerical form to calculate the true Y given the true hazard and other parameters
+#' @param t the time point to check
+#' @param constant_baseline_hazard logical; whether constant baseline hazard is used
+#' @param baseline_hazard a scalar, the constant baseline hazard
+#' @param a_shape_weibull the parameter of weibull distribution when simulate the data
+#' @param sigma_scale_weibull the parameter of weibull distribution when simulate the data
+#' @param sigma_scale_gamma the parameter of gamma distribution when simulate the frality term
+#' @param lambdaZ a vector, recurrent event hazard rate
+#' @param lambda a scalar, the hazard rate of the stopping time
+#' @return a scalar, the mean number of event at time `t`
+#'
+true_Y_numerical_form <- function(t,
+                                  constant_baseline_hazard,
+                                  baseline_hazard,
+                                  a_shape_weibull,
+                                  sigma_scale_weibull,
+                                  sigma_scale_gamma,
+                                  lambdaZ,
+                                  lambda) {
+  if (constant_baseline_hazard) {
+    term <- function(x) {
+      x[2] * min(t, x[1]) * dexp(x[1], rate = x[2] * lambda) *
+        dgamma(x[2],
+               shape = 1 / sigma_scale_gamma,
+               scale = sigma_scale_gamma) *
+        baseline_hazard
+    }
+
+    out <-
+      adaptIntegrate(term,
+                     lowerLimit = c(0, 0),
+                     upperLimit = c(Inf, Inf))$integral * lambdaZ
+
+    return(out)
+  }
+
+  term <- function(x) {
+    x[2] * pweibull(min(t, x[1]), shape = a_shape_weibull, scale = sigma_scale_weibull) *
+      dexp(x[1], rate = x[2] * lambda) *
+      dgamma(x[2], shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma) *
+      baseline_hazard
+  }
+
+  out <-
+    adaptIntegrate(term,
+                   lowerLimit = c(0, 0),
+                   upperLimit = c(Inf, Inf))$integral * lambdaZ
+
+  return(out)
+}
+
+#' Calculate the mean number events for each subject at different time points in the simulated dataset
+#' @param compo_sim_list the object from the `compo_sim` or `compo_sim_mao`
+#' @param time_points the time points that need to be evaluated
+#' @return a data frame (n_subject x length(time_point))
+#' @export
+trueY <- function(compo_sim_list,
+                  time_points) {
+  rst <- sapply(time_points,
+                function(x) {
+                  true_Y_numerical_form(
+                    t = x,
+                    constant_baseline_hazard = compo_sim_list$constant_baseline_hazard,
+                    baseline_hazard = compo_sim_list$baseline_hazard,
+                    a_shape_weibull = compo_sim_list$a_shape_weibull,
+                    sigma_scale_weibull = compo_sim_list$sigma_scale_weibull,
+                    sigma_scale_gamma = compo_sim_list$sigma_scale_gamma,
+                    lambdaZ = compo_sim_list$lambdaZ,
+                    lambda = compo_sim_list$lambda
+                  )
+                })
+  return(rst)
+}
