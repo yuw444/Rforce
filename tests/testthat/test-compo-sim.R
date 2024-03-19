@@ -8,11 +8,12 @@ test_that("compo_sim", {
       seed = i,
       verbose = FALSE
     )
-    dim(data_list[[1]])
     library(dplyr)
-    df_train <- data_list[[1]] %>%
-       dplyr::mutate(X = Time) %>%
-       dplyr::select(-c("Time"))
+    df_train <- random_censoring(
+      data_list$dataset,
+      0.9
+    )
+    sum(df_train$Status == 1)/200
     estimate_list <- wcompo_est(
        data = df_train,
        weight = c(1, 1)
