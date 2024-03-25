@@ -211,6 +211,7 @@ counts_by_interval_and_id <- function(event_times,
 
 #' convert the recorded event time per patient to the number of events per interval per patient
 #' @import dplyr assertthat tidyr
+#' @export
 #' @param data_to_convert: a data frame with columns of Id, X, Status, Time
 #' @param units_of_cpiu: a vector of units of CPIU
 #' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
