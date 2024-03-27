@@ -351,7 +351,8 @@ compo_sim_mao <- function(
 
   return(list(
     dataset = data_na_rm,
-    lambdaA = lambda,
+    lambda = lambda,
+    lambdaA = lambdaA,
     lambdaZ = lambdaZ,
     kesi = kesi,
     sigma_scale_gamma = sigma_scale_gamma

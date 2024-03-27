@@ -459,6 +459,7 @@ add_Y_hat <- function(
 }
 
 #' Numerical form to calculate the true Y given the true hazard and other parameters
+#' @import cubature
 #' @param t the time point to check
 #' @param constant_baseline_hazard logical; whether constant baseline hazard is used
 #' @param baseline_hazard a scalar, the constant baseline hazard
@@ -487,7 +488,7 @@ true_Y_numerical_form <- function(t,
     }
 
     out <-
-      adaptIntegrate(term,
+      cubature::adaptIntegrate(term,
                      lowerLimit = c(0, 0),
                      upperLimit = c(Inf, Inf))$integral * lambdaZ
 
@@ -520,10 +521,10 @@ true_Y <- function(compo_sim_list,
                 function(x) {
                   true_Y_numerical_form(
                     t = x,
-                    constant_baseline_hazard = compo_sim_list$constant_baseline_hazard,
-                    baseline_hazard = compo_sim_list$baseline_hazard,
-                    a_shape_weibull = compo_sim_list$a_shape_weibull,
-                    sigma_scale_weibull = compo_sim_list$sigma_scale_weibull,
+                    constant_baseline_hazard = ifelse(is.null(compo_sim_list$constant_baseline_hazard), NA, compo_sim_list$constant_baseline_hazard),
+                    baseline_hazard = ifelse(is.null(compo_sim_list$baseline_hazard),NA, compo_sim_list$baseline_hazard),
+                    a_shape_weibull = ifelse(is.null(compo_sim_list$a_shape_weibull), NA, compo_sim_list$a_shape_weibull),
+                    sigma_scale_weibull = ifelse(is.null(compo_sim_list$sigma_scale_weibull), NA, compo_sim_list$sigma_scale_weibull),
                     sigma_scale_gamma = compo_sim_list$sigma_scale_gamma,
                     lambdaZ = compo_sim_list$lambdaZ,
                     lambda = compo_sim_list$lambda
