@@ -472,7 +472,7 @@ add_Y_hat <- function(
 #'
 true_Y_numerical_form <- function(t,
                                   constant_baseline_hazard,
-                                  baseline_hazard,
+                                  baseline_hazard = 1,
                                   a_shape_weibull,
                                   sigma_scale_weibull,
                                   sigma_scale_gamma,
@@ -521,8 +521,8 @@ true_Y <- function(compo_sim_list,
                 function(x) {
                   true_Y_numerical_form(
                     t = x,
-                    constant_baseline_hazard = ifelse(is.null(compo_sim_list$constant_baseline_hazard), NA, compo_sim_list$constant_baseline_hazard),
-                    baseline_hazard = ifelse(is.null(compo_sim_list$baseline_hazard),NA, compo_sim_list$baseline_hazard),
+                    constant_baseline_hazard = ifelse(is.null(compo_sim_list$constant_baseline_hazard), FALSE, compo_sim_list$constant_baseline_hazard),
+                    baseline_hazard = ifelse(is.null(compo_sim_list$baseline_hazard),1, compo_sim_list$baseline_hazard),
                     a_shape_weibull = ifelse(is.null(compo_sim_list$a_shape_weibull), NA, compo_sim_list$a_shape_weibull),
                     sigma_scale_weibull = ifelse(is.null(compo_sim_list$sigma_scale_weibull), NA, compo_sim_list$sigma_scale_weibull),
                     sigma_scale_gamma = compo_sim_list$sigma_scale_gamma,
