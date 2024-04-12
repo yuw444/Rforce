@@ -4,12 +4,12 @@
 \alias{add_Y_hat}
 \title{Calculate the predicted number of events at given time points}
 \usage{
-add_Y_hat(lambda_pred, length_cpius, time_points)
+add_Y_hat(lambda_pred, length_cpius, time_to_evaluate)
 }
 \arguments{
 \item{lambda_pred}{a matrix of predicted hazard rates at each interval for multiple subjects}
 
-\item{time_points}{a vector of time points that been evaluated}
+\item{time_to_evaluate}{a scalar, time point to evaluate \code{Y^\hat}}
 
 \item{interval_cpius}{a vector of lengths for each CPIU, same length with \code{ncol(lambda_pred)}}
 }

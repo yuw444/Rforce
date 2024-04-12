@@ -7,7 +7,7 @@
 true_Y_numerical_form(
   t,
   constant_baseline_hazard,
-  baseline_hazard,
+  baseline_hazard = 1,
   a_shape_weibull,
   sigma_scale_weibull,
   sigma_scale_gamma,

@@ -83,13 +83,13 @@ pseudo_risk_time <- function(Gt,
 
     low_order <- sum(low >= wt$t)
 
-    wt_used <- wt[low_order:nrow(wt),]
+    wt_used <- wt[low_order:nrow(wt), ]
 
     wt_used[1, 1] <- low
 
     high_order <- sum(high >= wt_used$t)
 
-    wt_updated <- wt_used[1:high_order,]
+    wt_updated <- wt_used[1:high_order, ]
 
     # par(mfrow=c(1,2))
     # plot(wt, type = "s", xlim = c(0,5),ylim=c(0,1))
@@ -298,7 +298,9 @@ patients_to_cpius <- function(data_to_convert,
   df_event <- data_to_convert %>%
     dplyr::group_by(Id) %>%
     dplyr::filter(X <= interval_breaks[2]) %>%
-    dplyr::tally(Events)
+    dplyr::tally(Events) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(Id, X, Events)
 
   if (size_cpius >= 2) {
     for (i in 2:size_cpius) {
@@ -306,6 +308,8 @@ patients_to_cpius <- function(data_to_convert,
         dplyr::group_by(Id) %>%
         dplyr::filter(X <= interval_breaks[i + 1]) %>%
         dplyr::tally(Events) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(Id, X, Events) %>%
         dplyr::left_join(., df_event, "Id")
     }
   }
@@ -331,7 +335,8 @@ patients_to_cpius <- function(data_to_convert,
     template_to_return <- template_for_convert %>%
       tidyr::pivot_wider(names_from = nthInterval,
                          values_from = c(pseudo_risk_time, nEvents)) %>%
-      dplyr::mutate(dplyr::across(everything(), ~ tidyr::replace_na(.x, 0)))
+      dplyr::mutate(dplyr::starts_with("pseudo_risk_time"),
+                    ~ tidyr::replace_na(.x, 0))
 
     designMatrix_Y <- template_to_return %>%
       dplyr::select(
@@ -369,79 +374,72 @@ patients_to_cpius <- function(data_to_convert,
 }
 #' convert the recorded event time per patient to the number of events and wt at the given time point per patient
 #' @param data_to_convert: a data frame with columns of Id, X, Status
-#' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
-#' @param time: the time point to calculate the number of events and wt
-#' @return a dataframe with number of events and wt at the given time point per patient
-add_wt <- function(data_to_convert,
-                   weights_by_status,
-                   time_point) {
-  assertthat::assert_that("Id" %in% colnames(data_to_convert))
-  assertthat::assert_that("X" %in% colnames(data_to_convert))
-  assertthat::assert_that("Status" %in% colnames(data_to_convert))
+#' @param weights_by_status: a vector of weights by status, default is \code{c(0,1,1)} for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
+#' @param time_to_evaluate a scalar, or vector with length equal to \code{length(unique(data_to_convert$Id))}
+#'              the time point to calculate the number of events and wt for each patient;
+#'
+#' @return a data.frame with number of events and wt at the given time point per patient
 
-  list_status <- sort(unique(data_to_convert$Status))
-  data_to_convert$Events <- data_to_convert$Status
+add_wt <-
+  function(data_to_convert,
+           weights_by_status,
+           time_to_evaluate) {
+    assertthat::assert_that("Id" %in% colnames(data_to_convert))
+    assertthat::assert_that("X" %in% colnames(data_to_convert))
+    assertthat::assert_that("Status" %in% colnames(data_to_convert))
+    assertthat::assert_that(length(weights_by_status) == length(unique(data_to_convert$Status)))
 
-  for (i in seq_along(list_status)) {
-    data_to_convert$Events[data_to_convert$Status == list_status[i]] <-
-      weights_by_status[i]
-  }
+    patient_table <- c(table(data_to_convert$Id))
 
-  # 0. size of CPIUs, number of patients
-  n_patients <- length(unique(data_to_convert$Id))
-
-  # create a template based on given units
-  # 1. grab the maximum of observed time(X) for each Id
-  df_terminal <- data_to_convert %>%
-    dplyr::group_by(`Id`) %>%
-    dplyr::arrange(`X`) %>%
-    dplyr::slice_tail() %>%
-    dplyr::ungroup()
-
-  Gt <- km_fit(df_terminal$X, 1 - df_terminal$Status)
-  Gt_step <-
-    stepfun(Gt$unique_time, c(1, Gt$surv_prop), right = FALSE)
-
-  # calculate the number of event by each time point for each patient
-  df_terminal$Y_observe <- data_to_convert %>%
-    dplyr::group_by(`Id`) %>%
-    dplyr::summarise(`Y_observe` = sum(`Events`[`X` <= time_point])) %>%
-    dplyr::select(`Y_observe`) %>%
-    unlist()
-
-  df_terminal$wt <- apply(df_terminal, 1, function(x) {
-    if (x["X"] <= time_point) {
-      if (x["Status"] == 0) {
-        return(0)
-      } else {
-        return(1 / Gt_step(x["X"]))
-      }
+    if (length(time_to_evaluate) == 1) {
+      data_to_convert$time_of_interest <- time_to_evaluate
     } else {
-      return(1 / Gt_step(time_point))
+      if (length(time_to_evaluate) == length(patient_table)) {
+        data_to_convert$time_of_interest <-
+          rep(time_to_evaluate, patient_table)
+      } else {
+        stop("The length of time_to_evaluate should be 1 or equal to the number of patients")
+      }
     }
-  })
 
-  return(df_terminal)
-}
+    list_status <- sort(unique(data_to_convert$Status))
+    data_to_convert$Events <- data_to_convert$Status
+    for (i in seq_along(list_status)) {
+      data_to_convert$Events[data_to_convert$Status == list_status[i]] <-
+        weights_by_status[i]
+    }
+    n_patients <- length(unique(data_to_convert$Id))
+    df_terminal <- data_to_convert %>%
+      dplyr::group_by(Id) %>%
+      dplyr::arrange(X) %>%
+      dplyr::slice_tail() %>%
+      dplyr::ungroup()
+    Gt <- Rforce:::km_fit(df_terminal$X, 1 - df_terminal$Status)
+    Gt_step <-
+      stepfun(Gt$unique_time, c(1, Gt$surv_prop), right = FALSE)
+    df_terminal$Y_observe <- data_to_convert %>%
+      dplyr::group_by(Id) %>%
+      dplyr::summarise(Y_observe = sum(Events[X <= time_of_interest])) %>%
+      dplyr::pull(Y_observe)
+    df_terminal$wt <- apply(df_terminal, 1, function(x) {
+      if (x["X"] <= x["time_of_interest"]) {
+        if (x["Status"] == 0) {
+          return(0)
+        } else {
+          return(1 / Gt_step(x["X"]))
+        }
+      } else {
+        return(1 / Gt_step(x["time_of_interest"]))
+      }
+    })
 
-Y_hat_by_time <- function(lambdas,
-                          interval_lengths,
-                          time_points) {
-  interval_lengths <- interval_lengths[seq_along(lambdas)]
-  step_func <-
-    stepfun(cumsum(interval_lengths), c(lambdas, 0), right = FALSE)
-  if(max(time_points) > sum(interval_lengths))
-    stop("Error: The maximum of time point exceeds the given intervals, check the range of `interval_length` and `time_points`")
-  out <-
-    sapply(time_points, function(t)
-      integrate(step_func, 0, t, subdivisions = 2000)$value)
-  return(out)
-}
+    return(df_terminal)
+  }
 
 #' Calculate the predicted number of events at given time points
 #' @param lambda_pred a matrix of predicted hazard rates at each interval for multiple subjects
 #' @param interval_cpius a vector of lengths for each CPIU, same length with `ncol(lambda_pred)`
-#' @param time_points a vector of time points that been evaluated
+#' @param time_to_evaluate a scalar, time point to evaluate \code{Y^\hat}
 #' @return a matrix of predicted number of events at each `time_points` for multiple subjects
 #' @export
 #' @examples
@@ -451,11 +449,19 @@ Y_hat_by_time <- function(lambdas,
 add_Y_hat <- function(
     lambda_pred,
     length_cpius,
-    time_points) {
-  out <- apply(lambda_pred, 1, function(x) {
-    Y_hat_by_time(x, length_cpius, time_points)
-  })
-  return(out)
+    time_to_evaluate) {
+  assertthat::assert_that(ncol(lambda_pred) == length(length_cpius))
+  assertthat::assert_that(length(time_to_evaluate) == 1)
+  assertthat::assert_that(!any(time_to_evaluate > sum(length_cpius)))
+
+  temp <- break_length_by_interval(time_to_evaluate, length_cpius)
+  if (length(temp) < length(length_cpius)) {
+    temp <- c(temp, rep(0, length(length_cpius) - length(temp)))
+  }
+
+  y_hat <- (as.matrix(lambda_pred) %*% temp)[,1]
+
+  return(y_hat)
 }
 
 #' Numerical form to calculate the true Y given the true hazard and other parameters
@@ -489,8 +495,8 @@ true_Y_numerical_form <- function(t,
 
     out <-
       cubature::adaptIntegrate(term,
-                     lowerLimit = c(0, 0),
-                     upperLimit = c(Inf, Inf))$integral * lambdaZ
+                               lowerLimit = c(0, 0),
+                               upperLimit = c(Inf, Inf))$integral * lambdaZ
 
     return(out)
   }
@@ -516,15 +522,31 @@ true_Y_numerical_form <- function(t,
 #' @return a data frame (n_subject x length(time_point))
 #' @export
 true_Y <- function(compo_sim_list,
-                  time_points) {
+                   time_points) {
   rst <- sapply(time_points,
                 function(x) {
                   true_Y_numerical_form(
                     t = x,
-                    constant_baseline_hazard = ifelse(is.null(compo_sim_list$constant_baseline_hazard), FALSE, compo_sim_list$constant_baseline_hazard),
-                    baseline_hazard = ifelse(is.null(compo_sim_list$baseline_hazard),1, compo_sim_list$baseline_hazard),
-                    a_shape_weibull = ifelse(is.null(compo_sim_list$a_shape_weibull), NA, compo_sim_list$a_shape_weibull),
-                    sigma_scale_weibull = ifelse(is.null(compo_sim_list$sigma_scale_weibull), NA, compo_sim_list$sigma_scale_weibull),
+                    constant_baseline_hazard = ifelse(
+                      is.null(compo_sim_list$constant_baseline_hazard),
+                      FALSE,
+                      compo_sim_list$constant_baseline_hazard
+                    ),
+                    baseline_hazard = ifelse(
+                      is.null(compo_sim_list$baseline_hazard),
+                      1,
+                      compo_sim_list$baseline_hazard
+                    ),
+                    a_shape_weibull = ifelse(
+                      is.null(compo_sim_list$a_shape_weibull),
+                      NA,
+                      compo_sim_list$a_shape_weibull
+                    ),
+                    sigma_scale_weibull = ifelse(
+                      is.null(compo_sim_list$sigma_scale_weibull),
+                      NA,
+                      compo_sim_list$sigma_scale_weibull
+                    ),
                     sigma_scale_gamma = compo_sim_list$sigma_scale_gamma,
                     lambdaZ = compo_sim_list$lambdaZ,
                     lambda = compo_sim_list$lambda
@@ -543,30 +565,73 @@ true_Y <- function(compo_sim_list,
 #' @param time_point a scalar, the time point to evaluate WRSS
 #' @return a data frame contains WRSS for each subject
 #' @export
-add_wrss <- function(
-    df_test,
-    weights_by_status,
-    lambda_pred,
-    length_cpius,
-    time_point) {
+add_wrss <- function(df_test,
+                     weights_by_status,
+                     lambda_pred,
+                     length_cpius,
+                     time_point) {
+  t1 <- add_wt(df_test,
+               weights_by_status,
+               time_point)
 
-  t1 <- add_wt(
-    df_test,
-    weights_by_status,
-    time_point
-  )
-
-  t1$Y_hat <- add_Y_hat(
-    lambda_pred,
-    length_cpius,
-    time_point
-  )
+  t1$Y_hat <- add_Y_hat(lambda_pred,
+                        length_cpius,
+                        time_point)
 
   t1 <- t1 %>%
-    dplyr::mutate(
-      `WRSS` = (`Y_observe` - `Y_hat`)^2 * `wt`
-    )
+    dplyr::mutate(`WRSS` = (`Y_observe` - `Y_hat`) ^ 2 * `wt`)
 
   return(t1)
 }
 
+
+#' Numerical form to calculate the true Y given the true hazard and other parameters
+#' @import cubature
+#' @param t the time point to check
+#' @param constant_baseline_hazard logical; whether constant baseline hazard is used
+#' @param baseline_hazard a scalar, the constant baseline hazard
+#' @param a_shape_weibull the parameter of weibull distribution when simulate the data
+#' @param sigma_scale_weibull the parameter of weibull distribution when simulate the data
+#' @param sigma_scale_gamma the parameter of gamma distribution when simulate the frality term
+#' @param lambdaZ a vector, recurrent event hazard rate
+#' @param lambda a scalar, the hazard rate of the stopping time
+#' @return a scalar, the mean number of event at time `t`
+#'
+Y_hat_numerical_form <- function(t,
+                                 constant_baseline_hazard,
+                                 baseline_hazard = 1,
+                                 mu_0,
+                                 sigma_scale_gamma,
+                                 lambdaZ,
+                                 lambda) {
+  if (constant_baseline_hazard) {
+    term <- function(x) {
+      x[2] * min(t, x[1]) * dexp(x[1], rate = x[2] * lambda) *
+        dgamma(x[2],
+               shape = 1 / sigma_scale_gamma,
+               scale = sigma_scale_gamma) *
+        baseline_hazard
+    }
+
+    out <-
+      cubature::adaptIntegrate(term,
+                               lowerLimit = c(0, 0),
+                               upperLimit = c(Inf, Inf))$integral * lambdaZ
+
+    return(out)
+  }
+
+  term <- function(x) {
+    x[2] * pweibull(min(t, x[1]), shape = a_shape_weibull, scale = sigma_scale_weibull) *
+      dexp(x[1], rate = x[2] * lambda) *
+      dgamma(x[2], shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma) *
+      baseline_hazard
+  }
+
+  out <-
+    adaptIntegrate(term,
+                   lowerLimit = c(0, 0),
+                   upperLimit = c(Inf, Inf))$integral * lambdaZ
+
+  return(out)
+}
