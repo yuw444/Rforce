@@ -39,7 +39,7 @@ test_that("compo_sim_mao", {
     )
     dim(data_list[[1]])
     library(dplyr)
-    df_train <- manual_censoring(data_list[[1]], 0.8)
+    df_train <- random_censoring(data_list[[1]], 0.8)
 
     estimate_list <- wcompo_est(
       data = df_train,

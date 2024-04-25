@@ -4,12 +4,14 @@
 \alias{random_censoring}
 \title{apply random censoring in the given dataset}
 \usage{
-random_censoring(data_to_convert, event_rate, verbose = FALSE)
+random_censoring(data_to_convert, event_rate, seed = 926, verbose = FALSE)
 }
 \arguments{
 \item{data_to_convert}{the dataset to be converted; including the columns of \code{Id}, \code{Status} and \code{Time}}
 
 \item{event_rate}{the desired event rate}
+
+\item{seed}{seed for RNG, default is 926}
 
 \item{verbose}{print out details}
 }

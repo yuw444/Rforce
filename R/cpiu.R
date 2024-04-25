@@ -299,8 +299,7 @@ patients_to_cpius <- function(data_to_convert,
     dplyr::group_by(Id) %>%
     dplyr::filter(X <= interval_breaks[2]) %>%
     dplyr::tally(Events) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(Id, X, Events)
+    dplyr::ungroup()
 
   if (size_cpius >= 2) {
     for (i in 2:size_cpius) {
@@ -309,7 +308,6 @@ patients_to_cpius <- function(data_to_convert,
         dplyr::filter(X <= interval_breaks[i + 1]) %>%
         dplyr::tally(Events) %>%
         dplyr::ungroup() %>%
-        dplyr::select(Id, X, Events) %>%
         dplyr::left_join(., df_event, "Id")
     }
   }
@@ -335,8 +333,9 @@ patients_to_cpius <- function(data_to_convert,
     template_to_return <- template_for_convert %>%
       tidyr::pivot_wider(names_from = nthInterval,
                          values_from = c(pseudo_risk_time, nEvents)) %>%
-      dplyr::mutate(dplyr::starts_with("pseudo_risk_time"),
-                    ~ tidyr::replace_na(.x, 0))
+      dplyr::mutate(dplyr::across(starts_with("pseudo_risk_time"),
+                    ~ tidyr::replace_na(.x, 0))) %>%
+      dplyr::mutate(dplyr::across(starts_with("nEvents"), ~tidyr::replace_na(.x, 0)))
 
     designMatrix_Y <- template_to_return %>%
       dplyr::select(
@@ -446,10 +445,9 @@ add_wt <-
 #' lambdas <- matrix(1:10, nrow = 2, byrow = TRUE)
 #' intervals <- rep(3,5)
 #' add_Y_hat(lambdas, intervals, c(3, 6, 9))
-add_Y_hat <- function(
-    lambda_pred,
-    length_cpius,
-    time_to_evaluate) {
+add_Y_hat <- function(lambda_pred,
+                      length_cpius,
+                      time_to_evaluate) {
   assertthat::assert_that(ncol(lambda_pred) == length(length_cpius))
   assertthat::assert_that(length(time_to_evaluate) == 1)
   assertthat::assert_that(!any(time_to_evaluate > sum(length_cpius)))
@@ -459,7 +457,7 @@ add_Y_hat <- function(
     temp <- c(temp, rep(0, length(length_cpius) - length(temp)))
   }
 
-  y_hat <- (as.matrix(lambda_pred) %*% temp)[,1]
+  y_hat <- (as.matrix(lambda_pred) %*% temp)[, 1]
 
   return(y_hat)
 }
@@ -477,41 +475,31 @@ add_Y_hat <- function(
 #' @return a scalar, the mean number of event at time `t`
 #'
 true_Y_numerical_form <- function(t,
-                                  constant_baseline_hazard,
+                                  constant_baseline_hazard = FALSE,
                                   baseline_hazard = 1,
                                   a_shape_weibull,
                                   sigma_scale_weibull,
                                   sigma_scale_gamma,
                                   lambdaZ,
                                   lambda) {
+
   if (constant_baseline_hazard) {
-    term <- function(x) {
-      x[2] * min(t, x[1]) * dexp(x[1], rate = x[2] * lambda) *
-        dgamma(x[2],
-               shape = 1 / sigma_scale_gamma,
-               scale = sigma_scale_gamma) *
-        baseline_hazard
-    }
-
-    out <-
-      cubature::adaptIntegrate(term,
-                               lowerLimit = c(0, 0),
-                               upperLimit = c(Inf, Inf))$integral * lambdaZ
-
-    return(out)
+    Lambda0_t <- function(x) min(t, x)
+  } else {
+    Lambda0_t <- function(x) pweibull(min(t, x), shape = a_shape_weibull, scale = sigma_scale_weibull)
   }
 
-  term <- function(x) {
-    x[2] * pweibull(min(t, x[1]), shape = a_shape_weibull, scale = sigma_scale_weibull) *
-      dexp(x[1], rate = x[2] * lambda) *
-      dgamma(x[2], shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma) *
+  term <- function(y) {
+    y[2] * Lambda0_t(y[1]) *
+      dexp(y[1], rate = y[2] * lambda) *
+      dgamma(y[2], shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma) *
       baseline_hazard
   }
 
   out <-
-    adaptIntegrate(term,
-                   lowerLimit = c(0, 0),
-                   upperLimit = c(Inf, Inf))$integral * lambdaZ
+    cubature::adaptIntegrate(term,
+                             lowerLimit = c(0, 0),
+                             upperLimit = c(Inf, Inf))$integral * lambdaZ
 
   return(out)
 }
@@ -553,6 +541,90 @@ true_Y <- function(compo_sim_list,
                   )
                 })
   return(rst)
+}
+
+#' Empirical Mean Number of Events at the Different Time Point
+#' @details
+#' Calculate the empirical mean number of event at the different
+#' time points by using data simulation
+#' @param compo_sim_list simulation list either from \code{compo_sim} or \code{compo_sim_mao}
+#' @param weibull_baseline which simulation scheme is used, default is \code{compo_sim}
+#' @param x patient characteristics to exam
+#' @param time_points time point to exam
+#' @param n_sims number of simulations to run
+#' @param n_size number of patients at each simulation
+#'
+empirical_Y <- function(compo_sim_list,
+                        weibull_baseline = TRUE,
+                        x,
+                        time_points,
+                        n_sims,
+                        n_size) {
+  assertthat::assert_that(length(compo_sim_list$true_beta) == length(x))
+
+  hazard_value <- compo_sim_list$hazard_function(x)
+
+  if(any(class(hazard_value) %in% "matrix")){
+    hazard_value <- hazard_value[1,1]
+  }
+
+  hazard_true <- function(y) return(hazard_value)
+
+  y_out <- matrix(NA, nrow = n_sims, ncol = length(time_points))
+
+  if (weibull_baseline) {
+    for (sim in 1:n_sims) {
+      df <- Rforce::compo_sim(
+        n_patients = n_size,
+        non_linear_hazard = TRUE,
+        non_linear_function = hazard_true,
+        n_vars = 1,
+        vars_cate = "binary",
+        true_beta = 0,
+        seed = sim
+      )$dataset
+
+      n_events <- lapply(time_points, function(y) {
+        df %>%
+          dplyr::filter(`Time` < y) %>%
+          dplyr::filter(`Status` != 0) %>%
+          dplyr::group_by(`Id`) %>%
+          dplyr::summarise(`n` = n()) %>%
+          dplyr::pull(`n`) %>%
+          sum() / n_size
+      })
+
+      y_out[sim,] <- unlist(n_events)
+    }
+  } else {
+    for (sim in 1:n_sims) {
+      df <- Rforce::compo_sim_mao(
+        n_patient = n_size,
+        non_linear_hazard = TRUE,
+        non_linear_function = hazard_true,
+        n_vars = 1,
+        vars_cate = "binary",
+        true_beta = 0,
+        seed = sim
+      )$dataset
+
+      n_events <- lapply(time_points, function(y) {
+        df %>%
+          dplyr::filter(`Time` < y) %>%
+          dplyr::filter(`Status` != 0) %>%
+          dplyr::group_by(`Id`) %>%
+          dplyr::summarise(`n` = n()) %>%
+          dplyr::pull(`n`) %>%
+          sum() / n_size
+      })
+      y_out[sim,] <- unlist(n_events)
+    }
+  }
+
+  colnames(y_out) <- paste("t_", time_points, sep="")
+  rownames(y_out) <- paste("nsim_", 1:n_sims, sep="")
+  return(y_out)
+
 }
 
 #' Calculate the WRSS

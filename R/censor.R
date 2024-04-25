@@ -64,6 +64,7 @@ admin_censoring <- function(data_to_convert,
 #' @description censoring the given dataset based on the given event rate
 #' @param data_to_convert the dataset to be converted; including the columns of `Id`, `Status` and `Time`
 #' @param event_rate the desired event rate
+#' @param seed seed for RNG, default is 926
 #' @param verbose print out details
 #' @return the censored dataset
 #' @export
@@ -78,6 +79,7 @@ admin_censoring <- function(data_to_convert,
 
 random_censoring <- function(data_to_convert,
                              event_rate,
+                             seed = 926,
                              verbose = FALSE) {
   assertthat::assert_that("Id" %in% colnames(data_to_convert))
   assertthat::assert_that("Time" %in% colnames(data_to_convert))
@@ -118,12 +120,12 @@ random_censoring <- function(data_to_convert,
   upper_bound_censoring <- NULL
   n_times <- 0
 
-  set.seed(NULL)
+  set.seed(seed)
   while (is.null(upper_bound_censoring) && n_times < 100) {
-    seed <- sample(1:100000, 1)
+    seed_ <- sample(1:100000, 1)
     upper_bound_censoring <- tryCatch(
       uniroot(function(x) {
-        set.seed(seed)
+        set.seed(seed_)
         sum(runif(n_patients, min = 0, max = x) > event_time &
               df_terminal$Status == 1) / n_patients - event_rate
       }, interval = c(0, max(event_time) * 1000))$root,
