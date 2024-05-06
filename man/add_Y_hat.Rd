@@ -9,7 +9,7 @@ add_Y_hat(lambda_pred, length_cpius, time_to_evaluate)
 \arguments{
 \item{lambda_pred}{a matrix of predicted hazard rates at each interval for multiple subjects}
 
-\item{time_to_evaluate}{a scalar, time point to evaluate \code{Y^\hat}}
+\item{time_to_evaluate}{a scalar, time point to evaluate \eqn{\hat Y}}
 
 \item{interval_cpius}{a vector of lengths for each CPIU, same length with \code{ncol(lambda_pred)}}
 }

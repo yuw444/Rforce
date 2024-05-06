@@ -437,7 +437,7 @@ add_wt <-
 #' Calculate the predicted number of events at given time points
 #' @param lambda_pred a matrix of predicted hazard rates at each interval for multiple subjects
 #' @param interval_cpius a vector of lengths for each CPIU, same length with `ncol(lambda_pred)`
-#' @param time_to_evaluate a scalar, time point to evaluate \code{Y^\hat}
+#' @param time_to_evaluate a scalar, time point to evaluate \eqn{\hat Y}
 #' @return a matrix of predicted number of events at each `time_points` for multiple subjects
 #' @export
 #' @examples
