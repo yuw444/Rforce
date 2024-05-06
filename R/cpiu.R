@@ -345,11 +345,8 @@ patients_to_cpius <- function(data_to_convert,
       dplyr::mutate(dplyr::across(starts_with("nEvents"), ~tidyr::replace_na(.x, 0)))
 
     designMatrix_Y <- template_to_return %>%
-      dplyr::select(
-        !c(`Id`, `X`, `Status`, `Events`)
-      ) %>%
-      dplyr::select(!dplyr::starts_with("pseudo_risk_time")) %>%
-      dplyr::select(!dplyr::starts_with("nEvents"))
+      dplyr::select(!c(`Id`, `X`, `Status`, `Events`)) %>%
+      dplyr::select(!dplyr::starts_with("pseudo_risk_time"))
 
     auxiliaryFeatures <- template_to_return %>%
       dplyr::select(c(Id, dplyr::starts_with("pseudo_risk_time"))) %>%
