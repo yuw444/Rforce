@@ -255,7 +255,14 @@ patients_to_cpius <- function(data_to_convert,
     dplyr::ungroup() %>%
     dplyr::select(X, Status)
 
-  Gt <- km_fit(df_terminal$X, 1 - df_terminal$Status)
+  if(any(df_terminal$Status %in% c(0,1))){
+    warnings(
+      "One or more patients have the last event not being the censoring or terminal event! Considering the last event as the censoring point for IPCW calculation!"
+    )
+    df_terminal$Status[!(df_terminal$Status %in% c(0,1))] <- 0
+  }
+
+  Gt <- Rforce:::km_fit(df_terminal$X, 1 - df_terminal$Status)
 
   interval_breaks <- c(0, cumsum(units_of_cpiu))
 
@@ -270,7 +277,7 @@ patients_to_cpius <- function(data_to_convert,
   if (pseudo_risk == TRUE) {
     risk_time <- sapply(1:n_patients, function(n) {
       sapply(1:size_cpius, function(b) {
-        pseudo_risk_time(
+        Rforce:::pseudo_risk_time(
           Gt,
           X = df_terminal$X[n],
           Status = df_terminal$Status[n],
