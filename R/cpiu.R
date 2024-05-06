@@ -255,8 +255,8 @@ patients_to_cpius <- function(data_to_convert,
     dplyr::ungroup() %>%
     dplyr::select(X, Status)
 
-  if(any(df_terminal$Status %in% c(0,1))){
-    warnings(
+  if(any(!(df_terminal$Status %in% c(0,1)))){
+    warning(
       "One or more patients have the last event not being the censoring or terminal event! Considering the last event as the censoring point for IPCW calculation!"
     )
     df_terminal$Status[!(df_terminal$Status %in% c(0,1))] <- 0
@@ -346,19 +346,14 @@ patients_to_cpius <- function(data_to_convert,
 
     designMatrix_Y <- template_to_return %>%
       dplyr::select(
-        dplyr::starts_with("binary"),
-        dplyr::starts_with("contin"),
-        dplyr::starts_with("nEvents")
+        !c(`Id`, `X`, `Staus`, `Events`, `nthInterval`),
+        !dplyr::starts_with("pseudo_risk_time"),
+        !dplyr::starts_with("nEvents")
       )
-
-    temp <- data_to_convert %>%
-      dplyr::group_by(Id) %>%
-      dplyr::slice_tail() %>%
-      dplyr::ungroup()
 
     auxiliaryFeatures <- template_to_return %>%
       dplyr::select(c(Id, dplyr::starts_with("pseudo_risk_time"))) %>%
-      dplyr::mutate(X = temp$X, Status = temp$Status)
+      dplyr::mutate(X = df_terminal$X, Status = df_terminal$Status)
 
     return(list(designMatrix_Y = designMatrix_Y,
                 auxiliaryFeatures = auxiliaryFeatures))
@@ -366,14 +361,11 @@ patients_to_cpius <- function(data_to_convert,
 
   designMatrix_Y <- template_for_convert %>%
     dplyr::select(
-      dplyr::starts_with("binary"),
-      dplyr::starts_with("contin"),
-      nthInterval,
-      nEvents
+      !c(`Id`, `X`, `Status`, `Events`, `pseudo_risk_time`)
     )
 
   auxiliaryFeatures <- template_for_convert %>%
-    dplyr::select(c(Id, pseudo_risk_time))
+    dplyr::select(c(`Id`, `pseudo_risk_time`))
 
   return(list(designMatrix_Y = designMatrix_Y,
               auxiliaryFeatures = auxiliaryFeatures))
