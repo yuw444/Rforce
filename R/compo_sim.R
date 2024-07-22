@@ -60,7 +60,7 @@ compo_sim <- function(n_patients = 1000,
     msg = "vars_cate must be a character vector of \"continuous\" and \"binary\" ")
   )
 
-  set.seed(seed)
+  set.seed(seed + n_vars + n_patients)
 
   z <- sapply(1:n_vars, function(t) {
     if (vars_cate[t] == "binary") {
