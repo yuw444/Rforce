@@ -1,0 +1,12 @@
+{
+    "r.libPaths": [
+        "/Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/library"
+    ],
+    "r.rterm.mac": "/usr/local/bin/R",
+    "r.rpath.mac":  "/usr/local/bin/R",
+    "r.rterm.option": [
+        "--no-save",
+        "--no-restore"
+    ],
+    "r.plot.useHttpgd": true
+}
