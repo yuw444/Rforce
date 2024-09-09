@@ -305,7 +305,7 @@ double *LeafOutputInterval(
     free(statusInverse);
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
-    KMResult *wtPatient, *wtPatientLeft, *wtPatientRight;
+    KMResult *wtPatient;
 
     for (int i = 0; i < nrows; i++)
     {
@@ -623,7 +623,6 @@ double *QuasiPoissonLikelihood(
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
     KMResult *wtPatient, *wtPatientLeft, *wtPatientRight;
-    int flag = 0;
     for (int i = 0; i < nrows; i++)
     {
       wtPatient = Wt(Gt, X[i], status[i]);
@@ -649,14 +648,6 @@ double *QuasiPoissonLikelihood(
     for (int i = 0; i < nRight; i++)
     {
       wtPatientRight = Wt(GtRight, XRight[i], statusRight[i]);
-      // flag = 0;
-      // if (i == 66 && flag == 0)
-      // {
-      //   printf("wtPatientRight:\n");
-      //   PrintArrayDouble(wtPatientRight->uniqueTime, wtPatientRight->nTime);
-      //   PrintArrayDouble(wtPatientRight->survivalProb, wtPatientRight->nTime);
-      //   flag = 1;
-      // }
       for (int j = 0; j < nUnits; j++)
       {
         pseudoRiskTime[2][i][j] = PseudoRiskTime(wtPatientRight, breakpoints[j], breakpoints[j + 1]);
@@ -1194,7 +1185,6 @@ double *GEERule(
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
     KMResult *wtPatient;
-    int flag = 0;
     for (int i = 0; i < nrows; i++)
     {
       wtPatient = Wt(Gt, X[i], status[i]);
@@ -1235,7 +1225,7 @@ double *GEERule(
   // data preparation
 
   MATRIX *xin, *yin, *idin, *nin, *offsetin, *betain;
-  MATRIX *naivvar = NULL, *robvar = NULL, *tempmat1 = NULL, *tempmat2 = NULL, *tempmat3 = NULL;
+  MATRIX *naivvar = NULL, *robvar = NULL, *tempmat1 = NULL, *tempmat2 = NULL;
 
   xin = _interaction == 1 ? VC_GEE_create_matrix(nrows * nUnits, 2 * nUnits, PERMANENT) : VC_GEE_create_matrix(nrows * nUnits, nUnits + 1, PERMANENT);
   yin = VC_GEE_create_matrix(nrows * nUnits, 1, PERMANENT);

@@ -47,16 +47,16 @@ int Cgee(
     MATRIX *One = NULL, *mui = NULL; /*, *Opmui; */
     MATRIX *Ai = NULL, *ei = NULL, *ete = NULL;
     MATRIX *S1 = NULL, *S2 = NULL, *Di = NULL, *this_R = NULL, *S5 = NULL, *S2i = NULL;
-    MATRIX *tempmat1 = NULL, *tempmat2 = NULL, *tempmat3 = NULL, *tempmat4 = NULL, *tempmat5 = NULL, *tempmat6 = NULL, *tempmat7 = NULL, *tempmat8 = NULL;
+    MATRIX *tempmat1 = NULL, *tempmat2 = NULL, *tempmat3 = NULL, *tempmat4 = NULL, *tempmat5 = NULL, *tempmat6 = NULL, *tempmat7 = NULL;
     MATRIX *Aop = NULL, *Dop = NULL, *zi = NULL, *DRop = NULL;
     MATRIX *lag_wts = NULL, *tmpeep = NULL, *scratch = NULL, *wt = NULL;
     double phi, dni, phiLZ;
     int iter, ini, i2, j2, k;
     int alpha_VC_GEE_bandwidth;
-    int *onep, one, nclust, i; /*, j; */
+    int nclust, i; /*, j; */
     double alpha_scalar;
     double alpha_scalar_LZ, exdiv_LZ;
-    int maxni, ni, *maxnip;
+    int maxni, ni;
     int link, var_mean_rel, corstruct;
     int *maxiter;
     double nnsclust = 0.; /* for counting non-singletons */
@@ -73,7 +73,7 @@ int Cgee(
     alpha_scalar_LZ = 0.;
     exdiv_LZ = 0;
     iter = 0;
-    one = 1.;
+    // one = 1.;
 
     *maxiter = *S_iter;
     link = (*parmvec) - 1;
@@ -84,7 +84,7 @@ int Cgee(
 
     alpha_VC_GEE_bandwidth = *M_parm + 1;
 
-    onep = &one;
+    // onep = &one;
 
     nclust = VC_GEE_nchanges(idin);
     if (!(*silent))
@@ -130,7 +130,6 @@ int Cgee(
             maxni = ni;
     }
     *maxsz = maxni;
-    maxnip = &maxni;
 
     if (corstruct == (int)fixed)
     {
@@ -1308,6 +1307,7 @@ int VC_GEE_plug(MATRIX **VC_GEE_plugm, MATRIX **socket, int row, int col)
     }
 
     free_if_ephemeral(VC_GEE_plugm);
+    return (EXIT_SUCCESS);
 }
 
 MATRIX *VC_GEE_form_diag(MATRIX **vec)
@@ -1547,7 +1547,7 @@ MATRIX *VC_GEE_px1_times_pxq(MATRIX **px1, MATRIX **pxq) /* mult elements of a c
 /* across corresp row of mat */
 {
     MATRIX *tmp;
-    double *load, colel;
+    double colel;
     int i, j;
 
     if ((*px1)->ncols != 1)
@@ -1578,7 +1578,7 @@ MATRIX *VC_GEE_pxq_divby_px1(MATRIX **pxq, MATRIX **px1) /* divide elements of a
 /* into corresp row of mat */
 {
     MATRIX *tmp;
-    double *load, colel;
+    double colel;
     int i, j;
     if ((*px1)->ncols != 1)
     {

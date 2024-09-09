@@ -31,7 +31,7 @@ SEXP R_ColsPermute(SEXP x, SEXP colsToPermute, SEXP seed)
     //     }
     //     Rprintf("\n");
     // }
-    int *colsToPermutePtr = INTEGER(colsToPermute);
+    unsigned int *colsToPermutePtr = (unsigned int *)INTEGER(colsToPermute);
     int seedInt = INTEGER(seed)[0];
 
     double **result = ColsPermute(xptr, nrows, ncols, colsToPermutePtr, ncolsToPermute, seedInt);
@@ -56,14 +56,14 @@ SEXP R_Sum(SEXP x, SEXP nthreads)
     int nthreads0 = INTEGER(nthreads)[0];
     double sum = 0;
     omp_set_num_threads(nthreads0);
-    int nthreads1 = omp_get_max_threads();
-#pragma omp parallel for
+    // int nthreads1 = omp_get_max_threads();
+#pragma omp parallel for reduction(+:sum)
     for (size_t i = 0; i < n; i++)
     {
         sum += xptr[i];
-        Rprintf("thread id: %d/%d, i: %d, sum: %f\n", omp_get_thread_num(),omp_get_num_threads(), i, sum);
+        // Rprintf("thread id: %d/%d, i: %d, sum: %f\n", omp_get_thread_num(),omp_get_num_threads(), i, sum);
     }
-    Rprintf("number of thread allocated: %d, requested: %d\n", nthreads1, nthreads0);
+    // Rprintf("number of thread allocated: %d, requested: %d\n", nthreads1, nthreads0);
     return Rf_ScalarReal(sum);
 }
 
@@ -94,11 +94,11 @@ SEXP R_MatrixAdd(SEXP x, SEXP y)
     }
     UNPROTECT(1);
 
-    #pragma omp parallel num_threads(2) // Set 2 threads for this parallel region
-    {
-        int thread_id = omp_get_thread_num();
-        // printf("Thread ID in parallel region with 2 threads: %d\n", thread_id);
-    }
+    // #pragma omp parallel num_threads(2) // Set 2 threads for this parallel region
+    // {
+    //     int thread_id = omp_get_thread_num();
+    //     // printf("Thread ID in parallel region with 2 threads: %d\n", thread_id);
+    // }
 
     Rprintf("number of thread requested/allocated: %d/%d\n", 4L, omp_get_max_threads());
     return rst;

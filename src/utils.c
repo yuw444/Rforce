@@ -882,7 +882,7 @@ int vsP(const void *a, const void *b)
   double y = ((IndexedValue *)b)->value;
   if (x < y)
     return -1;
-  if (x > y)
+  else
     return 1;
 }
 
@@ -892,7 +892,7 @@ int vsPI(const void *a, const void *b)
   double y = ((IndexedValue *)b)->value;
   if (x < y)
     return 1;
-  if (x > y)
+  else
     return -1;
 }
 

@@ -59,7 +59,7 @@ int cmd_train(int argc, const char **argv)
         // optional
         OPT_INTEGER('u', "nVars", &nVars, "number of variables in the design matrix; optional, default is the number of columns of variables", NULL, 0, 0),
         OPT_STRING('i', "pathVarIds", &pathVarIds, "a vector of variable IDs, from 0 to (nVars -1). the consecutive repeated Ids indicates a single categorial variable when calculating vimpPermuted", NULL, 0, 0),
-        
+
         // node prediction
         OPT_INTEGER('k', "k", &_k, "parameter for bayesian estimator in leaf node output, default is 4, bigger means less info borrow", NULL, 0, 0),
 
@@ -72,7 +72,7 @@ int cmd_train(int argc, const char **argv)
         OPT_BOOLEAN('P', "pseudorisk1", &_pseudoRisk1, "use the original pseudo-risk time in the auxiliary matrix that calculated at population level", NULL, 0, 0),
         OPT_BOOLEAN('B', "pseudorisk2", &_pseudoRisk2, "default, re-calculate pseudo risk time at each tree level", NULL, 0, 0),
         OPT_BOOLEAN('D', "dynamicrisk", &_dynamicRisk, "use the dynamic pseudo-risk time estimation at each split", NULL, 0, 0),
-        
+
         OPT_BOOLEAN('F', "nophi", &_noPhi, "do not do the phi estimation, use the fixed phi = 1", NULL, 0, 0),
         OPT_BOOLEAN('P', "phi1", &_phi1, "phi is calculated at the population level", NULL, 0, 0),
         OPT_BOOLEAN('H', "phi2", &_phi2, "default, calculate phi at each tree level", NULL, 0, 0),
@@ -87,28 +87,33 @@ int cmd_train(int argc, const char **argv)
 
         // OpenMP
         OPT_INTEGER('T', "threads", &n_threads, "number of threads for parallel computing; optional, default is 8", NULL, 0, 0),
-        OPT_END()
-    };
+        OPT_END()};
 
-    if (pathVarIds != NULL)
-    {
-        nVars = GetNrowCSV(pathVarIds);
-        varIds = (unsigned int *)calloc(nVars, sizeof(unsigned int));
-        double **varIds_temp = Allocate2DArray(nVars, 1);
-        ReadCSV(pathVarIds, &varIds_temp, 0);
-        for (size_t i = 0; i < nVars; i++)
-        {
-            varIds[i] = (unsigned int)varIds_temp[i][0];
-        }
-        Free2DArray(varIds_temp, nVars);
-    }
-    
     struct argparse argparse;
     argparse_init(&argparse, options, usages, 0);
 
     argc = argparse_parse(&argparse, argc, argv);
 
-    //set up the number of threads
+    if (pathVarIds != NULL)
+    {
+        size_t nRows = GetNrowCSV(pathVarIds);
+        varIds = (unsigned int *)calloc(nRows, sizeof(unsigned int));
+        int **varIds_temp = Allocate2DArrayInt(nRows, 1);
+        ReadCSVInt(pathVarIds, &varIds_temp, 0);
+        for (size_t i = 0; i < nRows; i++)
+        {
+            varIds[i] = varIds_temp[i][0];
+        }
+        printf("The variable IDs are: ");
+        for (size_t i = 0; i < nRows; i++)
+        {
+            printf("%d ", varIds[i]);
+        }
+        printf("\n");
+        Free2DArrayInt(varIds_temp, nRows);
+    }
+
+    // set up the number of threads
     omp_set_num_threads(n_threads);
 
     // check if inputs are compatiable
@@ -125,6 +130,7 @@ int cmd_train(int argc, const char **argv)
     if (_gee == 1 && (sum_risk != 1 || sum_phi != 1))
     {
         printf("Error: only one of risk options --nopseudo, --pseudorisk1, --pseudorisk2, --dynamicrisk can be used.\n");
+        printf("sum_risk = %d\n sum_phi = %d\n", sum_risk, sum_phi);
         printf("Error: no phi-related can be used here.\n");
         exit(1);
     }
@@ -135,7 +141,7 @@ int cmd_train(int argc, const char **argv)
     }
 
     const char p_adjust_method[7][20] = {"bonferroni", "holm", "hochberg", "hommel", "BH", "BY", "none"};
-    
+
     // check if _padjust is valid
     int valid_p_adjust = 0;
     for (int i = 0; i < 7; i++)
@@ -304,7 +310,7 @@ int cmd_train(int argc, const char **argv)
         printf("The number of variables to try during splitting is : %zu\n", mtry);
         printf("The number of splitting to try at each variable is : %zu\n", nsplits);
         printf("The number of trees is : %zu\n", nTrees);
-        printf("The seeds for random composite endpoint forest is: %ld\n", seed);
+        printf("The seeds for random composite endpoint forest is: %u\n", seed);
     }
     // random composite endpoint forest
     printf("\n\n##############################\n\n");
@@ -322,7 +328,7 @@ int cmd_train(int argc, const char **argv)
         if (nVars == 0)
         {
             nVars = ncolD;
-            varIds = GetSeqInt(0, nVars - 1, 1);
+            varIds = (unsigned int *)GetSeqInt(0, nVars - 1, 1);
         }
 
         if (_asympotic || _gee)
@@ -408,7 +414,7 @@ int cmd_train(int argc, const char **argv)
         if (nVars == 0)
         {
             nVars = ncolD;
-            varIds = GetSeqInt(0, nVars - 1, 1);
+            varIds = (unsigned int *)GetSeqInt(0, nVars - 1, 1);
         }
 
         rsf = RandomForest(
@@ -432,6 +438,8 @@ int cmd_train(int argc, const char **argv)
             nTrees,
             seed);
     }
+
+    printf("nVars = %zu\n", nVars);
 
     // save the model
     printf("\n\n##############################\n\n");
@@ -466,6 +474,7 @@ int cmd_train(int argc, const char **argv)
     VC_GEE_destroy_matrix(&_Rin);
 
     free(unitsOfCPIU);
+    free(varIds);
 
     printf("Saving completed.\n");
 

@@ -22,7 +22,7 @@
 #define BUFFER 1024 * 1024
 
 #define PRINT_LOCATION() printf("\nFile: %s:%d : ", __FILE__, __LINE__ - 3)
-#define FREE(p) if(*p != NULL) {free(*p); *p = NULL;}
+// #define FREE(p) if(*p != NULL) {free(*p); *p = NULL;}
 
 // Macro to check for NA
 #define IS_NA(x) ((x) == NA)

@@ -771,7 +771,7 @@ DecisionTreeNode *LoadTree(FILE *file)
 
     if (root->flag)
     {
-        if (fscanf(file, "%ld ", &root->lenOutput) != 1)
+        if (fscanf(file, "%zu ", &root->lenOutput) != 1)
         {
             PRINT_LOCATION();
             printf("Error: reading leaf node output length from file.\n");
@@ -820,7 +820,7 @@ DecisionTreeNode *LoadTree(FILE *file)
             free(root);
             return NULL;
         }
-        if (fscanf(file, "%ld %lf %lf %lf %lf %lf %ld %ld\n", &root->splitIndex, &root->splitValue, &root->splitStat[0], &root->splitStat[1], &root->splitStat[2], &root->splitStat[3], &root->sizeLR[0], &root->sizeLR[1]) != 8)
+        if (fscanf(file, "%ld %lf %lf %lf %lf %lf %zu %zu\n", &root->splitIndex, &root->splitValue, &root->splitStat[0], &root->splitStat[1], &root->splitStat[2], &root->splitStat[3], &root->sizeLR[0], &root->sizeLR[1]) != 8)
         {
             PRINT_LOCATION();
             printf("Error: reading internal node data from file.\n");
@@ -885,7 +885,7 @@ void PrintAllNodesElementsRecur(
         {
             fprintf(
                 file,
-                "%ld,%ld,%ld,%ld,%ld,%lf,%lf,%lf,%lf,%lf,%ld,%ld,\n",
+                "%ld,%ld,%ld,%u,%ld,%lf,%lf,%lf,%lf,%lf,%zu,%zu,\n",
                 nodeElements[i]->treeId,
                 nodeElements[i]->nodeId,
                 *nthPath,
@@ -902,7 +902,7 @@ void PrintAllNodesElementsRecur(
 
         fprintf(
             file,
-            "%ld,%ld,%ld,%ld,,,,,,,,,",
+            "%ld,%ld,%ld,%u,,,,,,,,,",
             nodeElements[pathDepth - 1]->treeId,
             nodeElements[pathDepth - 1]->nodeId,
             *nthPath,

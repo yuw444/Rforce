@@ -30,7 +30,7 @@ RandomSurvivalForest *RandomForest(
     int **bootMatrix = BagMatrix(patientIds, nrow, nTrees, seed);
 
     double *likelihoodsum = (double *)calloc(nTrees, sizeof(double));
-    double **vimp = Allocate2DArray(nTrees, ncolsDesign);
+    double **vimp = Allocate2DArray(nTrees, nVars);
 
     free(patientIds);
 
@@ -567,7 +567,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
                         char *path)
 {
     // save forest
-    printf("seed is %ld\n", forest->seed);
+    printf("seed is %u\n", forest->seed);
     char *pathForest = malloc(1024 * sizeof(char));
     sprintf(pathForest, "%s/%s_tree%zu_depth%zu_mtry%zu_Gain%.3f_nsplits%zu_nodesize%zu_seed%d",
             path,
@@ -724,11 +724,11 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
     }
 
     printf("Loading forest parameters from %s\n", pathParameters);
-    fscanf(fileParameters, "%ld,%ld,%ld,%ld\n", &forest->nrowsDesign, &forest->ncolsDesign, &forest->nVars, &forest->nTrees);
+    fscanf(fileParameters, "%zu,%zu,%zu,%zu\n", &forest->nrowsDesign, &forest->ncolsDesign, &forest->nVars, &forest->nTrees);
     printf("nrowsDesign: %ld, ncolsDesign: %ld, nVars: %ld, nTrees: %ld\n", forest->nrowsDesign, forest->ncolsDesign, forest->nVars, forest->nTrees);
 
     int hasUnitsOfCPIU;
-    fscanf(fileParameters, "%d,%ld,", &hasUnitsOfCPIU, &forest->nUnits);
+    fscanf(fileParameters, "%d,%zu,", &hasUnitsOfCPIU, &forest->nUnits);
     if (hasUnitsOfCPIU)
     {
         double *unitsOfCPIU = malloc(forest->nrowsDesign * sizeof(double));
@@ -748,7 +748,7 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
 
     fscanf(
         fileParameters,
-        "%ld,%ld,%ld,%lf,%ld,%ld,%d\n",
+        "%zu,%zu,%zu,%lf,%zu,%zu,%u\n",
         &forest->lenOutput,
         &forest->maxDepth,
         &forest->minNodeSize,
