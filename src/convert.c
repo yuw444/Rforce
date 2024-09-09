@@ -30,8 +30,8 @@ double **RMatrixToDoublePtr(SEXP mat) {
   if (!Rf_isReal(mat) || !Rf_isMatrix(mat)) {
     Rf_error("Input must be a numeric matrix.");
   }
-  int nrow = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[0];
-  int ncol = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[1];
+  int nrow = Rf_nrows(mat);
+  int ncol = Rf_ncols(mat);
 
   double *data = REAL(mat);
   // PrintArrayDouble(data, nrow * ncol);
@@ -53,8 +53,8 @@ int **RMatrixToIntPtr(SEXP mat) {
     Rf_error("Input must be an integer matrix.");
   }
 
-  int nrow = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[0];
-  int ncol = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[1];
+  int nrow = Rf_nrows(mat);
+  int ncol = Rf_ncols(mat);
 
   int *data = INTEGER(mat);
   int *dataRow = (int *) R_alloc(nrow * ncol, sizeof(int));

@@ -46,3 +46,60 @@ SEXP R_ColsPermute(SEXP x, SEXP colsToPermute, SEXP seed)
     SEXP res = DoublePtrToRMatrix(result, nrows, ncols);
     return res;
 }
+
+// try openmp backend with a simple parallel for loop in C with reduction(+:sum)
+// #pragma omp parallel for reduction(+:sum)
+SEXP R_Sum(SEXP x, SEXP nthreads)
+{
+    double *xptr = REAL(x);
+    size_t n = Rf_length(x);
+    int nthreads0 = INTEGER(nthreads)[0];
+    double sum = 0;
+    omp_set_num_threads(nthreads0);
+    int nthreads1 = omp_get_max_threads();
+#pragma omp parallel for
+    for (size_t i = 0; i < n; i++)
+    {
+        sum += xptr[i];
+        Rprintf("thread id: %d/%d, i: %d, sum: %f\n", omp_get_thread_num(),omp_get_num_threads(), i, sum);
+    }
+    Rprintf("number of thread allocated: %d, requested: %d\n", nthreads1, nthreads0);
+    return Rf_ScalarReal(sum);
+}
+
+
+// matrix add
+SEXP R_MatrixAdd(SEXP x, SEXP y)
+{
+    size_t n = Rf_length(y);
+    int nrow = Rf_nrows(x);
+    int ncol = Rf_ncols(x);
+    printf("nrow: %d, ncol: %d\n", nrow, ncol);
+    SEXP rst = PROTECT(Rf_allocMatrix(REALSXP, nrow, ncol));
+    double *xptr = REAL(x);
+    double *yptr = REAL(y);
+    double *rstptr = REAL(rst);
+    omp_set_num_threads(4);
+
+#pragma omp parallel
+{
+    printf("thread %d/%d\n", omp_get_thread_num(), omp_get_max_threads());
+}
+
+#pragma omp parallel for
+    for (size_t i = 0; i < n; i++)
+    {
+        rstptr[i] = xptr[i] + yptr[i];
+        // Rprintf("thread id: %d, i: %d, sum: %f\n", omp_get_thread_num(), i, rstptr[i]);
+    }
+    UNPROTECT(1);
+
+    #pragma omp parallel num_threads(2) // Set 2 threads for this parallel region
+    {
+        int thread_id = omp_get_thread_num();
+        // printf("Thread ID in parallel region with 2 threads: %d\n", thread_id);
+    }
+
+    Rprintf("number of thread requested/allocated: %d/%d\n", 4L, omp_get_max_threads());
+    return rst;
+}
