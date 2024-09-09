@@ -32,7 +32,7 @@ RandomSurvivalForest *RandomForest(
     double *likelihoodsum = (double *)calloc(nTrees, sizeof(double));
     double **vimp = Allocate2DArray(nTrees, ncolsDesign);
 
-    Free(patientIds);
+    free(patientIds);
 
     if (_longformat == 0)
     {
@@ -84,11 +84,11 @@ RandomSurvivalForest *RandomForest(
                 }
             }
 
-            Free(globalLambda);
-            Free(globalYs);
-            Free(globalRts);
+            free(globalLambda);
+            free(globalYs);
+            free(globalRts);
             Free2DArray(globalYYs, lenOutput);
-            Free(lenYY);
+            free(lenYY);
         }
     }
 
@@ -130,17 +130,17 @@ RandomSurvivalForest *RandomForest(
                 _treePhi[i][m] = Var(globalYYs[m], lenYY[m]) / globalLambda[m];
             }
 
-            Free(globalLambda);
-            Free(globalYs);
-            Free(globalRts);
+            free(globalLambda);
+            free(globalYs);
+            free(globalRts);
             Free2DArray(globalYYs, lenOutput);
-            Free(lenYY);
+            free(lenYY);
 
-            Free(bootStrapData[0].designMatrixY);
-            Free(bootStrapData[0].auxiliaryFeatures);
-            Free(bootStrapData[1].designMatrixY);
-            Free(bootStrapData[1].auxiliaryFeatures);
-            Free(bootStrapData);
+            free(bootStrapData[0].designMatrixY);
+            free(bootStrapData[0].auxiliaryFeatures);
+            free(bootStrapData[1].designMatrixY);
+            free(bootStrapData[1].auxiliaryFeatures);
+            free(bootStrapData);
         }
     }
 
@@ -245,21 +245,21 @@ RandomSurvivalForest *RandomForest(
             }
 
             vimp[i][k] = likelihoodsum[i] - Mean(tempLiklihoodPerm, _nPerms);
-            Free(tempLiklihoodPerm);
+            free(tempLiklihoodPerm);
             lenColsToPermute = 0;
         }
-        Free(colsToPermute);
+        free(colsToPermute);
 
 #pragma omp critical
         {
             forest[i] = tree;
         }
 
-        Free(designMatrixYIn);
-        Free(auxiliaryFeaturesIn);
-        Free(designMatrixYOOB);
-        Free(auxiliaryFeaturesOOB);
-        Free(bootStrapData);
+        free(designMatrixYIn);
+        free(auxiliaryFeaturesIn);
+        free(designMatrixYOOB);
+        free(auxiliaryFeaturesOOB);
+        free(bootStrapData);
         FreeTree(treeOOB);
     }
 
@@ -325,7 +325,7 @@ RandomSurvivalForest *RandomForest(
 
     RandomSurvivalForest *out = malloc(sizeof(RandomSurvivalForest));
 
-    // copy of unitsOfCPIU, so when Free the forest, the unitsOfCPIU will not be freed but the copy
+    // copy of unitsOfCPIU, so when free the forest, the unitsOfCPIU will not be freed but the copy
     double *unitsOfCPIUCopy = (double *)calloc(nUnits, sizeof(double));
     memcpy(unitsOfCPIUCopy, unitsOfCPIU, nUnits * sizeof(double));
 
@@ -425,7 +425,7 @@ double **InternalForestOOBPredict(
     }
 
     Free3DArray(prediction, nrowsDesign, nTrees);
-    Free(nOOBTrees);
+    free(nOOBTrees);
 
     return out;
 }
@@ -504,18 +504,18 @@ void FreeSurvivalForest(RandomSurvivalForest *forest)
     {
         FreeTree(forest->forest[i]);
     }
-    Free(forest->forest);
+    free(forest->forest);
     Free2DArray(forest->predicted, forest->nrowsDesign);
     Free2DArray(forest->oobPredicted, forest->nrowsDesign);
-    Free(forest->vimpStat);
-    Free(forest->vimpFreq);
-    Free(forest->likelihoodsum);
+    free(forest->vimpStat);
+    free(forest->vimpFreq);
+    free(forest->likelihoodsum);
     Free2DArrayInt(forest->bagMatrix, forest->nTrees);
     Free2DArray(forest->vimpPermuted, forest->nTrees);
     // as unitsOfCPIU is a pointer from outside, it should not be freed here, make it easy to debug
     if (forest->unitsOfCPIU != NULL)
-        Free(forest->unitsOfCPIU);
-    Free(forest);
+        free(forest->unitsOfCPIU);
+    free(forest);
 }
 
 void SaveForest(DecisionTreeNode **forest,
@@ -559,8 +559,8 @@ void SaveForest(DecisionTreeNode **forest,
         WriteTreeDotFile(forest[i], pathDot, 0);
     }
 
-    Free(pathTree);
-    Free(pathDot);
+    free(pathTree);
+    free(pathDot);
 }
 
 void SaveSurvivalForest(RandomSurvivalForest *forest,
@@ -625,7 +625,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
             forest->inbagMSE);
 
     fclose(fileParameters);
-    Free(pathParameters);
+    free(pathParameters);
 
     // save predicted results of training data
     char *pathPredicted = malloc(300 * sizeof(char));
@@ -653,10 +653,10 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
     fclose(fileLikelihoodSum);
     fclose(filevimpPermuted);
 
-    Free(pathPredicted);
-    Free(pathPredictedOob);
-    Free(pathLikelihoodSum);
-    Free(pathvimpPermuted);
+    free(pathPredicted);
+    free(pathPredictedOob);
+    free(pathLikelihoodSum);
+    free(pathvimpPermuted);
 
     // save vimp
     char *pathVimp = malloc(300 * sizeof(char));
@@ -667,7 +667,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
     WriteCSV(&forest->vimpFreq, fileVimp, 1, forest->ncolsDesign);
 
     fclose(fileVimp);
-    Free(pathVimp);
+    free(pathVimp);
 
     // save bag matrix
     char *pathBagMatrix = malloc(300 * sizeof(char));
@@ -677,8 +677,8 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
     WriteCSVInt(forest->bagMatrix, fileBagMatrix, forest->nTrees, forest->nrowsDesign);
 
     fclose(fileBagMatrix);
-    Free(pathBagMatrix);
-    Free(pathForest);
+    free(pathBagMatrix);
+    free(pathForest);
 }
 
 DecisionTreeNode **LoadForest(char *path,
@@ -702,7 +702,7 @@ DecisionTreeNode **LoadForest(char *path,
         fclose(file);
     }
 
-    Free(pathTree);
+    free(pathTree);
 
     return forest;
 }
@@ -764,7 +764,7 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
 
     // printf("lenOutput: %ld, maxDepth: %ld, minNodeSize: %ld, minGain: %lf, mtry: %ld, nsplits: %ld, seed: %d\n", forest->lenOutput, forest->maxDepth, forest->minNodeSize, forest->minGain, forest->mtry, forest->nsplits, forest->seed);
     fclose(fileParameters);
-    Free(pathParameters);
+    free(pathParameters);
 
     // load predicted results of training data
     char *pathPredicted = malloc(300 * sizeof(char));
@@ -794,10 +794,10 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
     memcpy(forest->likelihoodsum, likelihoodSum[0], forest->nTrees * sizeof(double));
     forest->vimpPermuted = vimpPermuted;
 
-    Free(pathPredicted);
-    Free(pathPredictedOob);
-    Free(pathLikelihoodSum);
-    Free(pathvimpPermuted);
+    free(pathPredicted);
+    free(pathPredictedOob);
+    free(pathLikelihoodSum);
+    free(pathvimpPermuted);
 
     Free2DArray(likelihoodSum, 1);
 
@@ -810,8 +810,8 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
 
     forest->vimpStat = vimp[0];
     forest->vimpFreq = vimp[1];
-    Free(pathVimp);
-    Free(vimp);
+    free(pathVimp);
+    free(vimp);
 
     // load bag matrix
     char *pathBagMatrix = malloc(300 * sizeof(char));
@@ -822,7 +822,7 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
     ReadCSVInt(pathBagMatrix, &bagMatrix, 0);
 
     forest->bagMatrix = bagMatrix;
-    Free(pathBagMatrix);
+    free(pathBagMatrix);
 
     // load forest
 

@@ -455,9 +455,9 @@ int cmd_train(int argc, const char **argv)
     FILE *fp = fopen(path_paths, "w");
     PrintForestPaths(rsf, fp);
     fclose(fp);
-    Free(path_paths);
+    free(path_paths);
 
-    // Free memory
+    // free memory
     FreeSurvivalForest(rsf);
 
     Free2DArray(designMatrixY, nrowD);
@@ -465,7 +465,7 @@ int cmd_train(int argc, const char **argv)
     Free2DArray(_treePhi, nTrees);
     VC_GEE_destroy_matrix(&_Rin);
 
-    Free(unitsOfCPIU);
+    free(unitsOfCPIU);
 
     printf("Saving completed.\n");
 
@@ -537,11 +537,11 @@ int cmd_predict(int argc, const char **argv)
 
     printf("Prediction saved to %s\n", path_predict);
 
-    // Free memory
+    // free memory
     FreeSurvivalForest(rsf);
     Free2DArray(test, nrowT);
     Free2DArray(predict, nrowT);
-    Free(path_predict);
+    free(path_predict);
     fclose(fp);
 
     return 0;

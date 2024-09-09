@@ -108,7 +108,7 @@ int Cgee(
     if (!(arrname = (MATRIX **)malloc((unsigned)(nel * sizeof(MATRIX *)))))                      \
     {                                                                                            \
         printf("GEE Error: set_matrix_array (mac): out of memory, requesting %d elements", nel); \
-        Free(maxiter);                                                                           \
+        free(maxiter);                                                                           \
         return (EXIT_FAILURE);                                                                   \
     }
 
@@ -168,7 +168,7 @@ int Cgee(
             VC_GEE_destroy_double_matrix(&N, nclust);
             VC_GEE_destroy_double_matrix(&OFFSET, nclust);
             VC_GEE_destroy_matrix(&R);
-            Free(maxiter);
+            free(maxiter);
             return (EXIT_FAILURE);
             break;
         }
@@ -193,7 +193,7 @@ int Cgee(
             VC_GEE_destroy_double_matrix(&N, nclust);
             VC_GEE_destroy_double_matrix(&OFFSET, nclust);
             VC_GEE_destroy_matrix(&R);
-            Free(maxiter);
+            free(maxiter);
             return (EXIT_FAILURE);
             break;
         }
@@ -227,7 +227,7 @@ int Cgee(
             VC_GEE_destroy_double_matrix(&N, nclust);
             VC_GEE_destroy_double_matrix(&OFFSET, nclust);
             VC_GEE_destroy_matrix(&R);
-            Free(maxiter);
+            free(maxiter);
             return (EXIT_FAILURE);
             break;
         }
@@ -316,7 +316,7 @@ int Cgee(
                 if ((maxfitted >= .9999 || maxfitted <= .0001) && var_mean_rel == (int)Binomial)
                 {
                     printf("GEE Error: Cgee: error: logistic model for probability has fitted value very close to 1.\nestimates diverging; iteration terminated.");
-                    Free(maxiter);
+                    free(maxiter);
                     VC_GEE_destroy_double_matrix(&X, nclust);
                     VC_GEE_destroy_double_matrix(&Y, nclust);
                     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -339,7 +339,7 @@ int Cgee(
                 if ((maxfitted >= .9999 || maxfitted <= .0001) && var_mean_rel == (int)Binomial)
                 {
                     printf("GEE Error: Cgee: estimates diverging; iteration terminated");
-                    Free(maxiter);
+                    free(maxiter);
                     VC_GEE_destroy_double_matrix(&X, nclust);
                     VC_GEE_destroy_double_matrix(&Y, nclust);
                     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -360,7 +360,7 @@ int Cgee(
                 if ((maxfitted >= .9999 || maxfitted <= .0001) && var_mean_rel == (int)Binomial)
                 {
                     printf("GEE Error: Cgee: error: cloglog model for probability has fit ted value very close to 1.\nestimates diverging; iteration terminated.");
-                    Free(maxiter);
+                    free(maxiter);
                     VC_GEE_destroy_double_matrix(&X, nclust);
                     VC_GEE_destroy_double_matrix(&Y, nclust);
                     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -372,7 +372,7 @@ int Cgee(
 
             default:
                 printf("GEE Error: Cgee: unknown link. Dies.");
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -410,7 +410,7 @@ int Cgee(
                 break;
             default:
                 printf("GEE Error: Cgee: unknown var_mean_rel. Dies.");
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -443,7 +443,7 @@ int Cgee(
                 if (dni < (double)alpha_VC_GEE_bandwidth)
                 {
                     printf("GEE Error: cgee: M-dependence, M=%d, but clustsize=%d\nfatal error for this model", (int)*M_parm, (int)dni);
-                    Free(maxiter);
+                    free(maxiter);
                     VC_GEE_destroy_double_matrix(&X, nclust);
                     VC_GEE_destroy_double_matrix(&Y, nclust);
                     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -503,7 +503,7 @@ int Cgee(
                 break;
             default:
                 printf("GEE Error: corstruct not implemented.");
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -572,7 +572,7 @@ int Cgee(
             {
                 if (_GSL_ERROR_FLAG)
                     printf("Warning: matrix inverse fail in %s:%d, nobs = %d\n", __FILE__, __LINE__ - 4, *nobs);
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -610,7 +610,7 @@ int Cgee(
             break;
         default:
             printf("GEE Error: corstruct not implemented.");
-            Free(maxiter);
+            free(maxiter);
             VC_GEE_destroy_double_matrix(&X, nclust);
             VC_GEE_destroy_double_matrix(&Y, nclust);
             VC_GEE_destroy_double_matrix(&N, nclust);
@@ -704,7 +704,7 @@ int Cgee(
 
             default:
                 printf("GEE Error: Cgee: unknown link. Dies.");
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -742,7 +742,7 @@ int Cgee(
                 break;
             default:
                 printf("GEE Error: Cgee: unknown var_mean_rel. Dies.");
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -787,7 +787,7 @@ int Cgee(
                 {
                     if (_GSL_ERROR_FLAG)
                         printf("Warning: matrix inverse fail in %s:%d, nobs = %d\n", __FILE__, __LINE__ - 4, *nobs);
-                    Free(maxiter);
+                    free(maxiter);
                     VC_GEE_destroy_double_matrix(&X, nclust);
                     VC_GEE_destroy_double_matrix(&Y, nclust);
                     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -827,7 +827,7 @@ int Cgee(
         {
             if (_GSL_ERROR_FLAG)
                 printf("Warning: matrix inverse fail in %s:%d, nobs = %d\n", __FILE__, __LINE__ - 4, *nobs);
-            Free(maxiter);
+            free(maxiter);
             VC_GEE_destroy_double_matrix(&X, nclust);
             VC_GEE_destroy_double_matrix(&Y, nclust);
             VC_GEE_destroy_double_matrix(&N, nclust);
@@ -876,7 +876,7 @@ int Cgee(
             printf("Warning: Maximum number of iterations consumed\n");
             printf("Warning: Convergence not achieved; results suspect\n");
         }
-        Free(maxiter);
+        free(maxiter);
         VC_GEE_destroy_double_matrix(&X, nclust);
         VC_GEE_destroy_double_matrix(&Y, nclust);
         VC_GEE_destroy_double_matrix(&N, nclust);
@@ -964,7 +964,7 @@ int Cgee(
 
         default:
             printf("GEE Error: Cgee: unknown link. Dies.");
-            Free(maxiter);
+            free(maxiter);
             VC_GEE_destroy_double_matrix(&X, nclust);
             VC_GEE_destroy_double_matrix(&Y, nclust);
             VC_GEE_destroy_double_matrix(&N, nclust);
@@ -1001,7 +1001,7 @@ int Cgee(
             break;
         default:
             printf("GEE Error: Cgee: unknown var_mean_rel. Dies.\n");
-            Free(maxiter);
+            free(maxiter);
             VC_GEE_destroy_double_matrix(&X, nclust);
             VC_GEE_destroy_double_matrix(&Y, nclust);
             VC_GEE_destroy_double_matrix(&N, nclust);
@@ -1039,7 +1039,7 @@ int Cgee(
             {
                 if (_GSL_ERROR_FLAG)
                     printf("Warning: matrix inverse fail in %s:%d, nobs = %d\n", __FILE__, __LINE__ - 4, *nobs);
-                Free(maxiter);
+                free(maxiter);
                 VC_GEE_destroy_double_matrix(&X, nclust);
                 VC_GEE_destroy_double_matrix(&Y, nclust);
                 VC_GEE_destroy_double_matrix(&N, nclust);
@@ -1082,7 +1082,7 @@ int Cgee(
     {
         if (_GSL_ERROR_FLAG)
             printf("Warning: matrix inverse fail in %s:%d, nobs = %d\n", __FILE__, __LINE__ - 4, *nobs);
-        Free(maxiter);
+        free(maxiter);
         VC_GEE_destroy_double_matrix(&X, nclust);
         VC_GEE_destroy_double_matrix(&Y, nclust);
         VC_GEE_destroy_double_matrix(&N, nclust);
@@ -1108,7 +1108,7 @@ int Cgee(
     *Rin = VC_GEE_matcopy(&updateR);
     VC_GEE_destroy_matrix(&updateR);
 
-    Free(maxiter);
+    free(maxiter);
     VC_GEE_destroy_double_matrix(&X, nclust);
     VC_GEE_destroy_double_matrix(&Y, nclust);
     VC_GEE_destroy_double_matrix(&N, nclust);
@@ -1849,11 +1849,11 @@ void VC_GEE_destroy_matrix(MATRIX **mat)
     }
     for (int i = 0; i < (*mat)->nrows; i++)
     {
-        Free((*mat)->data[i]);
+        free((*mat)->data[i]);
     }
-    Free((*mat)->data);
+    free((*mat)->data);
 
-    Free((*mat));
+    free((*mat));
     *mat = NULL;
 }
 
@@ -1863,7 +1863,7 @@ void VC_GEE_destroy_double_matrix(MATRIX ***mat, int nmat)
     {
         VC_GEE_destroy_matrix(&((*mat)[i]));
     }
-    Free(*mat);
+    free(*mat);
     *mat = NULL;
 }
 
@@ -1955,7 +1955,7 @@ MATRIX *matrix_inverse(MATRIX **mat)
     // Convert GSL matrix back to MATRIX
     MATRIX *inverseMat = gsl_to_matrix(inverseGSL);
 
-    // Free GSL resources
+    // free GSL resources
     gsl_matrix_free(gslMat);
     gsl_matrix_free(inverseGSL);
     gsl_permutation_free(p);

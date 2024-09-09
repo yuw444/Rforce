@@ -744,7 +744,7 @@ double NthColMeanExcluding(
 
   for (int i = 0; i < nrows; i++)
   {
-    if (abs(arrayIn[i][nthCol] - exclude) > 1e-6)
+    if (fabs(arrayIn[i][nthCol] - exclude) > 1e-6)
     {
       tempSum += arrayIn[i][nthCol];
       tempCounts++;
@@ -978,13 +978,6 @@ double *Cummin(double *arrayIn, size_t n)
   return cummin;
 }
 
-void Free(void *ptr)
-{
-  {
-    free(ptr);
-  }
-}
-
 double *Permute(double *arrayIn, size_t n, unsigned int seed)
 {
   double *arrayOut = calloc(n, sizeof(double));
@@ -1018,8 +1011,8 @@ double **ColsPermute(double **arrayIn, size_t nrows, size_t ncols, unsigned int 
     {
       arrayOut[j][colsToPermute[i]] = permutedCol[j];
     }
-    Free(temp);
-    Free(permutedCol);
+    free(temp);
+    free(permutedCol);
   }
 
   return arrayOut;

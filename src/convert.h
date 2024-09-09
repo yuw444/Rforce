@@ -1,6 +1,7 @@
 #define R_NO_REMAP
 #include <R.h>
 #include <Rinternals.h>
+#include "utils.h"
 
 // Convert R matrix to double**
 double **RMatrixToDoublePtr(SEXP mat);

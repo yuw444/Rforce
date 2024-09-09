@@ -1,20 +1,47 @@
 #include "convert.h"
 
+/**
+ * 1 2 3 4
+ * 5 6 7 8
+ * 9 10 11 12
+ */
+
+// Convert column-major matrix to row-major matrix
+void ColMajorToRowMajor(double *colMajor, double *rowMajor, int nrow, int ncol) {
+  for (int j = 0; j < ncol; j++) {
+    for (int i = 0; i < nrow; i++) {
+      rowMajor[j + ncol * i] = colMajor[i + nrow * j];  // Access in row-major order
+    }
+  }
+}
+
+// Convert row-major matrix to column-major matrix
+void RowMajorToColMajor(double *rowMajor, double *colMajor, int nrow, int ncol) {
+  for (int j = 0; j < ncol; j++) {
+    for (int i = 0; i < nrow; i++) {
+      colMajor[i + nrow * j] = rowMajor[j + ncol * i];  // Access in column-major order
+    }
+  }
+}
+
 // Convert R matrix to double**
 double **RMatrixToDoublePtr(SEXP mat) {
+  
   if (!Rf_isReal(mat) || !Rf_isMatrix(mat)) {
     Rf_error("Input must be a numeric matrix.");
   }
-
-  printf("I'm here\n");
   int nrow = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[0];
   int ncol = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[1];
 
   double *data = REAL(mat);
+  // PrintArrayDouble(data, nrow * ncol);
+  double *dataRow = (double *) R_alloc(nrow * ncol, sizeof(double));
+  ColMajorToRowMajor(data, dataRow, nrow, ncol);
+  // PrintArrayDouble(dataRow, nrow * ncol);
   double **matrix = (double **) R_alloc(ncol, sizeof(double *));
 
-  for (int j = 0; j < ncol; j++) {
-    matrix[j] = &data[j * nrow];
+  for (int i = 0; i < nrow; i++) {
+    matrix[i] = &dataRow[i * ncol];
   }
 
   return matrix;
@@ -30,10 +57,13 @@ int **RMatrixToIntPtr(SEXP mat) {
   int ncol = INTEGER(Rf_getAttrib(mat, R_DimSymbol))[1];
 
   int *data = INTEGER(mat);
+  int *dataRow = (int *) R_alloc(nrow * ncol, sizeof(int));
+  ColMajorToRowMajor((double *) data, (double *) dataRow, nrow, ncol);
+
   int **matrix = (int **) R_alloc(ncol, sizeof(int *));
 
   for (int j = 0; j < ncol; j++) {
-    matrix[j] = &data[j * nrow];
+    matrix[j] = &dataRow[j * nrow];
   }
 
   return matrix;
@@ -46,7 +76,7 @@ SEXP DoublePtrToRMatrix(double **matrix, int nrow, int ncol) {
 
   for (int j = 0; j < ncol; j++) {
     for (int i = 0; i < nrow; i++) {
-      data[i + nrow * j] = matrix[j][i];  // Access in column-major order
+      data[i + nrow * j] = matrix[i][j];  // Access in column-major order
     }
   }
 
@@ -61,7 +91,7 @@ SEXP IntPtrToRMatrix(int **matrix, int nrow, int ncol) {
 
   for (int j = 0; j < ncol; j++) {
     for (int i = 0; i < nrow; i++) {
-      data[i + nrow * j] = matrix[j][i];  // Access in column-major order
+      data[i + nrow * j] = matrix[i][j];  // Access in column-major order
     }
   }
 

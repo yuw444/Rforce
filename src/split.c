@@ -154,11 +154,11 @@ int **BagMatrix(
                 }
             }
         }
-        Free(patientSample);
+        free(patientSample);
     }
 
-    Free(uniquePatients->Elements);
-    Free(uniquePatients);
+    free(uniquePatients->Elements);
+    free(uniquePatients);
 
     return bagMatrix;
 }
@@ -302,7 +302,7 @@ double *LeafOutputInterval(
     // fit kaplan-meier curve w.r.t censoring
     KMResult *Gt = KaplanMeier(X, statusInverse, nrows);
 
-    Free(statusInverse);
+    free(statusInverse);
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
     KMResult *wtPatient, *wtPatientLeft, *wtPatientRight;
@@ -318,9 +318,9 @@ double *LeafOutputInterval(
     }
     FreeKMResult(Gt);
 
-    Free(X);
+    free(X);
 
-    Free(status);
+    free(status);
 
     double *Y = (double *)calloc(lenOutput, sizeof(double));  // number of composite events
     double *rt = (double *)calloc(lenOutput, sizeof(double)); // pseudo risk time
@@ -348,11 +348,11 @@ double *LeafOutputInterval(
       output[i] = (alpha + Y[i]) / (beta + rt[i] + 1e-9);
     }
 
-    Free(Y);
+    free(Y);
 
-    Free(rt);
+    free(rt);
 
-    Free(breakpoints);
+    free(breakpoints);
     Free2DArray(pseudoRiskTime, nrows);
     return output;
   }
@@ -382,8 +382,8 @@ double *LeafOutputInterval(
   {
     output[i] = (alpha + Y[i]) / (beta + rt[i] + 1e-9);
   }
-  Free(Y);
-  Free(rt);
+  free(Y);
+  free(rt);
   return output;
 }
 
@@ -418,11 +418,11 @@ double *PoissonLikelihood(
   // check if the number of rows in left and right nodes are zero
   if (nLeft <= minNodeSize || nRight == minNodeSize)
   {
-    Free(dataSplits[0].designMatrixY);
-    Free(dataSplits[0].auxiliaryFeatures);
-    Free(dataSplits[1].designMatrixY);
-    Free(dataSplits[1].auxiliaryFeatures);
-    Free(dataSplits);
+    free(dataSplits[0].designMatrixY);
+    free(dataSplits[0].auxiliaryFeatures);
+    free(dataSplits[1].designMatrixY);
+    free(dataSplits[1].auxiliaryFeatures);
+    free(dataSplits);
     return NULL;
   }
   // lambda in parent node
@@ -484,15 +484,15 @@ double *PoissonLikelihood(
     }
   }
 
-  // Free memory
-  Free(lambda);
-  Free(lambdaLeft);
-  Free(lambdaRight);
-  Free(dataSplits[0].designMatrixY);
-  Free(dataSplits[0].auxiliaryFeatures);
-  Free(dataSplits[1].designMatrixY);
-  Free(dataSplits[1].auxiliaryFeatures);
-  Free(dataSplits);
+  // free memory
+  free(lambda);
+  free(lambdaLeft);
+  free(lambdaRight);
+  free(dataSplits[0].designMatrixY);
+  free(dataSplits[0].auxiliaryFeatures);
+  free(dataSplits[1].designMatrixY);
+  free(dataSplits[1].auxiliaryFeatures);
+  free(dataSplits);
   // return the pseudo likelihood
   double *out = (double *)calloc(4, sizeof(double));
   out[0] = (statLeft + statRight - stat) / fabs(stat);
@@ -536,11 +536,11 @@ double *QuasiPoissonLikelihood(
   // check if the number of rows in left and right nodes are zero
   if (nLeft <= minNodeSize || nRight <= minNodeSize)
   {
-    Free(dataSplits[0].designMatrixY);
-    Free(dataSplits[0].auxiliaryFeatures);
-    Free(dataSplits[1].designMatrixY);
-    Free(dataSplits[1].auxiliaryFeatures);
-    Free(dataSplits);
+    free(dataSplits[0].designMatrixY);
+    free(dataSplits[0].auxiliaryFeatures);
+    free(dataSplits[1].designMatrixY);
+    free(dataSplits[1].auxiliaryFeatures);
+    free(dataSplits);
     return NULL;
   }
   /******************For dynamic pseudo-risk time estimation**************************/
@@ -617,9 +617,9 @@ double *QuasiPoissonLikelihood(
       PrintArrayDouble(GtRight->survivalProb, GtRight->nTime);
     }
 
-    Free(statusInverse);
-    Free(statusInverseLeft);
-    Free(statusInverseRight);
+    free(statusInverse);
+    free(statusInverseLeft);
+    free(statusInverseRight);
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
     KMResult *wtPatient, *wtPatientLeft, *wtPatientRight;
@@ -687,13 +687,13 @@ double *QuasiPoissonLikelihood(
       }
     }
 
-    Free(X);
-    Free(XLeft);
-    Free(XRight);
-    Free(status);
-    Free(statusLeft);
-    Free(statusRight);
-    Free(breakpoints);
+    free(X);
+    free(XLeft);
+    free(XRight);
+    free(status);
+    free(statusLeft);
+    free(statusRight);
+    free(breakpoints);
   }
   else
   {
@@ -896,21 +896,21 @@ double *QuasiPoissonLikelihood(
     }
   }
 
-  // Free memory
+  // free memory
   Free2DArray(lambdas, 3);
   Free2DArray(Ys, 3);
   Free2DArray(rts, 3);
   Free3DArray(YY, 3, lenOutput);
   Free2DArrayInt(lenYY, 3);
   Free2DArray(phi, 3);
-  Free(YTotal);
-  Free(rtTotal);
-  Free(betas);
-  Free(dataSplits[0].designMatrixY);
-  Free(dataSplits[0].auxiliaryFeatures);
-  Free(dataSplits[1].designMatrixY);
-  Free(dataSplits[1].auxiliaryFeatures);
-  Free(dataSplits);
+  free(YTotal);
+  free(rtTotal);
+  free(betas);
+  free(dataSplits[0].designMatrixY);
+  free(dataSplits[0].auxiliaryFeatures);
+  free(dataSplits[1].designMatrixY);
+  free(dataSplits[1].auxiliaryFeatures);
+  free(dataSplits);
   Free3DArray(pseudoRiskTime, 3, nrows);
 
   // return the quasi likelihood
@@ -959,11 +959,11 @@ double *AsympoticDiffTestStatsNew(
   // check if the number of rows in left and right nodes are zero
   if (nLeft <= minNodeSize || nRight <= minNodeSize)
   {
-    Free(dataSplits[0].designMatrixY);
-    Free(dataSplits[0].auxiliaryFeatures);
-    Free(dataSplits[1].designMatrixY);
-    Free(dataSplits[1].auxiliaryFeatures);
-    Free(dataSplits);
+    free(dataSplits[0].designMatrixY);
+    free(dataSplits[0].auxiliaryFeatures);
+    free(dataSplits[1].designMatrixY);
+    free(dataSplits[1].auxiliaryFeatures);
+    free(dataSplits);
     return NULL;
   }
 
@@ -1075,25 +1075,25 @@ double *AsympoticDiffTestStatsNew(
   out[1] = fabs(ZZ);
   out[2] = ZZ;
   out[3] = ZZ;
-  // Free memory
+  // free memory
   Free2DArray(lambdas, 3);
   Free2DArray(Ys, 3);
   Free2DArray(rts, 3);
   Free3DArray(YY, 3, lenOutput);
   Free2DArrayInt(lenYY, 3);
   Free2DArray(phi, 3);
-  Free(YTotal);
-  Free(rtTotal);
-  Free(betas);
-  Free(ttLeft);
-  Free(ttRight);
-  Free(varTTLeft);
-  Free(varTTRight);
-  Free(dataSplits[0].designMatrixY);
-  Free(dataSplits[0].auxiliaryFeatures);
-  Free(dataSplits[1].designMatrixY);
-  Free(dataSplits[1].auxiliaryFeatures);
-  Free(dataSplits);
+  free(YTotal);
+  free(rtTotal);
+  free(betas);
+  free(ttLeft);
+  free(ttRight);
+  free(varTTLeft);
+  free(varTTRight);
+  free(dataSplits[0].designMatrixY);
+  free(dataSplits[0].auxiliaryFeatures);
+  free(dataSplits[1].designMatrixY);
+  free(dataSplits[1].auxiliaryFeatures);
+  free(dataSplits);
 
   return out;
 }
@@ -1130,11 +1130,11 @@ double *GEERule(
   // check if the number of rows in left and right nodes are zero
   if (nLeft <= minNodeSize || nRight <= minNodeSize)
   {
-    Free(dataSplits[0].designMatrixY);
-    Free(dataSplits[0].auxiliaryFeatures);
-    Free(dataSplits[1].designMatrixY);
-    Free(dataSplits[1].auxiliaryFeatures);
-    Free(dataSplits);
+    free(dataSplits[0].designMatrixY);
+    free(dataSplits[0].auxiliaryFeatures);
+    free(dataSplits[1].designMatrixY);
+    free(dataSplits[1].auxiliaryFeatures);
+    free(dataSplits);
     return NULL;
   }
   /******************For dynamic pseudo-risk time estimation**************************/
@@ -1190,7 +1190,7 @@ double *GEERule(
       PrintArrayDouble(Gt->uniqueTime, Gt->nTime);
       PrintArrayDouble(Gt->survivalProb, Gt->nTime);
     }
-    Free(statusInverse);
+    free(statusInverse);
 
     // placeholder for inverse probability of censoring weight w.r.t time of interest
     KMResult *wtPatient;
@@ -1216,9 +1216,9 @@ double *GEERule(
       }
     }
 
-    Free(X);
-    Free(status);
-    Free(breakpoints);
+    free(X);
+    free(status);
+    free(breakpoints);
   }
   else
   {
@@ -1332,11 +1332,11 @@ double *GEERule(
     VC_GEE_destroy_matrix(&idin);
     VC_GEE_destroy_matrix(&nin);
     VC_GEE_destroy_matrix(&offsetin);
-    Free(dataSplits[0].designMatrixY);
-    Free(dataSplits[0].auxiliaryFeatures);
-    Free(dataSplits[1].designMatrixY);
-    Free(dataSplits[1].auxiliaryFeatures);
-    Free(dataSplits);
+    free(dataSplits[0].designMatrixY);
+    free(dataSplits[0].auxiliaryFeatures);
+    free(dataSplits[1].designMatrixY);
+    free(dataSplits[1].auxiliaryFeatures);
+    free(dataSplits);
     Free2DArray(pseudoRiskTime, nrows);
     return NULL;
   }
@@ -1388,7 +1388,7 @@ double *GEERule(
       PrintMatrix(&OUT);
     }
 
-    // Free memory
+    // free memory
     VC_GEE_destroy_matrix(&A);
     VC_GEE_destroy_matrix(&B);
     VC_GEE_destroy_matrix(&OUT);
@@ -1413,11 +1413,11 @@ double *GEERule(
   VC_GEE_destroy_matrix(&idin);
   VC_GEE_destroy_matrix(&nin);
   VC_GEE_destroy_matrix(&offsetin);
-  Free(dataSplits[0].designMatrixY);
-  Free(dataSplits[0].auxiliaryFeatures);
-  Free(dataSplits[1].designMatrixY);
-  Free(dataSplits[1].auxiliaryFeatures);
-  Free(dataSplits);
+  free(dataSplits[0].designMatrixY);
+  free(dataSplits[0].auxiliaryFeatures);
+  free(dataSplits[1].designMatrixY);
+  free(dataSplits[1].auxiliaryFeatures);
+  free(dataSplits);
   Free2DArray(pseudoRiskTime, nrows);
   return out;
 }
@@ -1452,7 +1452,7 @@ SplitPoints *FindBestSplit(
     printf("varIndexs:\n");
   }
   int *varIndexSample = SampleInt(varIndexs, ncolsDesign, mtry, 0, seed);
-  Free(varIndexs);
+  free(varIndexs);
 
   if (_verbose >= 2)
   {
@@ -1474,9 +1474,9 @@ SplitPoints *FindBestSplit(
         varValuesNaRemoved->nElements,
         nsplits);
     maxSplits += splitsOfmtry[i]->nElements;
-    Free(varValues);
-    Free(varValuesNaRemoved->Elements);
-    Free(varValuesNaRemoved);
+    free(varValues);
+    free(varValuesNaRemoved->Elements);
+    free(varValuesNaRemoved);
   }
 
   double *pValues = (double *)calloc(maxSplits, sizeof(double));
@@ -1525,7 +1525,7 @@ SplitPoints *FindBestSplit(
           memcpy(bestSplitStat, splitStat, 4 * sizeof(double));
         }
       }
-      Free(splitStat);
+      free(splitStat);
     }
   }
 
@@ -1544,19 +1544,19 @@ SplitPoints *FindBestSplit(
       double minPvalueAdj = Min(pValueAdj, totalValidSplits);
       double negLog10minPvalueAdj = -1.0 * log10(minPvalueAdj);
       bestSplit->splitStat[0] = negLog10minPvalueAdj;
-      Free(pValueAdj);
+      free(pValueAdj);
     }
   }
 
-  // Free the memory
-  Free(varIndexSample);
+  // free the memory
+  free(varIndexSample);
   for (size_t i = 0; i < mtry; i++)
   {
-    Free(splitsOfmtry[i]->Elements);
-    Free(splitsOfmtry[i]);
+    free(splitsOfmtry[i]->Elements);
+    free(splitsOfmtry[i]);
   }
-  Free(splitsOfmtry);
-  Free(pValues);
+  free(splitsOfmtry);
+  free(pValues);
 
   return bestSplit;
 }

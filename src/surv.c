@@ -7,9 +7,9 @@ void FreeKMResult(KMResult *result)
     {
         return;
     }
-    Free(result->uniqueTime);
-    Free(result->survivalProb);
-    Free(result);
+    free(result->uniqueTime);
+    free(result->survivalProb);
+    free(result);
 }
 
 // fit a Kaplan-Meier model
@@ -37,8 +37,8 @@ KMResult *KaplanMeier(
         PrintArrayDouble(uniqueStatus->Elements, uniqueStatus->nElements);
         exit(1);
     }
-    Free(uniqueStatus->Elements);
-    Free(uniqueStatus);
+    free(uniqueStatus->Elements);
+    free(uniqueStatus);
 
     for (int i = 0; i < nObs; i++)
     {
@@ -64,7 +64,7 @@ KMResult *KaplanMeier(
         result->nTime = nTime;
         result->uniqueTime = uniqueTime;
         result->survivalProb = survivalProb;
-        Free(timeEvent);
+        free(timeEvent);
         return result;
     }
 
@@ -120,11 +120,11 @@ KMResult *KaplanMeier(
     result->uniqueTime = uniqueTime->Elements;
     result->survivalProb = kmEstimate;
 
-    // Free memory
-    Free(timeEvent);
-    Free(nAtRisk);
-    Free(nEvents);
-    Free(uniqueTime);
+    // free memory
+    free(timeEvent);
+    free(nAtRisk);
+    free(nEvents);
+    free(uniqueTime);
     return result;
 }
 
@@ -348,7 +348,7 @@ double PseudoRiskTimeNew(
     {
         pseudoRiskTime += (uniqueTimeNew[i + 1] - uniqueTimeNew[i]) * survivalProbNew[i];
     }
-    Free(uniqueTimeNew);
-    Free(survivalProbNew);
+    free(uniqueTimeNew);
+    free(survivalProbNew);
     return pseudoRiskTime;
 }

@@ -73,8 +73,8 @@ void GrowTree(
             nUnits,
             lenOutput);
         tree->lenOutput = lenOutput;
-        Free(designMatrixY);
-        Free(auxiliaryFeatures);
+        free(designMatrixY);
+        free(auxiliaryFeatures);
         return;
     }
 
@@ -113,10 +113,10 @@ void GrowTree(
             nUnits,
             lenOutput);
         tree->lenOutput = lenOutput;
-        Free(designMatrixY);
-        Free(auxiliaryFeatures);
-        Free(bestSplit->splitStat);
-        Free(bestSplit);
+        free(designMatrixY);
+        free(auxiliaryFeatures);
+        free(bestSplit->splitStat);
+        free(bestSplit);
         return;
     }
     else
@@ -126,8 +126,8 @@ void GrowTree(
         tree->splitValue = bestSplit->splitValue;
         tree->splitStat = bestSplit->splitStat;
 
-        // Free the memory
-        Free(bestSplit);
+        // free the memory
+        free(bestSplit);
 
         // split the data based on the best split
         DecisionTreeData *dataSplits = SplitDataset(
@@ -151,8 +151,8 @@ void GrowTree(
 
         tree->sizeLR = nLR;
 
-        // Free the memory
-        Free(dataSplits);
+        // free the memory
+        free(dataSplits);
 
         // check if daughter nodes are too small
         if (nLeft < minNodeSize || nRight < minNodeSize)
@@ -170,19 +170,19 @@ void GrowTree(
                 nUnits,
                 lenOutput);
             tree->lenOutput = lenOutput;
-            Free(designMatrixYLeft);
-            Free(designMatrixYRight);
-            Free(auxiliaryFeaturesLeft);
-            Free(auxiliaryFeaturesRight);
-            Free(designMatrixY);
-            Free(auxiliaryFeatures);
+            free(designMatrixYLeft);
+            free(designMatrixYRight);
+            free(auxiliaryFeaturesLeft);
+            free(auxiliaryFeaturesRight);
+            free(designMatrixY);
+            free(auxiliaryFeatures);
             return;
         }
         else
         {
-            // Free the memory
-            Free(designMatrixY);
-            Free(auxiliaryFeatures);
+            // free the memory
+            free(designMatrixY);
+            free(auxiliaryFeatures);
 
             // create left child node
             tree->leftChild = EmptyNode(treeId, nodeId);
@@ -318,8 +318,8 @@ DecisionTreeNode *Tree(
             PrintArrayDouble(uniqueStatus->Elements, uniqueStatus->nElements);
             exit(1);
         }
-        Free(uniqueStatus->Elements);
-        Free(uniqueStatus);
+        free(uniqueStatus->Elements);
+        free(uniqueStatus);
         double *statusInverse = (double *)malloc(nrows * sizeof(double));
 
         for (int i = 0; i < nrows; i++)
@@ -345,7 +345,7 @@ DecisionTreeNode *Tree(
 
         // fit kaplan-meier curve w.r.t censoring
         KMResult *Gt = KaplanMeier(X, statusInverse, nrows);
-        Free(statusInverse);
+        free(statusInverse);
 
         KMResult *wtPatient; // placeholder for inverse probability of censoring weight w.r.t time of interest
 
@@ -362,8 +362,8 @@ DecisionTreeNode *Tree(
             FreeKMResult(wtPatient);
         }
         FreeKMResult(Gt);
-        Free(X);
-        Free(status);
+        free(X);
+        free(status);
         for (int i = 0; i < nrows; i++)
         {
             designMatrixYCopy[i] = designMatrixY[i];
@@ -393,7 +393,7 @@ DecisionTreeNode *Tree(
             seed);
 
         Free2DArray(pseudoRiskTimes, nrows);
-        Free(breakpoints);
+        free(breakpoints);
         return root;
     }
 }
@@ -490,7 +490,7 @@ void TreeOOBInternal(
     size_t nLeft = dataSplits[0].nrows;
     size_t nRight = dataSplits[1].nrows;
 
-    Free(dataSplits);
+    free(dataSplits);
 
     (rootCopy->sizeLR)[0] = nLeft;
     (rootCopy->sizeLR)[1] = nRight;
@@ -529,11 +529,11 @@ void TreeOOBInternal(
         rootCopy->rightChild = NULL;
     }
 
-    // Free the memory
-    Free(designMatrixYLeft);
-    Free(designMatrixYRight);
-    Free(auxiliaryFeaturesLeft);
-    Free(auxiliaryFeaturesRight);
+    // free the memory
+    free(designMatrixYLeft);
+    free(designMatrixYRight);
+    free(auxiliaryFeaturesLeft);
+    free(auxiliaryFeaturesRight);
 }
 
 DecisionTreeNode *TreeOOB(
@@ -585,12 +585,12 @@ void FreeTree(DecisionTreeNode *tree)
     {
         return;
     }
-    Free(tree->splitStat);
-    Free(tree->sizeLR);
-    Free(tree->output);
+    free(tree->splitStat);
+    free(tree->sizeLR);
+    free(tree->output);
     FreeTree(tree->leftChild);
     FreeTree(tree->rightChild);
-    Free(tree);
+    free(tree);
 }
 
 double *TreePredict(
@@ -775,7 +775,7 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: reading leaf node output length from file.\n");
-            Free(root);
+            free(root);
             exit(1);
         }
         root->output = (double *)calloc(root->lenOutput, sizeof(double));
@@ -783,7 +783,7 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: allocating memory for leaf node output.\n");
-            Free(root);
+            free(root);
             return NULL;
         }
 
@@ -793,8 +793,8 @@ DecisionTreeNode *LoadTree(FILE *file)
             {
                 PRINT_LOCATION();
                 printf("Error: reading leaf node output from file.\n");
-                Free(root->output);
-                Free(root);
+                free(root->output);
+                free(root);
                 return NULL;
             }
         }
@@ -802,8 +802,8 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: reading leaf node output from file.\n");
-            Free(root->output);
-            Free(root);
+            free(root->output);
+            free(root);
             return NULL;
         }
     }
@@ -815,18 +815,18 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: allocating memory for internal node data.\n");
-            Free(root->sizeLR);
-            Free(root->splitStat);
-            Free(root);
+            free(root->sizeLR);
+            free(root->splitStat);
+            free(root);
             return NULL;
         }
         if (fscanf(file, "%ld %lf %lf %lf %lf %lf %ld %ld\n", &root->splitIndex, &root->splitValue, &root->splitStat[0], &root->splitStat[1], &root->splitStat[2], &root->splitStat[3], &root->sizeLR[0], &root->sizeLR[1]) != 8)
         {
             PRINT_LOCATION();
             printf("Error: reading internal node data from file.\n");
-            Free(root->sizeLR);
-            Free(root->splitStat);
-            Free(root);
+            free(root->sizeLR);
+            free(root->splitStat);
+            free(root);
             return NULL;
         }
         root->leftChild = LoadTree(file);
@@ -834,9 +834,9 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: creating left child node.\n");
-            Free(root->sizeLR);
-            Free(root->splitStat);
-            Free(root);
+            free(root->sizeLR);
+            free(root->splitStat);
+            free(root);
             return NULL;
         }
         root->rightChild = LoadTree(file);
@@ -844,10 +844,10 @@ DecisionTreeNode *LoadTree(FILE *file)
         {
             PRINT_LOCATION();
             printf("Error: creating right child node.\n");
-            Free(root->sizeLR);
-            Free(root->splitStat);
-            Free(root->leftChild);
-            Free(root);
+            free(root->sizeLR);
+            free(root->splitStat);
+            free(root->leftChild);
+            free(root);
             return NULL;
         }
     }
@@ -948,7 +948,7 @@ void PrintTreeNodes(
 
     for (int i = 0; i < 1000; i++)
     {
-        Free(nodeElements[i]);
+        free(nodeElements[i]);
     }
-    Free(nodeElements);
+    free(nodeElements);
 }

@@ -138,7 +138,6 @@ int vsPI(const void *a, const void *b);
 int *Order(void *arrayIn, size_t n, bool decreasing, bool is_double);
 double *Cummax(double *arrayIn, size_t n);
 double *Cummin(double *arrayIn, size_t n);
-void Free(void *ptr);
 
 double *Permute(double *arrayIn, size_t n, unsigned int seed);
 double **ColsPermute(double **arrayIn, size_t nrows, size_t ncols, unsigned int *colsToPermute, size_t ncolsToPermute, unsigned int seed);

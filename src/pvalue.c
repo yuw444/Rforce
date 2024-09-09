@@ -73,13 +73,13 @@ double *PAdjust(double *pvalues, size_t n, char method[])
       out[j] = ptemp[ro[j]];
     }
 
-    Free(i);
-    Free(o);
-    Free(ro);
-    Free(pvaluesOrdered);
-    Free(n1_i_p);
-    Free(n1_i_p_cummax);
-    Free(ptemp);
+    free(i);
+    free(o);
+    free(ro);
+    free(pvaluesOrdered);
+    free(n1_i_p);
+    free(n1_i_p_cummax);
+    free(ptemp);
     return out;
   }
 
@@ -146,10 +146,10 @@ double *PAdjust(double *pvalues, size_t n, char method[])
       {
         pa[k] = pa[k] < q[k] ? q[k] : pa[k];
       }
-      Free(ij);
-      Free(i2);
-      Free(j2);
-      Free(jpi22j);
+      free(ij);
+      free(i2);
+      free(j2);
+      free(jpi22j);
     }
 
     for (size_t j = 0; j < n; j++)
@@ -161,14 +161,14 @@ double *PAdjust(double *pvalues, size_t n, char method[])
     {
       out[j] = ptemp[ro[j]];
     }
-    Free(i);
-    Free(o);
-    Free(ro);
-    Free(pvaluesOrdered);
-    Free(npi);
-    Free(q);
-    Free(pa);
-    Free(ptemp);
+    free(i);
+    free(o);
+    free(ro);
+    free(pvaluesOrdered);
+    free(npi);
+    free(q);
+    free(pa);
+    free(ptemp);
     return out;
   }
 
@@ -199,11 +199,11 @@ double *PAdjust(double *pvalues, size_t n, char method[])
     {
       out[j] = ptemp[ror[j]];
     }
-    Free(ir);
-    Free(or);
-    Free(ror);
-    Free(pvaluesOrdered);
-    Free(ptemp);
+    free(ir);
+    free(or);
+    free(ror);
+    free(pvaluesOrdered);
+    free(ptemp);
     return out;
   }
 
@@ -225,12 +225,12 @@ double *PAdjust(double *pvalues, size_t n, char method[])
     {
       out[j] = ptemp1[ror[j]];
     }
-    Free(ir);
-    Free(or);
-    Free(ror);
-    Free(pvaluesOrdered);
-    Free(ptemp);
-    Free(ptemp1);
+    free(ir);
+    free(or);
+    free(ror);
+    free(pvaluesOrdered);
+    free(ptemp);
+    free(ptemp1);
     return out;
   }
 
@@ -256,15 +256,15 @@ double *PAdjust(double *pvalues, size_t n, char method[])
     {
       out[j] = ptemp1[ror[j]];
     }
-    Free(ir);
-    Free(or);
-    Free(ror);
-    Free(pvaluesOrdered);
-    Free(ptemp);
-    Free(ptemp1);
+    free(ir);
+    free(or);
+    free(ror);
+    free(pvaluesOrdered);
+    free(ptemp);
+    free(ptemp1);
     return out;
   }
 
-  Free(out);
+  free(out);
   return NULL;
 }

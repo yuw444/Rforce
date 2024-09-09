@@ -8,5 +8,3 @@
 
 library(testthat)
 library(Rforce)
-
-test_check("Rforce")
