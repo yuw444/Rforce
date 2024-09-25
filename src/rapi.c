@@ -61,7 +61,7 @@ SEXP R_Sum(SEXP x, SEXP nthreads)
     for (size_t i = 0; i < n; i++)
     {
         sum += xptr[i];
-        // Rprintf("thread id: %d/%d, i: %d, sum: %f\n", omp_get_thread_num(),omp_get_num_threads(), i, sum);
+        printf("thread id: %d/%d, i: %ld, sum: %f\n", omp_get_thread_num(),omp_get_num_threads(), i, sum);
     }
     // Rprintf("number of thread allocated: %d, requested: %d\n", nthreads1, nthreads0);
     return Rf_ScalarReal(sum);
@@ -81,16 +81,16 @@ SEXP R_MatrixAdd(SEXP x, SEXP y)
     double *rstptr = REAL(rst);
     omp_set_num_threads(4);
 
-#pragma omp parallel
-{
-    printf("thread %d/%d\n", omp_get_thread_num(), omp_get_max_threads());
-}
+// #pragma omp parallel
+// {
+//     printf("thread %d/%d\n", omp_get_thread_num(), omp_get_max_threads());
+// }
 
 #pragma omp parallel for
     for (size_t i = 0; i < n; i++)
     {
         rstptr[i] = xptr[i] + yptr[i];
-        // Rprintf("thread id: %d, i: %d, sum: %f\n", omp_get_thread_num(), i, rstptr[i]);
+        printf("thread id: %d, i: %ld, sum: %f\n", omp_get_thread_num(), i, rstptr[i]);
     }
     UNPROTECT(1);
 
@@ -102,4 +102,43 @@ SEXP R_MatrixAdd(SEXP x, SEXP y)
 
     Rprintf("number of thread requested/allocated: %d/%d\n", 4L, omp_get_max_threads());
     return rst;
+}
+
+// return a list of vectors to R
+
+SEXP R_ListOfVectors()
+{
+    SEXP list = PROTECT(Rf_allocVector(VECSXP, 3));
+
+    double v1ptr[3];
+    int v2ptr[4];
+    char **v3ptr;
+    v3ptr = (char **)malloc(5 * sizeof(char *));
+    for (size_t i = 0; i < 5; i++)
+    {
+        v3ptr[i] = (char *)malloc(10 * sizeof(char));
+    }   
+
+    for(size_t i = 0; i < 3; i++)
+    {
+        v1ptr[i] = i * 1.0f;
+    }
+
+    for(size_t i = 0; i < 4; i++)
+    {
+        v2ptr[i] = i;
+    }
+
+    for(size_t i = 0; i < 5; i++)
+    {
+        sprintf(v3ptr[i], "string %ld", i);
+    }
+
+    SET_VECTOR_ELT(list, 0, DoublePtrToRVector(v1ptr, 3));
+    SET_VECTOR_ELT(list, 1, IntPtrToRVector(v2ptr, 4));
+    SET_VECTOR_ELT(list, 2, CharPtrToRVector(v3ptr, 5));
+
+    UNPROTECT(1);
+
+    return list;
 }

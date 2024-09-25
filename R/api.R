@@ -40,3 +40,12 @@ RC_MatrixAdd <- function(x, y) {
   y_new <- matrix(as.numeric(y), nrow = dim(y)[1], ncol = dim(y)[2])
   .Call("R_MatrixAdd", x_new, y_new)
 }
+
+#' return a list to R
+#' @useDynLib Rforce, .registration=TRUE
+#' @export
+#' @return A list
+#' 
+RC_ReturnList <- function() {
+  .Call("R_ListOfVectors")
+}

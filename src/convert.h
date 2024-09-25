@@ -26,3 +26,6 @@ SEXP DoublePtrToRVector(double *vector, int length);
 
 // Convert int* to R vector
 SEXP IntPtrToRVector(int *vector, int length);
+
+// Convert char** to R vector
+SEXP CharPtrToRVector(char **vector, int length);

@@ -9,12 +9,14 @@ extern SEXP R_Cummax(SEXP x);
 extern SEXP R_ColsPermute(SEXP x, SEXP colsToPermute, SEXP seed);
 extern SEXP R_Sum(SEXP x, SEXP nthreads);
 extern SEXP R_MatrixAdd(SEXP x, SEXP y);
+extern SEXP R_ListOfVectors();
 
 static const R_CallMethodDef CallEntries[] = {
   {"R_Cummax", (DL_FUNC) &R_Cummax, 1},
   {"R_ColsPermute", (DL_FUNC) &R_ColsPermute, 3},
   {"R_Sum", (DL_FUNC) &R_Sum, 2},
   {"R_MatrixAdd", (DL_FUNC) &R_MatrixAdd, 2},
+  {"R_ListOfVectors", (DL_FUNC) &R_ListOfVectors, 0},
   {NULL, NULL, 0}
 };
 

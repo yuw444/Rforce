@@ -142,3 +142,16 @@ SEXP IntPtrToRVector(int *vector, int length) {
   UNPROTECT(1);
   return vec;
 }
+
+
+// convert char** to R character vector
+SEXP CharPtrToRVector(char **vector, int length) {
+  SEXP vec = PROTECT(Rf_allocVector(STRSXP, length));
+
+  for (int i = 0; i < length; i++) {
+    SET_STRING_ELT(vec, i, Rf_mkChar(vector[i]));
+  }
+
+  UNPROTECT(1);
+  return vec;
+}
