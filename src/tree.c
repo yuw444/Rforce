@@ -117,6 +117,10 @@ void GrowTree(
         free(auxiliaryFeatures);
         free(bestSplit->splitStat);
         free(bestSplit);
+        size_t *nLR = (size_t *)calloc(3, sizeof(size_t));
+        nLR[2] = nrows;
+
+        tree->sizeLR = nLR;
         return;
     }
     else
@@ -145,9 +149,10 @@ void GrowTree(
         size_t nLeft = dataSplits[0].nrows;
         size_t nRight = dataSplits[1].nrows;
 
-        size_t *nLR = (size_t *)malloc(2 * sizeof(size_t));
+        size_t *nLR = (size_t *)calloc(3, sizeof(size_t));
         nLR[0] = nLeft;
         nLR[1] = nRight;
+        nLR[2] = nrows;
 
         tree->sizeLR = nLR;
 

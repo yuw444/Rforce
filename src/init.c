@@ -10,6 +10,22 @@ extern SEXP R_ColsPermute(SEXP x, SEXP colsToPermute, SEXP seed);
 extern SEXP R_Sum(SEXP x, SEXP nthreads);
 extern SEXP R_MatrixAdd(SEXP x, SEXP y);
 extern SEXP R_ListOfVectors();
+// for function pointers, we use case switch to select the function
+extern SEXP R_Forest(
+  SEXP splitFunctionIndex, 
+  SEXP leafOutputFunctionIndex, 
+  SEXP designMatrixY, 
+  SEXP auxiliaryFeatures,
+  SEXP varIDs, 
+  SEXP unitsOfCPIU, 
+  SEXP nTrees, 
+  SEXP maxDepth, 
+  SEXP minNodeSize, 
+  SEXP minGain, 
+  SEXP mtry, 
+  SEXP nsplits, 
+  SEXP seed
+);
 
 static const R_CallMethodDef CallEntries[] = {
   {"R_Cummax", (DL_FUNC) &R_Cummax, 1},
@@ -17,6 +33,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_Sum", (DL_FUNC) &R_Sum, 2},
   {"R_MatrixAdd", (DL_FUNC) &R_MatrixAdd, 2},
   {"R_ListOfVectors", (DL_FUNC) &R_ListOfVectors, 0},
+  {"R_Forest", (DL_FUNC) &R_Forest, 13},
   {NULL, NULL, 0}
 };
 

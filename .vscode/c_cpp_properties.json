@@ -3,7 +3,8 @@
     {
       "name": "linux-gcc-x64",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/**",
+        "/hpc/apps/R/4.3.3/lib64/R/include/**"
       ],
       "compilerPath": "/hpc/apps/gcc/9.3.0/bin/gcc",
       "cStandard": "${default}",
