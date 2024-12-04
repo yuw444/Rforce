@@ -27,7 +27,7 @@ size_t CountNodes(DecisionTreeNode *root)
 void SaveTreeArray(
     DecisionTreeNode *root,
     size_t *rowIndex,
-    double ***arrayForestPtr // nodesCounts * colCounts * nTrees
+    double ***forestMatrix // nodesCounts * colCounts * nTrees
 )
 {
     if (root == NULL)
@@ -43,21 +43,21 @@ void SaveTreeArray(
         size_t ncols = 8 + root->lenOutput;
 
         // save the treeId, nodeId, flag, leftDaughter, rightDaughter, splitIndex, splitValue, splitStat, sizeLR, output
-        *arrayForestPtr[*rowIndex][0] = treeId * 1.0f;
-        *arrayForestPtr[*rowIndex][1] = nodeId * 1.0f;
-        *arrayForestPtr[*rowIndex][2] = root->flag * 1.0f;
-        *arrayForestPtr[*rowIndex][3] = root->sizeLR[2] * 1.0f;
-        *arrayForestPtr[*rowIndex][4] = leftDaughterNode * 1.0f;
-        *arrayForestPtr[*rowIndex][5] = rightDaughterNode * 1.0f;
-        *arrayForestPtr[*rowIndex][6] = root->splitIndex * 1.0f;
-        *arrayForestPtr[*rowIndex][7 ] = root->splitValue * 1.0f;
+        *forestMatrix[*rowIndex][0] = treeId * 1.0f;
+        *forestMatrix[*rowIndex][1] = nodeId * 1.0f;
+        *forestMatrix[*rowIndex][2] = root->flag * 1.0f;
+        *forestMatrix[*rowIndex][3] = root->sizeLR[2] * 1.0f;
+        *forestMatrix[*rowIndex][4] = leftDaughterNode * 1.0f;
+        *forestMatrix[*rowIndex][5] = rightDaughterNode * 1.0f;
+        *forestMatrix[*rowIndex][6] = root->splitIndex * 1.0f;
+        *forestMatrix[*rowIndex][7] = root->splitValue * 1.0f;
         for (size_t i = 0; i < root->lenOutput; i++)
         {
-            *arrayForestPtr[*rowIndex][8 + i] = root->output[i];
+            *forestMatrix[*rowIndex][8 + i] = root->output[i];
         }
         *rowIndex++;
-        SaveTreeArray(root->leftChild, *rowIndex, arrayForestPtr);
-        SaveTreeArray(root->rightChild, *rowIndex, arrayForestPtr);
+        SaveTreeArray(root->leftChild, *rowIndex, forestMatrix);
+        SaveTreeArray(root->rightChild, *rowIndex, forestMatrix);
     }
 }
 
@@ -286,18 +286,9 @@ SEXP R_Forest(
         nTrees0,
         seed0);
 
-    // return the forest to R
-
-    // bag matrix: nTrees * nrow
-    SEXP bagMatrix = IntPtrToRMatrix(forest->bagMatrix, nTrees0, nrow);
-
-    // tree_phi: nTrees * lenOutput
-    SEXP treePhi = DoublePtrToRMatrix(_treePhi, nTrees0, nUnits);
-
-    // tree 3d array: nNodes * nDynamic(treeId, nodeId, status, size, leftDaughter, rightDaughter, splitVar, splitValue, prediction(lenOutput)) * nTrees
     // rename the forest to forest0 for easy access, no need to free the memory as it is a shallow copy
     DecisionTreeNode **forest0 = forest->forest;
-    
+
     // count the number of nodes in each tree
     size_t *nNodes = (size_t *)calloc(nTrees0, sizeof(size_t));
     size_t nNodesTotal = 0;
@@ -307,9 +298,48 @@ SEXP R_Forest(
         nNodesTotal += nNodes[i];
     }
 
-    // create an R matrix to store the tree array
+    // forestMatrix: nNodesTotal * nDynamic(treeId, nodeId, status, size, leftDaughter, rightDaughter, splitVar, splitValue, prediction(lenOutput))
+    double **forestMatrix = Allocate2DArray(nNodesTotal, 8 + lenOutput);
 
+    size_t rowIndex = 0;
+    for (size_t i = 0; i < nTrees0; i++)
+    {
+        SaveTreeArray(forest0[i], &rowIndex, &forestMatrix);
+    }
+
+    // return the forest to R
+
+    // bag matrix: nTrees * nrow
+    SEXP bagMatrix = IntPtrToRMatrix(forest->bagMatrix, nTrees0, nrow);
+    // tree_phi: nTrees * lenOutput
+    SEXP treePhi = DoublePtrToRMatrix(_treePhi, nTrees0, nUnits);
+    // convert the forestMatrix to R matrix
+    SEXP forestMatrixR = DoublePtrToRMatrix(forestMatrix, nNodesTotal, 8 + lenOutput);
     // vimpStat: nVars * nTrees
-
+    SEXP vimpStat = DoublePtrToRMatrix(forest->vimpPermuted, nTrees0, nVars);
+    
     // free the memory
+    FreeSurvivalForest(forest);
+    free(nNodes);
+    Free2DArray(forestMatrix, nNodesTotal);
+
+    // return the list
+    SEXP list = PROTECT(Rf_allocVector(VECSXP, 4));
+    SET_VECTOR_ELT(list, 0, bagMatrix);
+    SET_VECTOR_ELT(list, 1, treePhi);
+    SET_VECTOR_ELT(list, 2, forestMatrixR);
+    SET_VECTOR_ELT(list, 3, vimpStat);
+    UNPROTECT(1);
+
+    // set the names
+    SEXP names = PROTECT(Rf_allocVector(STRSXP, 4));
+    SET_STRING_ELT(names, 0, Rf_mkChar("bagMatrix"));
+    SET_STRING_ELT(names, 1, Rf_mkChar("treePhi"));
+    SET_STRING_ELT(names, 2, Rf_mkChar("forestMatrix"));
+    SET_STRING_ELT(names, 3, Rf_mkChar("vimpStat"));
+    Rf_setAttrib(list, R_NamesSymbol, names);
+    UNPROTECT(1);
+
+    return list;
+
 }
