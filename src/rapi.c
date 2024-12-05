@@ -7,9 +7,9 @@
 
 enum SplitFunctionIndex
 {
-    PoissonLikelihoodIndex = 0,
-    QuasiPoissonLikelihoodIndex = 1,
-    GEERuleIndex = 2
+    QuasiPoissonLikelihoodIndex = 0,
+    GEERuleIndex = 1,
+    PoissonLikelihoodIndex = 2
 };
 
 size_t CountNodes(DecisionTreeNode *root)
@@ -198,8 +198,9 @@ SEXP R_ListOfVectors()
     return list;
 }
 
-SEXP R_Forest(
+SEXP R_Rforce(
     SEXP splitFunctionIndex,
+    SEXP interaction,
     SEXP designMatrixY,
     SEXP auxiliaryFeatures,
     SEXP varIDs,
@@ -246,11 +247,6 @@ SEXP R_Forest(
 
     switch (splitFunctionIndex0)
     {
-    case PoissonLikelihoodIndex:
-        splitFunction = PoissonLikelihood;
-        leafOutputFunction = LeafOutput;
-        lenOutput = 1;
-        break;
     case QuasiPoissonLikelihoodIndex:
         splitFunction = QuasiPoissonLikelihood;
         leafOutputFunction = LeafOutputInterval;
@@ -261,9 +257,18 @@ SEXP R_Forest(
         leafOutputFunction = LeafOutputInterval;
         lenOutput = nUnits;
         break;
+    case PoissonLikelihoodIndex:
+        splitFunction = PoissonLikelihood;
+        leafOutputFunction = LeafOutput;
+        lenOutput = 1;
+        break;
     default:
         Rf_error("Invalid splitFunctionIndex.");
     }
+
+    // whether to account for interaction in gee split rule
+    _interaction = (INTEGER(interaction)[0] == 1) ? 1: 0;
+
     // call the function
     RandomSurvivalForest *forest = RandomForest(
         splitFunction,

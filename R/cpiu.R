@@ -212,7 +212,7 @@ counts_by_interval_and_id <- function(event_times,
 #' convert the recorded event time per patient to the number of events per interval per patient
 #' @import dplyr assertthat tidyr
 #' @export
-#' @param data_to_convert: a data frame with columns of Id, X, Status, Time
+#' @param data_to_convert: a data frame with columns of Id, X, Status
 #' @param units_of_cpiu: a vector of units of CPIU
 #' @param weights_by_status: a vector of weights by status, default is c(0,1,1) for censoring (status: 0), terminal event(status: 1) and recurrent event(status: 1)
 #' @param pseudo_risk: a boolean value indicating whether to use pseudo risk time
@@ -238,7 +238,7 @@ patients_to_cpius <- function(data_to_convert,
   list_status <- sort(unique(data_to_convert$Status))
   data_to_convert$Events <- data_to_convert$Status
 
-  for (i in 1:length(list_status)) {
+  for (i in seq_along(list_status)) {
     data_to_convert$Events[data_to_convert$Status == list_status[i]] <-
       weights_by_status[i]
   }
@@ -271,7 +271,7 @@ patients_to_cpius <- function(data_to_convert,
     dplyr::group_by(Id) %>%
     dplyr::slice_tail() %>%
     dplyr::ungroup() %>%
-    dplyr::slice(rep(1:n(), each = size_cpius)) %>%
+    dplyr::slice(rep(seq_len(n()), each = size_cpius)) %>%
     dplyr::mutate(nthInterval = rep(1:size_cpius, times = n_patients))
 
   if (pseudo_risk == TRUE) {
