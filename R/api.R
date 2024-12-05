@@ -72,44 +72,44 @@ Rforce <- function(
     n_splits = NA,
     seed = 926) {
   ## Developing help function
-  data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds")
-  units_of_cpius <- diff(c(0, quantile(data$X[data$Status != 0], 1 / 4 * 1:4)))
-  table(data$Status)
+  # data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds")
+  # units_of_cpius <- diff(c(0, quantile(data$X[data$Status != 0], 1 / 4 * 1:4)))
+  # table(data$Status)
 
-  data_to_dummy <- data %>%
-    dplyr::select(-c(X, Status, Id))
+  # data_to_dummy <- data %>%
+  #   dplyr::select(-c(X, Status, Id))
 
-  lst <- sapply(data_to_dummy, function(x) {
-    if (is.factor(x)) {
-      sjmisc::to_dummy(x)[, -1]
-    } else {
-      x
-    }
-  })
+  # lst <- sapply(data_to_dummy, function(x) {
+  #   if (is.factor(x)) {
+  #     sjmisc::to_dummy(x)[, -1]
+  #   } else {
+  #     x
+  #   }
+  # })
 
-  data_to_convert <- cbind.data.frame(
-    do.call("cbind.data.frame", lst),
-    data[, c("Id", "X", "Status")]
-  )
+  # data_to_convert <- cbind.data.frame(
+  #   do.call("cbind.data.frame", lst),
+  #   data[, c("Id", "X", "Status")]
+  # )
 
-  variable_Ids <- colnames(do.call("cbind.data.frame", lst))
+  # variable_Ids <- colnames(do.call("cbind.data.frame", lst))
 
-  variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
+  # variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
 
-  unique_vars <- unique(variable_Ids)
+  # unique_vars <- unique(variable_Ids)
 
-  variable_Ids <- match(variable_Ids, unique_vars) - 1
+  # variable_Ids <- match(variable_Ids, unique_vars) - 1
   
-  lst_cpiu_wide <- patients_to_cpius(
-    data_to_convert = data,
-    units_of_cpiu = units_of_cpius,
-    weights_by_status = c(0, 1, 1, 1, 1),
-    pseudo_risk = TRUE,
-    wide_format = TRUE
-  )
+  # lst_cpiu_wide <- patients_to_cpius(
+  #   data_to_convert = data,
+  #   units_of_cpiu = units_of_cpius,
+  #   weights_by_status = c(0, 1, 1, 1, 1),
+  #   pseudo_risk = TRUE,
+  #   wide_format = TRUE
+  # )
 
-  design_matrix_Y <- lst_cpiu_wide$designMatrix_Y
-  auxiliary_features <- lst_cpiu_wide$auxiliaryFeatures
+  # design_matrix_Y <- lst_cpiu_wide$designMatrix_Y
+  # auxiliary_features <- lst_cpiu_wide$auxiliaryFeatures
 
   ## choose splitting rule
   split_rule_index <- switch(split_rule,
