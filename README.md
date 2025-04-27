@@ -123,4 +123,9 @@ Rforce predict -m output_folder/model.rforce -t test_data.csv -o prediction_resu
 - Dynamic options (`--dynamicrisk`, `--dynamicphi`) allow estimates at each split for more flexibility.
 - Parallel computation is supported via the `--threads` option.
 - GEE-based splitting with p-value adjustment is available.
+- An R API is currently actively developing which includes
+  - Classical survivial data generation
+  - Composite endpoint data generation
+  - [`Wcompo`](https://cran.r-project.org/web/packages/Wcompo/index.html) methodology realization
+  - An R interface to **Rforce**
 
