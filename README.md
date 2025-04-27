@@ -4,8 +4,22 @@ We introduce random forests for composite endpoints(**Rforce**) consisting of no
 
 ## Installation
 
-(Instructions for installation if needed, or write something like:  
-"Download the binary and add it to your PATH.")
+You can build Rforce from source using CMake.
+
+```
+git clone https://github.com/yuw444/Rforce.git
+cd Rforce
+mkdir build
+cd build
+cmake ..
+make
+```
+
+Note:
+
+Make sure you have `CMake` version 3.16.0 or higher.
+
+A `CMakeLists.txt` file is provided in the repository.
 
 ## Usage
 
