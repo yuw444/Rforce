@@ -13,7 +13,7 @@ patients_to_cpius(
 )
 }
 \arguments{
-\item{data_to_convert:}{a data frame with columns of Id, X, Status, Time}
+\item{data_to_convert:}{a data frame with columns of Id, X, Status}
 
 \item{units_of_cpiu:}{a vector of units of CPIU}
 

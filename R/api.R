@@ -55,7 +55,8 @@ RC_ReturnList <- function() {
 #' @useDynLib Rforce, .registration=TRUE
 #' @export
 #' @importFrom sjmisc to_dummy
-#' @param
+#' @param design_matrix_Y data.frame that includes design matrix and response(number of events at each CPIU)
+#' @param auxiliary_features data.frame that includes Id, X, Status, pseudo-risktime-at-duration
 #'
 
 Rforce <- function(

@@ -7,49 +7,58 @@
  */
 
 // Convert column-major matrix to row-major matrix
-void ColMajorToRowMajor(double *colMajor, double *rowMajor, int nrow, int ncol) {
-  for (int j = 0; j < ncol; j++) {
-    for (int i = 0; i < nrow; i++) {
-      rowMajor[j + ncol * i] = colMajor[i + nrow * j];  // Access in row-major order
+void ColMajorToRowMajor(double *colMajor, double *rowMajor, int nrow, int ncol)
+{
+  for (int j = 0; j < ncol; j++)
+  {
+    for (int i = 0; i < nrow; i++)
+    {
+      rowMajor[j + ncol * i] = colMajor[i + nrow * j]; // Access in row-major order
     }
   }
 }
 
 // Convert row-major matrix to column-major matrix
-void RowMajorToColMajor(double *rowMajor, double *colMajor, int nrow, int ncol) {
-  for (int j = 0; j < ncol; j++) {
-    for (int i = 0; i < nrow; i++) {
-      colMajor[i + nrow * j] = rowMajor[j + ncol * i];  // Access in column-major order
+void RowMajorToColMajor(double *rowMajor, double *colMajor, int nrow, int ncol)
+{
+  for (int j = 0; j < ncol; j++)
+  {
+    for (int i = 0; i < nrow; i++)
+    {
+      colMajor[i + nrow * j] = rowMajor[j + ncol * i]; // Access in column-major order
     }
   }
 }
 
 // Convert R matrix to double**
-double **RMatrixToDoublePtr(SEXP mat) {
-  
-  if (!Rf_isReal(mat) || !Rf_isMatrix(mat)) {
+double **RMatrixToDoublePtr(SEXP mat)
+{
+
+  if (!Rf_isReal(mat) || !Rf_isMatrix(mat))
+  {
     Rf_error("Input must be a numeric matrix.");
   }
   int nrow = Rf_nrows(mat);
   int ncol = Rf_ncols(mat);
 
   double *data = REAL(mat);
-  // PrintArrayDouble(data, nrow * ncol);
-  double *dataRow = (double *) R_alloc(nrow * ncol, sizeof(double));
-  ColMajorToRowMajor(data, dataRow, nrow, ncol);
-  // PrintArrayDouble(dataRow, nrow * ncol);
-  double **matrix = (double **) R_alloc(ncol, sizeof(double *));
-
-  for (int i = 0; i < nrow; i++) {
-    matrix[i] = &dataRow[i * ncol];
+  double **matrix = Allocate2DArray(nrow, ncol);
+  for (int i = 0; i < nrow; i++)
+  {
+    for (int j = 0; j < ncol; j++)
+    {
+      matrix[i][j] = data[i + j * nrow];
+    }
   }
 
   return matrix;
 }
 
 // Convert R matrix to int**
-int **RMatrixToIntPtr(SEXP mat) {
-  if (!Rf_isInteger(mat) || !Rf_isMatrix(mat)) {
+int **RMatrixToIntPtr(SEXP mat)
+{
+  if (!Rf_isInteger(mat) || !Rf_isMatrix(mat))
+  {
     Rf_error("Input must be an integer matrix.");
   }
 
@@ -57,26 +66,29 @@ int **RMatrixToIntPtr(SEXP mat) {
   int ncol = Rf_ncols(mat);
 
   int *data = INTEGER(mat);
-  int *dataRow = (int *) R_alloc(nrow * ncol, sizeof(int));
-  ColMajorToRowMajor((double *) data, (double *) dataRow, nrow, ncol);
-
-  int **matrix = (int **) R_alloc(ncol, sizeof(int *));
-
-  for (int j = 0; j < ncol; j++) {
-    matrix[j] = &dataRow[j * nrow];
+  int **matrix = Allocate2DArrayInt(nrow, ncol);
+  for (int i = 0; i < nrow; i++)
+  {
+    for (int j = 0; j < ncol; j++)
+    {
+      matrix[i][j] = data[i + j * nrow];
+    }
   }
 
   return matrix;
 }
 
 // Convert double** to R matrix
-SEXP DoublePtrToRMatrix(double **matrix, int nrow, int ncol) {
+SEXP DoublePtrToRMatrix(double **matrix, int nrow, int ncol)
+{
   SEXP mat = PROTECT(Rf_allocMatrix(REALSXP, nrow, ncol));
   double *data = REAL(mat);
 
-  for (int j = 0; j < ncol; j++) {
-    for (int i = 0; i < nrow; i++) {
-      data[i + nrow * j] = matrix[i][j];  // Access in column-major order
+  for (int j = 0; j < ncol; j++)
+  {
+    for (int i = 0; i < nrow; i++)
+    {
+      data[i + nrow * j] = matrix[i][j]; // Access in column-major order
     }
   }
 
@@ -85,13 +97,16 @@ SEXP DoublePtrToRMatrix(double **matrix, int nrow, int ncol) {
 }
 
 // Convert int** to R matrix
-SEXP IntPtrToRMatrix(int **matrix, int nrow, int ncol) {
+SEXP IntPtrToRMatrix(int **matrix, int nrow, int ncol)
+{
   SEXP mat = PROTECT(Rf_allocMatrix(INTSXP, nrow, ncol));
   int *data = INTEGER(mat);
 
-  for (int j = 0; j < ncol; j++) {
-    for (int i = 0; i < nrow; i++) {
-      data[i + nrow * j] = matrix[i][j];  // Access in column-major order
+  for (int j = 0; j < ncol; j++)
+  {
+    for (int i = 0; i < nrow; i++)
+    {
+      data[i + nrow * j] = matrix[i][j]; // Access in column-major order
     }
   }
 
@@ -100,8 +115,10 @@ SEXP IntPtrToRMatrix(int **matrix, int nrow, int ncol) {
 }
 
 // Convert R vector to double*
-double *RVectorToDoublePtr(SEXP vec) {
-  if (!Rf_isReal(vec)) {
+double *RVectorToDoublePtr(SEXP vec)
+{
+  if (!Rf_isReal(vec))
+  {
     Rf_error("Input must be a numeric vector.");
   }
 
@@ -109,8 +126,10 @@ double *RVectorToDoublePtr(SEXP vec) {
 }
 
 // Convert R vector to int*
-int *RVectorToIntPtr(SEXP vec) {
-  if (!Rf_isInteger(vec)) {
+int *RVectorToIntPtr(SEXP vec)
+{
+  if (!Rf_isInteger(vec))
+  {
     Rf_error("Input must be an integer vector.");
   }
 
@@ -118,11 +137,13 @@ int *RVectorToIntPtr(SEXP vec) {
 }
 
 // Convert double* to R vector
-SEXP DoublePtrToRVector(double *vector, int length) {
+SEXP DoublePtrToRVector(double *vector, int length)
+{
   SEXP vec = PROTECT(Rf_allocVector(REALSXP, length));
   double *data = REAL(vec);
 
-  for (int i = 0; i < length; i++) {
+  for (int i = 0; i < length; i++)
+  {
     data[i] = vector[i];
   }
 
@@ -131,11 +152,13 @@ SEXP DoublePtrToRVector(double *vector, int length) {
 }
 
 // Convert int* to R vector
-SEXP IntPtrToRVector(int *vector, int length) {
+SEXP IntPtrToRVector(int *vector, int length)
+{
   SEXP vec = PROTECT(Rf_allocVector(INTSXP, length));
   int *data = INTEGER(vec);
 
-  for (int i = 0; i < length; i++) {
+  for (int i = 0; i < length; i++)
+  {
     data[i] = vector[i];
   }
 
@@ -143,12 +166,13 @@ SEXP IntPtrToRVector(int *vector, int length) {
   return vec;
 }
 
-
 // convert char** to R character vector
-SEXP CharPtrToRVector(char **vector, int length) {
+SEXP CharPtrToRVector(char **vector, int length)
+{
   SEXP vec = PROTECT(Rf_allocVector(STRSXP, length));
 
-  for (int i = 0; i < length; i++) {
+  for (int i = 0; i < length; i++)
+  {
     SET_STRING_ELT(vec, i, Rf_mkChar(vector[i]));
   }
 

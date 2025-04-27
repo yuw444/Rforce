@@ -40,24 +40,23 @@ void SaveTreeArray(
         size_t nodeId = root->nodeId;
         int leftDaughterNode = root->leftChild == NULL ? -1 : root->leftChild->nodeId;
         int rightDaughterNode = root->rightChild == NULL ? -1 : root->rightChild->nodeId;
-        size_t ncols = 8 + root->lenOutput;
 
         // save the treeId, nodeId, flag, leftDaughter, rightDaughter, splitIndex, splitValue, splitStat, sizeLR, output
-        *forestMatrix[*rowIndex][0] = treeId * 1.0f;
-        *forestMatrix[*rowIndex][1] = nodeId * 1.0f;
-        *forestMatrix[*rowIndex][2] = root->flag * 1.0f;
-        *forestMatrix[*rowIndex][3] = root->sizeLR[2] * 1.0f;
-        *forestMatrix[*rowIndex][4] = leftDaughterNode * 1.0f;
-        *forestMatrix[*rowIndex][5] = rightDaughterNode * 1.0f;
-        *forestMatrix[*rowIndex][6] = root->splitIndex * 1.0f;
-        *forestMatrix[*rowIndex][7] = root->splitValue * 1.0f;
+        (*forestMatrix)[*rowIndex][0] = treeId * 1.0f;
+        (*forestMatrix)[*rowIndex][1] = nodeId * 1.0f;
+        (*forestMatrix)[*rowIndex][2] = root->flag * 1.0f;
+        (*forestMatrix)[*rowIndex][3] = root->sizeLR[2] * 1.0f;
+        (*forestMatrix)[*rowIndex][4] = leftDaughterNode * 1.0f;
+        (*forestMatrix)[*rowIndex][5] = rightDaughterNode * 1.0f;
+        (*forestMatrix)[*rowIndex][6] = root->splitIndex * 1.0f;
+        (*forestMatrix)[*rowIndex][7] = root->splitValue * 1.0f;
         for (size_t i = 0; i < root->lenOutput; i++)
         {
-            *forestMatrix[*rowIndex][8 + i] = root->output[i];
+            (*forestMatrix)[*rowIndex][8 + i] = root->output[i];
         }
-        *rowIndex++;
-        SaveTreeArray(root->leftChild, *rowIndex, forestMatrix);
-        SaveTreeArray(root->rightChild, *rowIndex, forestMatrix);
+        (*rowIndex)++;
+        SaveTreeArray(root->leftChild, rowIndex, forestMatrix);
+        SaveTreeArray(root->rightChild, rowIndex, forestMatrix);
     }
 }
 
@@ -245,22 +244,38 @@ SEXP R_Rforce(
     fpLeafOutput leafOutputFunction = NULL;
     size_t lenOutput = 0;
 
+    // initiate the phi array
+    _treePhi = Allocate2DArray(nTrees0, nUnits);
+
     switch (splitFunctionIndex0)
     {
     case QuasiPoissonLikelihoodIndex:
         splitFunction = QuasiPoissonLikelihood;
         leafOutputFunction = LeafOutputInterval;
         lenOutput = nUnits;
+        _pseudoRisk2 = 1L;
+        _phi2 = 1L; 
+        _longformat = 0L;
+        _gee = 0L;
         break;
     case GEERuleIndex:
         splitFunction = GEERule;
         leafOutputFunction = LeafOutputInterval;
         lenOutput = nUnits;
+        _pseudoRisk2 = 1L;
+        _phi2 = 1L;
+        _longformat = 0L;
+        _gee = 1L;
+        _padjust = "BH";
+        _Rin = NULL;
         break;
     case PoissonLikelihoodIndex:
         splitFunction = PoissonLikelihood;
         leafOutputFunction = LeafOutput;
-        lenOutput = 1;
+        lenOutput = 1L;
+        _noPseudo = 1L;
+        _longformat = 1L;
+        _gee = 0L;
         break;
     default:
         Rf_error("Invalid splitFunctionIndex.");
@@ -268,6 +283,7 @@ SEXP R_Rforce(
 
     // whether to account for interaction in gee split rule
     _interaction = (INTEGER(interaction)[0] == 1) ? 1: 0;
+    ncolsDesign = ncolsDesign - lenOutput;
 
     // call the function
     RandomSurvivalForest *forest = RandomForest(

@@ -9,7 +9,7 @@
 # PKG_CPPFLAGS = -I$(LIB_GSL)/include -I$(LIB_OMP)/include
 # PKG_CFLAGS = -I$(LIB_GSL)/include -I$(LIB_OMP)/include $(SHLIB_OPENMP_CFLAGS)
 PKG_CPPFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(LIB_GSL)/include
-PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(LIB_GSL)/include
+PKG_CFLAGS = $(SHLIB_OPENMP_CFLAGS) -I$(LIB_GSL)/include -g -O0
 
 
 # Linker flags to link with GSL and OpenMP libraries

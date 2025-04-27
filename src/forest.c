@@ -1,4 +1,5 @@
 #include "forest.h"
+#include <R.h>
 
 int _nPerms = 10;
 
