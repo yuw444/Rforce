@@ -48,7 +48,7 @@ Rforce train <options>
 **Options:**
 
 | Option | Description | Required/Optional | Default |
-|:------|:------------|:------------------|:--------|
+|:-----------------------------|:------------|:------------------|:--------|
 | `-d, --designMatrixY=<str>` | Path to design matrix | **Required** | |
 | `-a, --auxiliary=<str>` | Path to auxiliary features | **Required** | |
 | `-u, --unitsOfCPIU=<str>` | Path to unitsOfCPIU file | **Required** | |
@@ -94,7 +94,7 @@ Rforce predict <options>
 **Options:**
 
 | Option | Description | Required/Optional | Default |
-|:------|:------------|:------------------|:--------|
+|:-------------------|:------------|:------------------|:--------|
 | `-m, --model=<str>` | Path to trained model | **Required** | |
 | `-t, --test=<str>` | Path to test data | **Required** | |
 | `-o, --out=<str>` | Path to output directory | Optional | Current working directory |
