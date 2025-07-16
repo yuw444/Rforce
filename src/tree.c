@@ -75,6 +75,10 @@ void GrowTree(
         tree->lenOutput = lenOutput;
         free(designMatrixY);
         free(auxiliaryFeatures);
+        size_t *nLR = (size_t *)calloc(3, sizeof(size_t));
+        nLR[2] = nrows;
+
+        tree->sizeLR = nLR;
         return;
     }
 
@@ -308,7 +312,7 @@ DecisionTreeNode *Tree(
     else
     {
         /**************recalculate pseudo-risk time for each tree*********************/
-        printf("Default: recalculate pseudo-risk time for tree %ld...\n", treeId);
+        // printf("Default: recalculate pseudo-risk time for tree %ld...\n", treeId);
         // no pseudo risk time and population level pseudo risk time are handled by the user input
         // pseudo risk time at split is handled in split.c
         // pseudo risk time at tree-level is handled in current else condition

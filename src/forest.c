@@ -96,7 +96,7 @@ RandomSurvivalForest *RandomForest(
     // phi is calculated for each tree
     if (_noPhi == 0 && _phi1 == 0 && _phi2 == 1 && _dynamicPhi == 0 && _longformat == 0)
     {
-        printf("Calculating phi for each tree\n\n");
+        // printf("Calculating phi for each tree\n\n");
 #pragma omp parallel for
         for (long i = 0; i < nTrees; i++)
         {
@@ -105,7 +105,7 @@ RandomSurvivalForest *RandomForest(
                                                               nrow,
                                                               bootMatrix[i]);
 
-            printf("Default: Calculating phi for each tree\n\n");
+            // printf("Default: Calculating phi for each tree\n\n");
             double *globalLambda = (double *)calloc(lenOutput, sizeof(double));
             double *globalYs = (double *)calloc(lenOutput, sizeof(double));
             double *globalRts = (double *)calloc(lenOutput, sizeof(double));
@@ -317,12 +317,12 @@ RandomSurvivalForest *RandomForest(
     Free2DArray(oobPredictedNEvents, nrow);
     Free2DArray(inbagPredictedNEvents, nrow);
 
-    printf("\n\n##############################\n\n");
-    printf("VimpFreq: \n");
-    PrintArrayDouble(vimpFreq, ncolsDesign);
-    printf("VimpStat: \n");
-    PrintArrayDouble(vimpStat, ncolsDesign);
-    printf("oobMSE: %.5f, inbagMSE: %0.5f\n", oobMSE, inbagMSE);
+    // printf("\n\n##############################\n\n");
+    // printf("VimpFreq: \n");
+    // PrintArrayDouble(vimpFreq, ncolsDesign);
+    // printf("VimpStat: \n");
+    // PrintArrayDouble(vimpStat, ncolsDesign);
+    // printf("oobMSE: %.5f, inbagMSE: %0.5f\n", oobMSE, inbagMSE);
 
     RandomSurvivalForest *out = malloc(sizeof(RandomSurvivalForest));
 

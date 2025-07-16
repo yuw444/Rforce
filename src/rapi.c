@@ -244,7 +244,12 @@ SEXP R_Rforce(
     fpLeafOutput leafOutputFunction = NULL;
     size_t lenOutput = 0;
 
-    // initiate the phi array
+    /* **********************
+    initiate the phi array
+    _treePhi is a 2D array of size nTrees * nUnits, a global variable split.h::34
+    it is updated automatically in forest.c
+    has to be allocated before calling the RandomForest function
+    **************************/ 
     _treePhi = Allocate2DArray(nTrees0, nUnits);
 
     switch (splitFunctionIndex0)
@@ -338,6 +343,11 @@ SEXP R_Rforce(
     SEXP forestMatrixR = DoublePtrToRMatrix(forestMatrix, nNodesTotal, 8 + lenOutput);
     // vimpStat: nVars * nTrees
     SEXP vimpStat = DoublePtrToRMatrix(forest->vimpPermuted, nTrees0, nVars);
+    // predicted: nrow * lenOutput
+    SEXP predicted = DoublePtrToRMatrix(forest->predicted, nrow, lenOutput);
+    // oobPredicted: nrow * lenOutput
+    SEXP oobPredicted = DoublePtrToRMatrix(forest->oobPredicted, nrow, lenOutput);
+    // likelihoodsum: 1 * nTrees
     
     // free the memory
     FreeSurvivalForest(forest);
@@ -345,19 +355,23 @@ SEXP R_Rforce(
     Free2DArray(forestMatrix, nNodesTotal);
 
     // return the list
-    SEXP list = PROTECT(Rf_allocVector(VECSXP, 4));
+    SEXP list = PROTECT(Rf_allocVector(VECSXP, 6));
     SET_VECTOR_ELT(list, 0, bagMatrix);
     SET_VECTOR_ELT(list, 1, treePhi);
     SET_VECTOR_ELT(list, 2, forestMatrixR);
     SET_VECTOR_ELT(list, 3, vimpStat);
+    SET_VECTOR_ELT(list, 4, predicted);
+    SET_VECTOR_ELT(list, 5, oobPredicted);
     UNPROTECT(1);
 
     // set the names
-    SEXP names = PROTECT(Rf_allocVector(STRSXP, 4));
+    SEXP names = PROTECT(Rf_allocVector(STRSXP, 6));
     SET_STRING_ELT(names, 0, Rf_mkChar("bagMatrix"));
     SET_STRING_ELT(names, 1, Rf_mkChar("treePhi"));
     SET_STRING_ELT(names, 2, Rf_mkChar("forestMatrix"));
     SET_STRING_ELT(names, 3, Rf_mkChar("vimpStat"));
+    SET_STRING_ELT(names, 4, Rf_mkChar("predicted"));
+    SET_STRING_ELT(names, 5, Rf_mkChar("oobPredicted"));
     Rf_setAttrib(list, R_NamesSymbol, names);
     UNPROTECT(1);
 

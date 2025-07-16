@@ -51,7 +51,7 @@
     variable_Ids = variable_Ids,
     units_of_cpius = units_of_cpius,
     split_rule = "Rforce-QLR",
-    n_trees = 4,
+    n_trees = 100,
     mtry = 3,
     n_splits = 2,
     seed = 926
