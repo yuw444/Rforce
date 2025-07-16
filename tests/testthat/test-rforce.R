@@ -1,5 +1,7 @@
 # test_that("rforce works", {
   # Developing help function
+  library(devtools)
+  document()
   library(dplyr)
   library(sjmisc)
   library(Rforce)
@@ -51,11 +53,11 @@
     variable_Ids = variable_Ids,
     units_of_cpius = units_of_cpius,
     split_rule = "Rforce-QLR",
-    n_trees = 100,
+    n_trees = 10,
     mtry = 3,
     n_splits = 2,
     seed = 926
   )
 
-  predict.Rforce(temp$`_external_forest_C_Ptr`, design_matrix_Y[1:2, ])
+  predict(temp, design_matrix_Y[1:2, ])
 # 

@@ -72,47 +72,6 @@ Rforce <- function(
     mtry = NA,
     n_splits = NA,
     seed = 926) {
-      
-  ## Developing help function
-  # data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds")
-  # units_of_cpius <- diff(c(0, quantile(data$X[data$Status != 0], 1 / 4 * 1:4)))
-  # table(data$Status)
-
-  # data_to_dummy <- data %>%
-  #   dplyr::select(-c(X, Status, Id))
-
-  # lst <- sapply(data_to_dummy, function(x) {
-  #   if (is.factor(x)) {
-  #     sjmisc::to_dummy(x)[, -1]
-  #   } else {
-  #     x
-  #   }
-  # })
-
-  # data_to_convert <- cbind.data.frame(
-  #   do.call("cbind.data.frame", lst),
-  #   data[, c("Id", "X", "Status")]
-  # )
-
-  # variable_Ids <- colnames(do.call("cbind.data.frame", lst))
-
-  # variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
-
-  # unique_vars <- unique(variable_Ids)
-
-  # variable_Ids <- match(variable_Ids, unique_vars) - 1
-  
-  # lst_cpiu_wide <- patients_to_cpius(
-  #   data_to_convert = data,
-  #   units_of_cpiu = units_of_cpius,
-  #   weights_by_status = c(0, 1, 1, 1, 1),
-  #   pseudo_risk = TRUE,
-  #   wide_format = TRUE
-  # )
-
-  # design_matrix_Y <- lst_cpiu_wide$designMatrix_Y
-  # auxiliary_features <- lst_cpiu_wide$auxiliaryFeatures
-
   ## choose splitting rule
   split_rule_index <- switch(split_rule,
     "Rforce-QLR" = 0,
@@ -131,7 +90,7 @@ Rforce <- function(
     0
   )
 
-  .Call(
+  temp_C_return <- .Call(
     "R_Rforce",
     as.integer(split_rule_index),
     as.integer(gee_interaction),
@@ -148,28 +107,56 @@ Rforce <- function(
     as.integer(seed)
   )
 
+  # Extract struct values from the returned list
+  rforce_obj <- list(
+    bagMatrix = temp_C_return[["bagMatrix"]],
+    treePhi = temp_C_return[["treePhi"]],
+    forestMatrix = temp_C_return[["forestMatrix"]],
+    vimpStat = temp_C_return[["vimpStat"]],
+    predicted = temp_C_return[["predicted"]],
+    oobPredicted = temp_C_return[["oobPredicted"]],
+    # You can add more fields here if your C code returns them
+    nrowsDesign = nrow(design_matrix_Y),
+    ncolsDesign = ncol(design_matrix_Y),
+    varIDs = variable_Ids,
+    nVars = length(unique(variable_Ids)),
+    nTrees = n_trees,
+    unitsOfCPIU = units_of_cpius,
+    nUnits = length(units_of_cpius),
+    lenOutput = ncol(temp_C_return[["predicted"]]),
+    maxDepth = max_depth,
+    minNodeSize = min_node_size,
+    minGain = min_gain,
+    mtry = mtry,
+    nsplits = n_splits,
+    seed = seed,
+    `_external_forest_C_Ptr` = temp_C_return[["_external_forest_C_Ptr"]]
+  )
+
+  class(rforce_obj) <- "Rforce"
+  return(rforce_obj)
 }
 
 
 #' Predict function for Rforce
 #' @useDynLib Rforce, .registration=TRUE
 #' @export
-#' @param forest An external pointer to the forest object created by Rforce
+#' @param forest An Rforce forest object
 #' @param designMatrix A matrix of design features for prediction
 #' @return A list containing the predicted values
 #'
 predict.Rforce <- function(forest, designMatrix) {
-  if (!inherits(forest, "externalptr")) {
-    stop("forestPtr must be an external pointer to a forest object created by Rforce.")
-  }   
-  
+  if (!inherits(forest, "Rforce")) {
+    stop("forest must be an Rforce object.")
+  }
+
   if (!is.data.frame(designMatrix) && !is.matrix(designMatrix)) {
     stop("designMatrix must be a data frame or matrix.")
   }
 
   .Call(
     "R_ForestPredict",
-    forest,
+    forest$`_external_forest_C_Ptr`,
     as.matrix(designMatrix)
   )
 }

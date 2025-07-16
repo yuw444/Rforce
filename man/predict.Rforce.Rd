@@ -7,7 +7,7 @@
 \method{predict}{Rforce}(forest, designMatrix)
 }
 \arguments{
-\item{forest}{An external pointer to the forest object created by Rforce}
+\item{forest}{An Rforce forest object}
 
 \item{designMatrix}{A matrix of design features for prediction}
 }
