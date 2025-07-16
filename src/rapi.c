@@ -334,7 +334,9 @@ SEXP R_Rforce(
     }
 
     // return the forest to R
-
+    // create an external pointer to the forest
+    SEXP forestPtr = R_MakeExternalPtr(forest, R_NilValue, R_NilValue);
+    R_RegisterCFinalizerEx(forestPtr, (R_CFinalizer_t)FreeSurvivalForest, TRUE);
     // bag matrix: nTrees * nrow
     SEXP bagMatrix = IntPtrToRMatrix(forest->bagMatrix, nTrees0, nrow);
     // tree_phi: nTrees * lenOutput
@@ -350,31 +352,62 @@ SEXP R_Rforce(
     // likelihoodsum: 1 * nTrees
     
     // free the memory
-    FreeSurvivalForest(forest);
+    // FreeSurvivalForest(forest);
     free(nNodes);
     Free2DArray(forestMatrix, nNodesTotal);
 
     // return the list
-    SEXP list = PROTECT(Rf_allocVector(VECSXP, 6));
+    SEXP list = PROTECT(Rf_allocVector(VECSXP, 7));
     SET_VECTOR_ELT(list, 0, bagMatrix);
     SET_VECTOR_ELT(list, 1, treePhi);
     SET_VECTOR_ELT(list, 2, forestMatrixR);
     SET_VECTOR_ELT(list, 3, vimpStat);
     SET_VECTOR_ELT(list, 4, predicted);
     SET_VECTOR_ELT(list, 5, oobPredicted);
+    SET_VECTOR_ELT(list, 6, forestPtr); // Add as last element
     UNPROTECT(1);
 
     // set the names
-    SEXP names = PROTECT(Rf_allocVector(STRSXP, 6));
+    SEXP names = PROTECT(Rf_allocVector(STRSXP, 7));
     SET_STRING_ELT(names, 0, Rf_mkChar("bagMatrix"));
     SET_STRING_ELT(names, 1, Rf_mkChar("treePhi"));
     SET_STRING_ELT(names, 2, Rf_mkChar("forestMatrix"));
     SET_STRING_ELT(names, 3, Rf_mkChar("vimpStat"));
     SET_STRING_ELT(names, 4, Rf_mkChar("predicted"));
     SET_STRING_ELT(names, 5, Rf_mkChar("oobPredicted"));
+    SET_STRING_ELT(names, 6, Rf_mkChar("_external_forest_C_Ptr")); // Add name for the forest pointer
     Rf_setAttrib(list, R_NamesSymbol, names);
     UNPROTECT(1);
 
     return list;
 
+}
+
+
+SEXP R_ForestPredict(
+    SEXP forestPtr,
+    SEXP designMatrix)
+{
+    // convert the forest pointer to C pointer
+    RandomSurvivalForest *forest = (RandomSurvivalForest *)R_ExternalPtrAddr(forestPtr);
+    if (forest == NULL)
+    {
+        Rf_error("Invalid forest pointer.");
+    }
+
+    double **designMatrix0 = RMatrixToDoublePtr(designMatrix);
+    size_t nrowsDesign = Rf_nrows(designMatrix);
+
+    // call the ForestPredict function
+    double **predicted = ForestPredict(
+        forest->forest,
+        forest->nTrees,
+        designMatrix0,
+        nrowsDesign,
+        forest->lenOutput);
+
+    // convert the predicted to R matrix
+    SEXP predictedR = DoublePtrToRMatrix(predicted, nrowsDesign, forest->lenOutput);
+
+    return predictedR;
 }

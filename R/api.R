@@ -149,3 +149,27 @@ Rforce <- function(
   )
 
 }
+
+
+#' Predict function for Rforce
+#' @useDynLib Rforce, .registration=TRUE
+#' @export
+#' @param forest An external pointer to the forest object created by Rforce
+#' @param designMatrix A matrix of design features for prediction
+#' @return A list containing the predicted values
+#'
+predict.Rforce <- function(forest, designMatrix) {
+  if (!inherits(forest, "externalptr")) {
+    stop("forestPtr must be an external pointer to a forest object created by Rforce.")
+  }   
+  
+  if (!is.data.frame(designMatrix) && !is.matrix(designMatrix)) {
+    stop("designMatrix must be a data frame or matrix.")
+  }
+
+  .Call(
+    "R_ForestPredict",
+    forest,
+    as.matrix(designMatrix)
+  )
+}

@@ -57,4 +57,5 @@
     seed = 926
   )
 
-# })
+  predict.Rforce(temp$`_external_forest_C_Ptr`, design_matrix_Y[1:2, ])
+# 

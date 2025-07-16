@@ -25,6 +25,8 @@ extern SEXP R_Rforce(
     SEXP nsplits,
     SEXP seed);
 
+extern SEXP R_ForestPredict(SEXP forestPtr, SEXP designMatrix);
+
 static const R_CallMethodDef CallEntries[] = {
   {"R_Cummax", (DL_FUNC) &R_Cummax, 1},
   {"R_ColsPermute", (DL_FUNC) &R_ColsPermute, 3},
@@ -32,6 +34,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"R_MatrixAdd", (DL_FUNC) &R_MatrixAdd, 2},
   {"R_ListOfVectors", (DL_FUNC) &R_ListOfVectors, 0},
   {"R_Rforce", (DL_FUNC) &R_Rforce, 13},
+  {"R_ForestPredict", (DL_FUNC) &R_ForestPredict, 2},
   {NULL, NULL, 0}
 };
 
