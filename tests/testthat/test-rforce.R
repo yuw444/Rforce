@@ -52,7 +52,7 @@
     auxiliary_features = auxiliary_features,
     variable_Ids = variable_Ids,
     units_of_cpius = units_of_cpius,
-    split_rule = "Rforce-QLR",
+    split_rule = "RF-SLAM",
     n_trees = 10,
     mtry = 3,
     n_splits = 2,

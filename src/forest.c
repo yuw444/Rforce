@@ -40,7 +40,7 @@ RandomSurvivalForest *RandomForest(
         // ignore the phi, phi = 1 all time
         if (_noPhi == 1 && _phi1 == 0 && _phi2 == 0 && _dynamicPhi == 0)
         {
-            printf("Using phi = 1 for all splits in every tree\n\n");
+            // printf("Using phi = 1 for all splits in every tree\n\n");
             for (int i = 0; i < lenOutput; i++)
             {
                 for (int j = 0; j < nTrees; j++)
@@ -53,7 +53,7 @@ RandomSurvivalForest *RandomForest(
         // phi is calculated for the population
         if (_noPhi == 0 && _phi1 == 1 && _phi2 == 0 && _dynamicPhi == 0)
         {
-            printf("Calculating phi once for the population\n\n");
+            // printf("Calculating phi once for the population\n\n");
             double *globalLambda = (double *)calloc(lenOutput, sizeof(double));
             double *globalYs = (double *)calloc(lenOutput, sizeof(double));
             double *globalRts = (double *)calloc(lenOutput, sizeof(double));
@@ -533,7 +533,7 @@ void SaveForest(DecisionTreeNode **forest,
     {
         if (mkdir(outputFolderTree, 0777) == -1)
         {
-            printf("Could not create folder %s!\n", outputFolderTree);
+            printf("Error: Could not create folder %s!\n", outputFolderTree);
             exit(1);
         }
     }
@@ -542,7 +542,7 @@ void SaveForest(DecisionTreeNode **forest,
     {
         if (mkdir(outputFolderDot, 0777) == -1)
         {
-            printf("Could not create folder %s!\n", outputFolderDot);
+            printf("Error: Could not create folder %s!\n", outputFolderDot);
             exit(1);
         }
     }
@@ -687,7 +687,7 @@ DecisionTreeNode **LoadForest(char *path,
 {
     if (access(path, F_OK) == -1)
     {
-        printf("Input folder %s does not exist!\n", path);
+        printf("Error: Input folder %s does not exist!\n", path);
         return 0;
     }
 
@@ -720,7 +720,7 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
 
     if (fileParameters == NULL)
     {
-        printf("Cannot open file %s\n", pathParameters);
+        printf("Error: Cannot open file %s\n", pathParameters);
         return NULL;
     }
 
@@ -836,7 +836,7 @@ void PrintForestPaths(RandomSurvivalForest *forest, FILE *file)
 {
     if (forest == NULL)
     {
-        printf("Forest is NULL!\n");
+        printf("Error: Forest is NULL!\n");
         return;
     }
 

@@ -274,7 +274,7 @@ DecisionTreeNode *Tree(
 
     if (_noPseudo == 1 || _pseudoRisk1 == 1 || _longformat == 1)
     {
-        printf("Keep the input risk time for tree %ld...\n", treeId);
+        // printf("Keep the input risk time for tree %ld...\n", treeId);
         /****************************Use the global pseudo-risk time as-is****************/
         // no pseudo risk time and population level pseudo risk time are handled by the user input
         // pseudo risk time at split is handled in split.c
