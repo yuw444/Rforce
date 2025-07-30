@@ -97,6 +97,7 @@ Rforce <- function(
     matrix(as.numeric(design_matrix_Y), nrow = dim(design_matrix_Y)[1], ncol = dim(design_matrix_Y)[2]),
     matrix(as.numeric(auxiliary_features), nrow = dim(auxiliary_features)[1], ncol = dim(auxiliary_features)[2]),
     as.integer(variable_Ids),
+    as.integer(length(unique(variable_Ids))),
     as.numeric(units_of_cpius),
     as.integer(n_trees),
     as.integer(max_depth),

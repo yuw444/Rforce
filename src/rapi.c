@@ -203,6 +203,7 @@ SEXP R_Rforce(
     SEXP designMatrixY,
     SEXP auxiliaryFeatures,
     SEXP varIDs,
+    SEXP nUniqueVars,
     SEXP unitsOfCPIU,
     SEXP nTrees,
     SEXP maxDepth,
@@ -235,6 +236,7 @@ SEXP R_Rforce(
     size_t mtry0 = (size_t)INTEGER(mtry)[0];
     size_t nsplits0 = (size_t)INTEGER(nsplits)[0];
     size_t nTrees0 = (size_t)INTEGER(nTrees)[0];
+    size_t nUniqueVars0 = (size_t)INTEGER(nUniqueVars)[0];
     unsigned int seed0 = (unsigned int)INTEGER(seed)[0];
 
     // convert SEXP to C types, use case switch to select the function pointers later
@@ -344,7 +346,7 @@ SEXP R_Rforce(
     // convert the forestMatrix to R matrix
     SEXP forestMatrixR = DoublePtrToRMatrix(forestMatrix, nNodesTotal, 8 + lenOutput);
     // vimpStat: nVars * nTrees
-    SEXP vimpStat = DoublePtrToRMatrix(forest->vimpPermuted, nTrees0, nVars);
+    SEXP vimpStat = DoublePtrToRMatrix(forest->vimpPermuted, nTrees0, nUniqueVars0);
     // predicted: nrow * lenOutput
     SEXP predicted = DoublePtrToRMatrix(forest->predicted, nrow, lenOutput);
     // oobPredicted: nrow * lenOutput

@@ -60,7 +60,7 @@
   )
 
   predict(temp, design_matrix_Y[1:2, ])
-
+  str(temp)
   saveRforce(temp, "./output/")
 # 
   temp2 <- loadRforce("./output/")
