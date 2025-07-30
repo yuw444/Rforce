@@ -568,7 +568,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
                         char *path)
 {
     // save forest
-    printf("seed is %u\n", forest->seed);
+    // printf("seed is %u\n", forest->seed);
     char *pathForest = malloc(1024 * sizeof(char));
     sprintf(pathForest, "%s/%s_tree%zu_depth%zu_mtry%zu_Gain%.3f_nsplits%zu_nodesize%zu_seed%d",
             path,
@@ -583,7 +583,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
 
     MkdirRecursive(pathForest);
 
-    printf("Saving forest to %s\n", pathForest);
+    // printf("Saving forest to %s\n", pathForest);
 
     SaveForest(forest->forest, forest->nTrees, forest->lenOutput, pathForest);
 
@@ -724,9 +724,9 @@ RandomSurvivalForest *LoadSurvivalForest(char *path)
         return NULL;
     }
 
-    printf("Loading forest parameters from %s\n", pathParameters);
+    // printf("Loading forest parameters from %s\n", pathParameters);
     fscanf(fileParameters, "%zu,%zu,%zu,%zu\n", &forest->nrowsDesign, &forest->ncolsDesign, &forest->nVars, &forest->nTrees);
-    printf("nrowsDesign: %ld, ncolsDesign: %ld, nVars: %ld, nTrees: %ld\n", forest->nrowsDesign, forest->ncolsDesign, forest->nVars, forest->nTrees);
+    // printf("nrowsDesign: %ld, ncolsDesign: %ld, nVars: %ld, nTrees: %ld\n", forest->nrowsDesign, forest->ncolsDesign, forest->nVars, forest->nTrees);
 
     int hasUnitsOfCPIU;
     fscanf(fileParameters, "%d,%zu,", &hasUnitsOfCPIU, &forest->nUnits);

@@ -380,7 +380,6 @@ SEXP R_Rforce(
     UNPROTECT(1);
 
     return list;
-
 }
 
 
@@ -410,4 +409,30 @@ SEXP R_ForestPredict(
     SEXP predictedR = DoublePtrToRMatrix(predicted, nrowsDesign, forest->lenOutput);
 
     return predictedR;
+}
+
+
+SEXP R_SaveRforce(
+    SEXP forestPtr,
+    SEXP path)
+{
+    SaveSurvivalForest(
+        (RandomSurvivalForest *)R_ExternalPtrAddr(forestPtr),
+        CHAR(STRING_ELT(path, 0))
+    );
+
+    return R_NilValue;
+}
+
+
+SEXP R_LoadRforce(
+    SEXP path)
+{
+    RandomSurvivalForest *forest = LoadSurvivalForest(CHAR(STRING_ELT(path, 0)));
+
+    // create an external pointer to the forest
+    SEXP forestPtr = R_MakeExternalPtr(forest, R_NilValue, R_NilValue);
+    R_RegisterCFinalizerEx(forestPtr, (R_CFinalizer_t)FreeSurvivalForest, TRUE);
+
+    return forestPtr;
 }
