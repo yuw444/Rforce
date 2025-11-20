@@ -1458,15 +1458,13 @@ SplitPoints *FindBestSplit(
   {
     int varIndex = varIndexSample[i];
     double *varValues = GetCol(designMatrixY, nrows, ncolsDesign, varIndex);
-    ElementStruct *varValuesNaRemoved = RemoveNA(varValues, nrows);
+    // ElementStruct *varValuesNaRemoved = RemoveNA(varValues, nrows);
     splitsOfmtry[i] = SplitCandidates(
-        varValuesNaRemoved->Elements,
-        varValuesNaRemoved->nElements,
+        varValues,
+        nrows,
         nsplits);
     maxSplits += splitsOfmtry[i]->nElements;
     free(varValues);
-    free(varValuesNaRemoved->Elements);
-    free(varValuesNaRemoved);
   }
 
   double *pValues = (double *)calloc(maxSplits, sizeof(double));

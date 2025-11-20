@@ -12,6 +12,8 @@ enum SplitFunctionIndex
     PoissonLikelihoodIndex = 2
 };
 
+
+
 size_t CountNodes(DecisionTreeNode *root)
 {
     if (root == NULL)
@@ -337,7 +339,7 @@ SEXP R_Rforce(
 
     // return the forest to R
     // create an external pointer to the forest
-    SEXP forestPtr = R_MakeExternalPtr(forest, R_NilValue, R_NilValue);
+    SEXP forestPtr = PROTECT(R_MakeExternalPtr(forest, R_NilValue, R_NilValue));
     R_RegisterCFinalizerEx(forestPtr, (R_CFinalizer_t)FreeSurvivalForest, TRUE);
     // bag matrix: nTrees * nrow
     SEXP bagMatrix = IntPtrToRMatrix(forest->bagMatrix, nTrees0, nrow);
@@ -367,7 +369,6 @@ SEXP R_Rforce(
     SET_VECTOR_ELT(list, 4, predicted);
     SET_VECTOR_ELT(list, 5, oobPredicted);
     SET_VECTOR_ELT(list, 6, forestPtr); // Add as last element
-    UNPROTECT(1);
 
     // set the names
     SEXP names = PROTECT(Rf_allocVector(STRSXP, 7));
@@ -379,7 +380,7 @@ SEXP R_Rforce(
     SET_STRING_ELT(names, 5, Rf_mkChar("oobPredicted"));
     SET_STRING_ELT(names, 6, Rf_mkChar("_external_forest_C_Ptr")); // Add name for the forest pointer
     Rf_setAttrib(list, R_NamesSymbol, names);
-    UNPROTECT(1);
+    UNPROTECT(3);
 
     return list;
 }

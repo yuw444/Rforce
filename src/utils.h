@@ -67,7 +67,7 @@ int vsD(const void *a, const void *b);
 // used for qsort
 int vsI(const void *a, const void *b);
 
-// get unique elements and length of a double array with n elements
+// get unique elements and length of a double array with n elements, excluding NA
 ElementStruct *Unique(double *arrayIn, size_t n);
 
 // get transpose of a double array with nrows and ncols

@@ -49,6 +49,8 @@ double **RMatrixToDoublePtr(SEXP mat)
     {
       matrix[i][j] = ISNA(data[i + j * nrow]) ? NA_DOUBLE : data[i + j * nrow];
     }
+    // if(i < 5)
+    //   PrintArrayDouble(matrix[i], ncol);
   }
 
   return matrix;

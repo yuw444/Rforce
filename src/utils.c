@@ -25,7 +25,10 @@ void PrintArrayDouble(double *array, size_t n)
   }
   for (int i = 0; i < n; i++)
   {
-    printf("%.3f ", array[i]);
+    if (isnan(array[i]))
+      printf("NA ");
+    else
+      printf("%.3f ", array[i]);
   }
   printf("\n");
 }
@@ -336,7 +339,7 @@ ElementStruct *RemoveNA(double *arrayIn, size_t n)
   size_t j = 0;
   for (size_t i = 0; i < n; i++)
   {
-    if (isnan(arrayIn[i]))
+    if (!isnan(arrayIn[i]))
     {
       arrayOut[j++] = arrayIn[i];
     }
@@ -365,28 +368,28 @@ int vsI(const void *a, const void *b)
 
 ElementStruct *Unique(double *arrayIn, size_t n)
 {
-  double *arrayInCopy = calloc(n, sizeof(double));
-  double *uniqueElements = calloc(n, sizeof(double));
-  if (arrayInCopy == NULL || uniqueElements == NULL)
+  // in case NA is present, safely remove them first
+  ElementStruct *naRemoved = RemoveNA(arrayIn, n);
+  // PrintArrayDouble(naRemoved->Elements, naRemoved->nElements);
+
+  qsort(naRemoved->Elements, naRemoved->nElements, sizeof(double), vsD);
+
+  double *uniqueElements = (double *)calloc(naRemoved->nElements, sizeof(double));
+  if (uniqueElements == NULL)
   {
     PRINT_LOCATION();
     printf("Memory allocation failed\n");
     exit(1);
   }
-
-  memcpy(arrayInCopy, arrayIn, n * sizeof(double));
-
-  qsort(arrayInCopy, n, sizeof(double), vsD);
-
   size_t nUniques = 1;
-  uniqueElements[0] = arrayInCopy[0];
+  uniqueElements[0] = naRemoved->Elements[0];
 
-  for (int i = 1; i < n; ++i)
+  for (int i = 1; i < naRemoved->nElements; ++i)
   {
     // make sure it is not a missing value
-    if (fabs(arrayInCopy[i - 1] - arrayInCopy[i]) > 1e-9)
+    if (fabs((naRemoved->Elements)[i - 1] - (naRemoved->Elements)[i]) > 1e-9)
     {
-      uniqueElements[nUniques++] = arrayInCopy[i];
+      uniqueElements[nUniques++] = naRemoved->Elements[i];
     }
   }
 
@@ -402,7 +405,8 @@ ElementStruct *Unique(double *arrayIn, size_t n)
 
   *out = (ElementStruct){nUniques, uniqueElements};
 
-  free(arrayInCopy);
+  free(naRemoved->Elements);
+  free(naRemoved);
 
   return out;
 }
@@ -575,7 +579,7 @@ void ReadCSV(char *filename, double ***data, unsigned int header)
          tok && *tok;
          j++, tok = strtok(NULL, ",\n"))
     {
-      if (strcmp(tok, "NA") == 0)
+      if (strcmp(tok, "NA") == 0 || strcmp(tok, ".") == 0)
       {
         (*data)[i][j] = NA_DOUBLE;
       }
@@ -745,7 +749,7 @@ double NthColMean(
 
   for (int i = 0; i < nrows; i++)
   {
-    if (isnan(arrayIn[i][nthCol]))
+    if (!isnan(arrayIn[i][nthCol]))
     {
       tempSum += arrayIn[i][nthCol];
       tempCounts++;

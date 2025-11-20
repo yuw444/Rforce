@@ -21,6 +21,13 @@
     }
   })
 
+  formula <- as.formula(
+    paste(
+      "Surv(Id, X, Status) ~",
+      paste(colnames(data %>% dplyr::select(-c(X, Status, Id))), collapse = " + ")
+    )
+  )
+
   data_to_convert <- cbind.data.frame(
     do.call("cbind.data.frame", lst),
     data[, c("Id", "X", "Status")]
@@ -50,6 +57,26 @@
   temp <- Rforce(
     design_matrix_Y = design_matrix_Y,
     auxiliary_features = auxiliary_features,
+    variable_Ids = variable_Ids,
+    units_of_cpius = units_of_cpius,
+    split_rule = "Rforce-QLR",
+    n_trees = 10,
+    mtry = 3,
+    n_splits = 2,
+    seed = 926
+  )
+
+  lst_cpiu_long <- patients_to_cpius(
+    data_to_convert = data_to_convert,
+    units_of_cpiu = units_of_cpius,
+    weights_by_status = c(0, 1, 1, 1, 1),
+    pseudo_risk = FALSE,
+    wide_format = FALSE
+  )
+
+  temp_rfslam <- Rforce(
+    design_matrix_Y = as.matrix(lst_cpiu_long$designMatrix_Y),
+    auxiliary_features = as.matrix(lst_cpiu_long$auxiliaryFeatures),
     variable_Ids = variable_Ids,
     units_of_cpius = units_of_cpius,
     split_rule = "RF-SLAM",
