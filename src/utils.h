@@ -4,7 +4,6 @@
 
 #ifndef UTILS_H
 #define UTILS_H
-#define NA 999999.0
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,7 +24,7 @@
 // #define FREE(p) if(*p != NULL) {free(*p); *p = NULL;}
 
 // Macro to check for NA
-#define IS_NA(x) ((x) == NA)
+extern const double NA_DOUBLE;   // declared here; define in a .c file
 
 // struct for double elements and its length
 typedef struct
@@ -57,7 +56,7 @@ double *GetSeqDouble(double start, double end, double step);
 int *SampleInt(int *arrayIn, size_t n, size_t nSample, unsigned int replace, unsigned int seed);
 
 // NA remover for a double array with n elements
-ElementStruct *RemoveNA(double *arrayIn, size_t n, double NA_value);
+ElementStruct *RemoveNA(double *arrayIn, size_t n);
 
 // sample k elements with or without replacement from a double array of length n using seed
 double *SampleDouble(double *arrayIn, size_t n, size_t nSample, unsigned int replace, unsigned int seed);
@@ -110,7 +109,7 @@ double Min(double *arrayIn, size_t n);
 double Mean(double *arrayIn, size_t n);
 double *RowMean(double **arrayIn, size_t nrows, size_t ncols);
 double *RowMeanExcludingZeros(double **arrayIn, size_t nrows, size_t ncols); // for OOB prediction
-double NthColMeanExcluding(double **arrayIn, size_t nrows, unsigned int nthCol, double exclude); // for dynamic imputation
+double NthColMean(double **arrayIn, size_t nrows, unsigned int nthCol); // for dynamic imputation
 
 // get variance of double array
 double Var(double *arrayIn, size_t n);

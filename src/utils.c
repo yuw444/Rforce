@@ -1,5 +1,7 @@
 #include "utils.h"
 
+const double NA_DOUBLE = 0.0 / 0.0; // define NA as NaN
+
 void PrintArrayInt(int *array, size_t n)
 {
   if (array == NULL)
@@ -315,7 +317,7 @@ double *SampleDouble(double *arrayIn, size_t n, size_t nSample, unsigned int rep
 }
 
 // NA remover for a double array with n elements
-ElementStruct *RemoveNA(double *arrayIn, size_t n, double NA_value)
+ElementStruct *RemoveNA(double *arrayIn, size_t n)
 {
   ElementStruct *out = malloc(sizeof(ElementStruct));
   if (out == NULL)
@@ -334,7 +336,7 @@ ElementStruct *RemoveNA(double *arrayIn, size_t n, double NA_value)
   size_t j = 0;
   for (size_t i = 0; i < n; i++)
   {
-    if (fabs(arrayIn[i] - NA_value) > 1e-9)
+    if (isnan(arrayIn[i]))
     {
       arrayOut[j++] = arrayIn[i];
     }
@@ -575,7 +577,7 @@ void ReadCSV(char *filename, double ***data, unsigned int header)
     {
       if (strcmp(tok, "NA") == 0)
       {
-        (*data)[i][j] = NA;
+        (*data)[i][j] = NA_DOUBLE;
       }
       else
       {
@@ -733,18 +735,17 @@ double *RowMeanExcludingZeros(double **arrayIn, size_t nrows, size_t ncols)
 }
 
 // the user should make sure that the nthCol is out of bounds
-double NthColMeanExcluding(
+double NthColMean(
     double **arrayIn,
     size_t nrows,
-    unsigned int nthCol,
-    double exclude)
+    unsigned int nthCol)
 {
   double tempSum = 0.0;
   double tempCounts = 1e-9;
 
   for (int i = 0; i < nrows; i++)
   {
-    if (fabs(arrayIn[i][nthCol] - exclude) > 1e-6)
+    if (isnan(arrayIn[i][nthCol]))
     {
       tempSum += arrayIn[i][nthCol];
       tempCounts++;

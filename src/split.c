@@ -33,14 +33,14 @@ size_t *SplitSizes(
   // split the dataset
   size_t *out = (size_t *)malloc(2 * sizeof(size_t));
   // imputed value for missing value
-  double imputedMean = NthColMeanExcluding(designMatrixY, nrows, varIndex, NA);
+  double imputedMean = NthColMean(designMatrixY, nrows, varIndex);
   // spot for imputed value or actual value
   double tempValue = 0.0;
 
   for (size_t i = 0; i < nrows; i++)
   {
     // if the value is missing, impute it with the mean
-    if (fabs(designMatrixY[i][varIndex] - NA) < 1e-6)
+    if (isnan(designMatrixY[i][varIndex]))
     {
       tempValue = imputedMean;
     }
@@ -77,14 +77,14 @@ DecisionTreeData *SplitDataset(
   size_t nLeft = 0;
   size_t nRight = 0;
   // imputed value for missing value
-  double imputedMean = NthColMeanExcluding(designMatrixY, nrows, varIndex, NA);
+  double imputedMean = NthColMean(designMatrixY, nrows, varIndex);
   // spot for imputed value or actual value
   double tempValue = 0.0;
 
   for (size_t i = 0; i < nrows; i++)
   {
     // if the value is missing, impute it with the mean
-    if (fabs(designMatrixY[i][varIndex] - NA) < 1e-6)
+    if (isnan(designMatrixY[i][varIndex]))
     {
       tempValue = imputedMean;
     }
@@ -1458,7 +1458,7 @@ SplitPoints *FindBestSplit(
   {
     int varIndex = varIndexSample[i];
     double *varValues = GetCol(designMatrixY, nrows, ncolsDesign, varIndex);
-    ElementStruct *varValuesNaRemoved = RemoveNA(varValues, nrows, NA);
+    ElementStruct *varValuesNaRemoved = RemoveNA(varValues, nrows);
     splitsOfmtry[i] = SplitCandidates(
         varValuesNaRemoved->Elements,
         varValuesNaRemoved->nElements,

@@ -1,2 +1,18 @@
 
 return list from C to R
+
+    design_matrix_Y = NULL
+    auxiliary_features = NULL
+    variable_Ids = NULL
+    units_of_cpius = NULL
+    data = NULL
+    formula = NULL            # e.g. Surv(X Status) ~ covariate1 + covariate2
+    event_types = NULL
+    event_weights = NULL      # e.g. c(01111)
+    split_rule = c("Rforce-QLR", "Rforce-GEE", "Rforce-GEEIntr", "RF-SLAM")
+    n_trees = NULL
+    max_depth = NULL
+    min_node_size = NULL
+    min_gain = NULL
+    mtry = NA
+    n_splits = NA

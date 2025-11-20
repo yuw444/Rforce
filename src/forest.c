@@ -522,7 +522,7 @@ void FreeSurvivalForest(RandomSurvivalForest *forest)
 void SaveForest(DecisionTreeNode **forest,
                 size_t nTrees,
                 size_t lenOutput,
-                char *path)
+                const char *path)
 {
     char outputFolderTree[300];
     char outputFolderDot[300];
@@ -565,7 +565,7 @@ void SaveForest(DecisionTreeNode **forest,
 }
 
 void SaveSurvivalForest(RandomSurvivalForest *forest,
-                        char *path)
+                        const char *path)
 {
     // save forest
     // printf("seed is %u\n", forest->seed);
@@ -682,7 +682,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
     free(pathForest);
 }
 
-DecisionTreeNode **LoadForest(char *path,
+DecisionTreeNode **LoadForest(const char *path,
                               size_t nTrees)
 {
     if (access(path, F_OK) == -1)
@@ -708,7 +708,7 @@ DecisionTreeNode **LoadForest(char *path,
     return forest;
 }
 
-RandomSurvivalForest *LoadSurvivalForest(char *path)
+RandomSurvivalForest *LoadSurvivalForest(const char *path)
 {
     RandomSurvivalForest *forest = (RandomSurvivalForest *)malloc(sizeof(RandomSurvivalForest));
 

@@ -105,20 +105,20 @@ void SaveForest(
     DecisionTreeNode **forest,
     size_t nTrees,
     size_t lenOutput,
-    char *path);
+    const char *path);
 
 // save survival forest
 void SaveSurvivalForest(
     RandomSurvivalForest *forest,
-    char *path);
+    const char *path);
 
 // load forest
 DecisionTreeNode **LoadForest(
-    char *path,
+    const char *path,
     size_t nTrees);
 
 // load survival forest
-RandomSurvivalForest *LoadSurvivalForest(char *path);
+RandomSurvivalForest *LoadSurvivalForest(const char *path);
 
 // print all tree paths of a forest
 void PrintForestPaths(RandomSurvivalForest *forest, FILE *file); 
