@@ -351,14 +351,14 @@ Rforce <- function(
     as.integer(split_rule_index),
     as.integer(gee_interaction),
     matrix(
-      as.numeric(cpius$design_matrix_Y),
-      nrow = dim(cpius$design_matrix_Y)[1],
-      ncol = dim(cpius$design_matrix_Y)[2]
+      as.numeric(unlist(cpius$designMatrix_Y)),
+      nrow = dim(cpius$designMatrix_Y)[1],
+      ncol = dim(cpius$designMatrix_Y)[2]
     ),
     matrix(
-      as.numeric(cpius$auxiliary_features),
-      nrow = dim(cpius$auxiliary_features)[1],
-      ncol = dim(cpius$auxiliary_features)[2]
+      as.numeric(unlist(cpius$auxiliaryFeatures)),
+      nrow = dim(cpius$auxiliaryFeatures)[1],
+      ncol = dim(cpius$auxiliaryFeatures)[2]
     ),
     as.integer(cpius$variableIds),
     as.integer(length(unique(cpius$variableIds))),
