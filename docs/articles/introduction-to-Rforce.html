@@ -82,9 +82,8 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RevolutionAnalytics/doparallel" class="external-link">doParallel</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: foreach</span></span>
 <span><span class="co">#&gt; Loading required package: iterators</span></span>
-<span><span class="co">#&gt; Loading required package: parallel</span></span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html" class="external-link">registerDoParallel</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: parallel</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/doParallel/man/registerDoParallel.html" class="external-link">registerDoParallel</a></span><span class="op">(</span>cores <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="va">rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">foreach</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/foreach/man/foreach.html" class="external-link">%dopar%</a></span><span class="op">{</span></span>
 <span>  <span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compo_sim.html">compo_sim</a></span><span class="op">(</span></span>
 <span>    n_patients <span class="op">=</span> <span class="fl">500</span>,</span>
@@ -105,9 +104,8 @@
 <span><span class="va">df_rst</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="st">"cbind"</span>, <span class="va">rst</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">df_rst</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1]  9.647290e-04 -4.256601e-03 -7.894755e-03  5.941230e-01 -3.709555e-05</span></span>
-<span><span class="co">#&gt;  [6]  1.744629e-02  7.873844e-01 -9.023901e-03  6.645270e-01 -1.914386e-02</span></span></code></pre></div>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">df_rst</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co">#&gt;  [6]  1.744629e-02  7.873844e-01 -9.023901e-03  6.645270e-01 -1.914386e-02</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/boxplot.html" class="external-link">boxplot</a></span><span class="op">(</span><span class="va">df_rst</span><span class="op">)</span></span></code></pre></div>
 <p><img src="introduction-to-Rforce_files/figure-html/setup-1.png" width="700"></p>
   </main>
 </div>
@@ -116,7 +114,7 @@
 
     <footer><div class="pkgdown-footer-left">
   <p></p>
-<p>Developed by First Last.</p>
+<p>Developed by Yu Wang.</p>
 </div>
 
 <div class="pkgdown-footer-right">

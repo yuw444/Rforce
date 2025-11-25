@@ -3,5 +3,8 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   introduction-to-Rforce: introduction-to-Rforce.html
-last_built: 2025-11-25T06:23Z
+last_built: 2025-11-25T18:55Z
+urls:
+  reference: https://yuw444.github.io/Rforce/reference
+  article: https://yuw444.github.io/Rforce/articles
 

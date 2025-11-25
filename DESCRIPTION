@@ -23,7 +23,7 @@ Imports:
     cubature,
     dplyr,
     purrr,
-    survival
+    survival,
     tidyr,
     magrittr,
     fastDummies
