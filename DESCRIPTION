@@ -24,6 +24,9 @@ Imports:
     dplyr,
     purrr,
     survival
+    tidyr,
+    magrittr,
+    fastDummies
 Suggests: 
     knitr,
     rmarkdown,

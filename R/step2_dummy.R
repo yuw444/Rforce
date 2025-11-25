@@ -3,7 +3,10 @@
 #' This function takes a CPIU object and dummy-encodes any factor or character covariates
 #' in the design matrix for the outcome variable Y. It removes the reference level
 #' for each factor to avoid multicollinearity.
-#' @import tidyr dplyr fastDummies
+#' @importFrom magrittr %>%
+#' @importFrom tidyr starts_with
+#' @importFrom dplyr select all_of
+#' @importFrom fastDummies dummy_cols
 #' @param object A CPIU object.
 #' @param cols_to_dummy Optional vector of column names to dummy-encode. If NULL, all factor/character columns will be dummy-encoded.
 #' @return A CPIU object with dummy-encoded covariates in the `designMatrixY`.
