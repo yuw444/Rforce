@@ -158,9 +158,6 @@ Rforce(
 An object of class `"Rforce"`, a list with elements including (but not
 limited to):
 
-- `data`, `formula` — the original data and model formula used to fit
-  the forest (if available);
-
 - `cpius` — the CPIU-wide list containing `design_matrix_Y`,
   `auxiliary_features`, `variableIds`, `unitsOfCPIUs`, and related
   meta-data;
