@@ -1,0 +1,41 @@
+---
+title: "introduction-to-Rforce"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{introduction-to-Rforce}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(Rforce)
+library(doParallel)
+registerDoParallel(cores = 10)
+rst <- foreach(i = 1:50) %dopar%{
+  data_list <- compo_sim(
+    n_patients = 500,
+    seed = i,
+    verbose = FALSE
+  )
+  dim(data_list[[1]])
+  library(dplyr)
+  df_train <- data_list[[1]] %>%
+    dplyr::mutate(X = Time) %>%
+    dplyr::select(-c("Time"))
+  estimate_list <- wcompo_est(
+    data = df_train,
+    weight = c(1, 1)
+  )
+  estimate_list$beta
+}
+df_rst <- t(do.call("cbind", rst))
+colMeans(df_rst)
+boxplot(df_rst)
+```

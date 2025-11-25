@@ -7,3 +7,7 @@ sub/
 build/
 output/
 paper/
+inst/doc
+/doc/
+/Meta/
+docs
