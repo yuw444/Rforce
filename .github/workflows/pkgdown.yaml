@@ -24,6 +24,13 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+      # 👇 Add this block back in for your C libs
+      - name: Install system dependencies (GSL, HTSlib, OpenMP)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgsl-dev \
+            libomp-dev
 
       - uses: r-lib/actions/setup-pandoc@v2
 
