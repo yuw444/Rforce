@@ -1,14 +1,16 @@
 # test_that("rforce works", {
   # Developing help function
+  .libPaths(rev(.libPaths()))
+  Sys.setenv(PATH = paste0(Sys.getenv("PATH"), ":/hpc/apps/pandoc/2.11.4/bin"))
   library(devtools)
   document()
   library(dplyr)
-  library(sjmisc)
+  # library(sjmisc)
   library(Rforce)
 
   data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds") %>% filter(Id < 1000)
   units_of_cpius <- diff(c(0, quantile(data$X, 1 / 10 * 1:10)))
-  table(data$Status)
+  # table(data$Status)
 
   data_to_dummy <- data %>%
     dplyr::select(-c(X, Status, Id))
@@ -30,30 +32,47 @@
 
   data_to_convert <- cbind.data.frame(
     do.call("cbind.data.frame", lst),
-    data[, c("Id", "X", "Status")]
+    data %>% select(c("Id", "X", "Status"))
   )
 
-  variable_Ids <- colnames(do.call("cbind.data.frame", lst))
+  # variable_Ids <- colnames(do.call("cbind.data.frame", lst))
 
-  variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
+  # variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
 
-  unique_vars <- unique(variable_Ids)
+  # unique_vars <- unique(variable_Ids)
 
-  variable_Ids <- match(variable_Ids, unique_vars) - 1
+  # variable_Ids <- match(variable_Ids, unique_vars) - 1
   
   lst_cpiu_wide <- patients_to_cpius(
-    data_to_convert = data_to_convert,
+    data_to_convert = data,
     units_of_cpiu = units_of_cpius,
     weights_by_status = c(0, 1, 1, 1, 1),
     pseudo_risk = TRUE,
     wide_format = TRUE
   )
 
+  object <- lst_cpiu_wide
+  temp <- cpius_to_dummy(lst_cpiu_wide)
+
   design_matrix_Y <- as.matrix(lst_cpiu_wide$designMatrix_Y)
   auxiliary_features <- as.matrix(lst_cpiu_wide$auxiliaryFeatures)
 
-  design_matrix_Y[is.na(design_matrix_Y)] <- 999999.0
+  # design_matrix_Y[is.na(design_matrix_Y)] <- 999999.0
 
+  temp_method1 <- Rforce(
+    data = data,
+    formula = formula,
+    n_intervals = 10,
+    n_trees = 10,
+    mtry = 6,
+    n_splits = 2,
+    max_depth = 5,
+    min_node_size = 10,
+    min_gain = 0,
+    split_rule = "Rforce-QLR"
+  )
+
+  str(temp_method1)
   temp <- Rforce(
     design_matrix_Y = design_matrix_Y,
     auxiliary_features = auxiliary_features,

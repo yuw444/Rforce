@@ -35,23 +35,40 @@
 #' }
 #' colMeans(betaHat) - beta_true
 surv_sim <- function(
-    n_patients,
-    n_vars,
-    vars_cate,
-    scale_weibull,
-    shape_weibull,
-    beta,
-    rateC,
-    seed = 926,
-    method = c("InverseCDF", "Weibull")) {
+  n_patients,
+  n_vars,
+  vars_cate,
+  scale_weibull,
+  shape_weibull,
+  beta,
+  rateC,
+  seed = 926,
+  method = c("InverseCDF", "Weibull")
+) {
   assertthat::assert_that(assertthat::are_equal(n_vars, length(vars_cate)))
-  assertthat::assert_that(assertthat::are_equal(length(beta), length(vars_cate)))
-  assertthat::assert_that(assertthat::see_if(n_patients > 0, msg = "`n_patients` must be integer greater than 0"))
-  assertthat::assert_that(assertthat::see_if(shape_weibull > 0, msg = "`shape_weibull` must be greater than 0"))
-  assertthat::assert_that(assertthat::see_if(scale_weibull > 0, msg = "`scale_weibull` must be greater than 0"))
-  assertthat::assert_that(assertthat::see_if(rateC > 0, msg = "`rateC` must between 0 and 1"))
-  assertthat::assert_that(assertthat::see_if(sum(vars_cate %in% c("continous", "binary")) == n_vars,
-                                             msg = "vars_cate must be a character vector of \"continous\" and \"binary\" "
+  assertthat::assert_that(assertthat::are_equal(
+    length(beta),
+    length(vars_cate)
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    n_patients > 0,
+    msg = "`n_patients` must be integer greater than 0"
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    shape_weibull > 0,
+    msg = "`shape_weibull` must be greater than 0"
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    scale_weibull > 0,
+    msg = "`scale_weibull` must be greater than 0"
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    rateC > 0,
+    msg = "`rateC` must between 0 and 1"
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    sum(vars_cate %in% c("continous", "binary")) == n_vars,
+    msg = "vars_cate must be a character vector of \"continous\" and \"binary\" "
   ))
 
   method <- match.arg(method)
@@ -75,12 +92,17 @@ surv_sim <- function(
   if (method == "InverseCDF") {
     # Weibull latent event times
     v <- runif(n = n_patients)
-    event_time <- (-log(v) / (scale_weibull * exp(c(x %*% beta))))^(1 / shape_weibull)
+    event_time <- (-log(v) / (scale_weibull * exp(c(x %*% beta))))^(1 /
+      shape_weibull)
   } else {
     # An alternative draw for event times
     lambda_wiki <- scale_weibull^(-1 / shape_weibull) # change definition of scale_weibull to Wikipedia's
     lambda_prime <- lambda_wiki / exp(c(x %*% beta) / shape_weibull) # re-scale according to beta
-    event_time <- rweibull(n_patients, shape = shape_weibull, scale = lambda_prime)
+    event_time <- rweibull(
+      n_patients,
+      shape = shape_weibull,
+      scale = lambda_prime
+    )
   }
 
   # censoring rate control
@@ -104,7 +126,10 @@ surv_sim <- function(
   # data set
   rst <- cbind.data.frame(
     Id = 1:n_patients,
-    HazardWOBaseline = as.numeric(format(exp(c(x %*% beta)), scientific = FALSE)),
+    HazardWOBaseline = as.numeric(format(
+      exp(c(x %*% beta)),
+      scientific = FALSE
+    )),
     Time = event_time,
     Censor = C,
     X = time,

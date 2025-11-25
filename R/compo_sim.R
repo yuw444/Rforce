@@ -38,26 +38,37 @@
 #' df_rst <- t(do.call("cbind", rst))
 #' colMeans(df_rst)
 #' boxplot(df_rst)
-compo_sim <- function(n_patients = 1000,
-                      n_vars = 10,
-                      vars_cate = c(rep("binary", 6), rep("continuous", 4)),
-                      true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
-                      lambda = 1e-2,
-                      a_shape_weibull = 1,
-                      sigma_scale_weibull = 1,
-                      sigma_scale_gamma = 0.05,
-                      non_linear_hazard = FALSE,
-                      non_linear_function = NULL,
-                      seed = 926,
-                      verbose = FALSE) {
+compo_sim <- function(
+  n_patients = 1000,
+  n_vars = 10,
+  vars_cate = c(rep("binary", 6), rep("continuous", 4)),
+  true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
+  lambda = 1e-2,
+  a_shape_weibull = 1,
+  sigma_scale_weibull = 1,
+  sigma_scale_gamma = 0.05,
+  non_linear_hazard = FALSE,
+  non_linear_function = NULL,
+  seed = 926,
+  verbose = FALSE
+) {
   assertthat::assert_that(assertthat::are_equal(n_vars, length(vars_cate)))
-  assertthat::assert_that(assertthat::are_equal(length(true_beta), length(vars_cate)))
-  assertthat::assert_that(assertthat::see_if(n_patients > 0, msg = "n_patients must be greater than 0"))
+  assertthat::assert_that(assertthat::are_equal(
+    length(true_beta),
+    length(vars_cate)
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    n_patients > 0,
+    msg = "n_patients must be greater than 0"
+  ))
   assertthat::assert_that(
-    assertthat::see_if(sum(
-      vars_cate %in% c("continuous", "binary")
-    ) == n_vars,
-    msg = "vars_cate must be a character vector of \"continuous\" and \"binary\" ")
+    assertthat::see_if(
+      sum(
+        vars_cate %in% c("continuous", "binary")
+      ) ==
+        n_vars,
+      msg = "vars_cate must be a character vector of \"continuous\" and \"binary\" "
+    )
   )
 
   set.seed(seed + n_vars + n_patients)
@@ -77,14 +88,14 @@ compo_sim <- function(n_patients = 1000,
 
   ## frailty term
   kesi <-
-    rgamma(n_patients,
-           shape = 1 / sigma_scale_gamma,
-           scale = sigma_scale_gamma)
+    rgamma(n_patients, shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma)
 
   ## hazard generation
   if (non_linear_hazard) {
     if (is.null(non_linear_function)) {
-      stop("non_linear_function must be specified when non_linear_hazard is TRUE")
+      stop(
+        "non_linear_function must be specified when non_linear_hazard is TRUE"
+      )
     }
     lambdaZ <- apply(z, 1, non_linear_function)
   } else {
@@ -108,13 +119,14 @@ compo_sim <- function(n_patients = 1000,
   }
 
   Finv <- function(u, t_max) {
-    sigma_scale_weibull * (-log(1 - u * Lambda0_t(t_max))) ^ (1 / a_shape_weibull)
+    sigma_scale_weibull * (-log(1 - u * Lambda0_t(t_max)))^(1 / a_shape_weibull)
   }
 
   ## cumulative hazard at stopping time for each patient
   n_recurrents_per_patients <-
-    sapply(Lambda0_t(t_stop) * lambdaZZ, function(x)
-      rpois(1, lambda = x))
+    sapply(Lambda0_t(t_stop) * lambdaZZ, function(x) {
+      rpois(1, lambda = x)
+    })
 
   if (verbose) {
     cat("\nTable of the number of recurrent event per patients:\n")
@@ -125,14 +137,16 @@ compo_sim <- function(n_patients = 1000,
 
   ## n_recurrents_per_patients could be 0
   ## then t_per_patients is 0, meaning no composite event, only terminal events
-  t_per_patients <- purrr::map2(n_recurrents_per_patients,
-                                t_stop,
-                                function(x, y) {
-                                  if (x == 0) {
-                                    return(y)
-                                  }
-                                  Finv(sort(runif(x)), y)
-                                })
+  t_per_patients <- purrr::map2(
+    n_recurrents_per_patients,
+    t_stop,
+    function(x, y) {
+      if (x == 0) {
+        return(y)
+      }
+      Finv(sort(runif(x)), y)
+    }
+  )
 
   ## generate status for each patient
   status_per_patients <-
@@ -148,29 +162,34 @@ compo_sim <- function(n_patients = 1000,
 
   ## although n_recurrents_per_patients could be 0
   ## it is still in the final return dataset, need to consider this
-  n_observed_events_per_patients <- sapply(n_recurrents_per_patients, function(x) {
-    if (x == 0) {
-      return(1)
+  n_observed_events_per_patients <- sapply(
+    n_recurrents_per_patients,
+    function(x) {
+      if (x == 0) {
+        return(1)
+      }
+      return(x)
     }
-    return(x)
-  })
+  )
   colnames(z) <- paste(vars_cate, 1:n_vars, sep = "")
   df_true <- data.frame(
     Id = rep(1:n_patients, times = n_observed_events_per_patients),
     Time = unlist(t_per_patients),
     Status = unlist(status_per_patients),
-    z[rep(1:n_patients, times = n_observed_events_per_patients),]
+    z[rep(1:n_patients, times = n_observed_events_per_patients), ]
   )
 
   return(
     list(
       dataset = df_true,
       linear = !non_linear_hazard,
-      hazard_function = ifelse(is.null(non_linear_function),
-                               function(x) {
-                                 exp(x %*% true_beta)
-                               },
-                               non_linear_function),
+      hazard_function = ifelse(
+        is.null(non_linear_function),
+        function(x) {
+          exp(x %*% true_beta)
+        },
+        non_linear_function
+      ),
       true_beta = true_beta,
       t_stop = t_stop,
       n_patients = n_patients,
@@ -222,23 +241,34 @@ compo_sim <- function(n_patients = 1000,
 #' df_rst <- t(do.call("cbind", rst))
 #' colMeans(df_rst)
 #' boxplot(df_rst)
-compo_sim_mao <- function(n_patients = 1000,
-                          n_vars = 10,
-                          vars_cate = c(rep("binary", 6), rep("continuous", 4)),
-                          true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
-                          non_linear_hazard = FALSE,
-                          non_linear_function = NULL,
-                          sigma_scale_gamma = 0.25,
-                          seed = 926,
-                          s = 2000) {
+compo_sim_mao <- function(
+  n_patients = 1000,
+  n_vars = 10,
+  vars_cate = c(rep("binary", 6), rep("continuous", 4)),
+  true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
+  non_linear_hazard = FALSE,
+  non_linear_function = NULL,
+  sigma_scale_gamma = 0.25,
+  seed = 926,
+  s = 2000
+) {
   assertthat::assert_that(assertthat::are_equal(n_vars, length(vars_cate)))
-  assertthat::assert_that(assertthat::are_equal(length(true_beta), length(vars_cate)))
-  assertthat::assert_that(assertthat::see_if(n_patients > 0, msg = "n must be greater than 0"))
+  assertthat::assert_that(assertthat::are_equal(
+    length(true_beta),
+    length(vars_cate)
+  ))
+  assertthat::assert_that(assertthat::see_if(
+    n_patients > 0,
+    msg = "n must be greater than 0"
+  ))
   assertthat::assert_that(
-    assertthat::see_if(sum(
-      vars_cate %in% c("continuous", "binary")
-    ) == n_vars,
-    msg = "vars_cate must be a character vector of \"continuous\" and \"binary\" ")
+    assertthat::see_if(
+      sum(
+        vars_cate %in% c("continuous", "binary")
+      ) ==
+        n_vars,
+      msg = "vars_cate must be a character vector of \"continuous\" and \"binary\" "
+    )
   )
 
   set.seed(seed)
@@ -259,14 +289,14 @@ compo_sim_mao <- function(n_patients = 1000,
 
   ## frailty term
   kesi <-
-    rgamma(n_patients,
-           shape = 1 / sigma_scale_gamma,
-           scale = sigma_scale_gamma)
+    rgamma(n_patients, shape = 1 / sigma_scale_gamma, scale = sigma_scale_gamma)
 
   ## hazard generation
   if (non_linear_hazard) {
     if (is.null(non_linear_function)) {
-      stop("non_linear_function must be specified when non_linear_hazard is TRUE")
+      stop(
+        "non_linear_function must be specified when non_linear_hazard is TRUE"
+      )
     }
 
     lambdaZ <- apply(z, 1, non_linear_function)
@@ -297,11 +327,15 @@ compo_sim_mao <- function(n_patients = 1000,
     if (U[x] <= lambdaA[x] / (lambdaZZ[x])) {
       return(0)
     } else {
-      return(uniroot(function(t) {
-        (1 - exp(-lambdaA[x] * t)) / (1 - exp(-lambdaZZ[x] * t)) - U[x]
-      },
-      c(10 ^ -7, 10 ^ 7),
-      tol = .Machine$double.eps ^ 10)$root)
+      return(
+        uniroot(
+          function(t) {
+            (1 - exp(-lambdaA[x] * t)) / (1 - exp(-lambdaZZ[x] * t)) - U[x]
+          },
+          c(10^-7, 10^7),
+          tol = .Machine$double.eps^10
+        )$root
+      )
     }
   }
 
@@ -322,11 +356,11 @@ compo_sim_mao <- function(n_patients = 1000,
 
   # chose the maxmium of \tau^\tilde and t_comp_matrix[1,]
   # as Stopping time for each individual
-  t_ast <- t(as.matrix(pmax(t_tilde, t_comp_matrix[1,])))
+  t_ast <- t(as.matrix(pmax(t_tilde, t_comp_matrix[1, ])))
 
   # check if composite event censor by stopping time
   # if so, discard the composite event afterwards
-  t_ast_matrix <- t_ast[rep(1, s),]
+  t_ast_matrix <- t_ast[rep(1, s), ]
   censor_stopping <- t_comp_matrix_cumsum > t_ast_matrix
   t_comp_matrix_cumsum[censor_stopping] <- NA
   Time <- as.vector(t_comp_matrix_cumsum)
@@ -335,7 +369,7 @@ compo_sim_mao <- function(n_patients = 1000,
   if (n_vars == 1) {
     temp <- rep(z, each = s)
   } else {
-    temp <- z[rep(1:n_patients, each = s),]
+    temp <- z[rep(1:n_patients, each = s), ]
   }
 
   ## data frame to hold all info
@@ -350,7 +384,7 @@ compo_sim_mao <- function(n_patients = 1000,
     dplyr::summarise(death_index = sum(!is.na(Time))) %>%
     dplyr::mutate(terminal = ifelse(death_index == s, 2, 1))
 
-  data_na_rm <- data[!is.na(data$Time),]
+  data_na_rm <- data[!is.na(data$Time), ]
   data_na_rm$Status[cumsum(temp$death_index)] <- temp$terminal
 
   if (mean(temp$terminal == 1) != 1) {
@@ -367,11 +401,13 @@ compo_sim_mao <- function(n_patients = 1000,
     list(
       dataset = data_na_rm,
       linear = !non_linear_hazard,
-      hazard_function = ifelse(is.null(non_linear_function),
-                               function(x) {
-                                 exp(x %*% true_beta)
-                               },
-                               non_linear_function),
+      hazard_function = ifelse(
+        is.null(non_linear_function),
+        function(x) {
+          exp(x %*% true_beta)
+        },
+        non_linear_function
+      ),
       true_beta = true_beta,
       lambda = lambda,
       lambdaA = lambdaA,

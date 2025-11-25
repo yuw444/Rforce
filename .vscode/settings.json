@@ -9,10 +9,14 @@
     "--no-restore"
   ],
   "r.plot.useHttpgd": true,
+  "[r]": {
+        "editor.formatOnSave": true
+    },
   "r.libPaths": [
     "/home/yu89975/R/x86_64-pc-linux-gnu-library/4.3",
     "/hpc/apps/R/4.3.3/lib64/R/library"
   ],
+  "cmake.cmakePath": "/hpc/apps/cmake/3.30.3/bin/cmake",
   "r.bracketedPaste": true,
   "C_Cpp_Runner.cCompilerPath": "gcc",
   "C_Cpp_Runner.cppCompilerPath": "g++",

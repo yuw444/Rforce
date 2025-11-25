@@ -14,8 +14,7 @@
 #' )
 #' str(df_converted)
 #'
-admin_censoring <- function(data_to_convert,
-                            censoring_quantile) {
+admin_censoring <- function(data_to_convert, censoring_quantile) {
   assertthat::assert_that("Id" %in% colnames(data_to_convert))
   assertthat::assert_that("Time" %in% colnames(data_to_convert))
   assertthat::assert_that("Status" %in% colnames(data_to_convert))
@@ -29,30 +28,31 @@ admin_censoring <- function(data_to_convert,
     probs = censoring_quantile
   )
   tt <- data_to_convert %>%
-    dplyr::mutate(censored = Time > censoring_time,
-                  newTime = pmin(Time, censoring_time)) %>%
+    dplyr::mutate(
+      censored = Time > censoring_time,
+      newTime = pmin(Time, censoring_time)
+    ) %>%
     dplyr::group_by(Id) %>%
     dplyr::mutate(nthCensor = cumsum(censored)) %>%
     dplyr::ungroup() %>%
     dplyr::filter(nthCensor == 1 | censored == FALSE)
 
-  Status <- purrr::map2(tt$Status,
-                        tt$censored,
-                        function(x, y) {
-                          if (y == TRUE) {
-                            return(0)
-                          } else {
-                            return(x)
-                          }
-                        })
+  Status <- purrr::map2(tt$Status, tt$censored, function(x, y) {
+    if (y == TRUE) {
+      return(0)
+    } else {
+      return(x)
+    }
+  })
 
   df_out <- data.frame(
     Id = tt$Id,
     X = tt$newTime,
     Status = unlist(Status),
-    tt %>% dplyr::select(
-      !c("Id", "Time", "Status", "censored", "newTime", "nthCensor")
-    )
+    tt %>%
+      dplyr::select(
+        !c("Id", "Time", "Status", "censored", "newTime", "nthCensor")
+      )
   )
 
   return(df_out)
@@ -77,10 +77,12 @@ admin_censoring <- function(data_to_convert,
 #' str(df_converted)
 #'
 
-random_censoring <- function(data_to_convert,
-                             event_rate,
-                             seed = 926,
-                             verbose = FALSE) {
+random_censoring <- function(
+  data_to_convert,
+  event_rate,
+  seed = 926,
+  verbose = FALSE
+) {
   assertthat::assert_that("Id" %in% colnames(data_to_convert))
   assertthat::assert_that("Time" %in% colnames(data_to_convert))
   assertthat::assert_that("Status" %in% colnames(data_to_convert))
@@ -94,8 +96,9 @@ random_censoring <- function(data_to_convert,
   n_patients <- length(unique(data_to_convert$Id))
   n_terminals <- sum(data_to_convert$Status == 1)
   event_rate_current <- n_terminals / n_patients
-  if (verbose)
+  if (verbose) {
     print(paste0("The actual event rate is ", event_rate_current))
+  }
 
   if (event_rate_current <= event_rate) {
     warning(
@@ -108,15 +111,17 @@ random_censoring <- function(data_to_convert,
     event_rate <- event_rate_current
   }
 
-  event_time <- unlist(purrr::map2(df_terminal$Status,
-                                   df_terminal$Time,
-                                   function(x, y) {
-                                     if (x == 0) {
-                                       return(0)
-                                     } else {
-                                       return(y)
-                                     }
-                                   }))
+  event_time <- unlist(purrr::map2(
+    df_terminal$Status,
+    df_terminal$Time,
+    function(x, y) {
+      if (x == 0) {
+        return(0)
+      } else {
+        return(y)
+      }
+    }
+  ))
   upper_bound_censoring <- NULL
   n_times <- 0
 
@@ -124,11 +129,18 @@ random_censoring <- function(data_to_convert,
   while (is.null(upper_bound_censoring) && n_times < 100) {
     seed_ <- sample(1:100000, 1)
     upper_bound_censoring <- tryCatch(
-      uniroot(function(x) {
-        set.seed(seed_)
-        sum(runif(n_patients, min = 0, max = x) > event_time &
-              df_terminal$Status == 1) / n_patients - event_rate
-      }, interval = c(0, max(event_time) * 1000))$root,
+      uniroot(
+        function(x) {
+          set.seed(seed_)
+          sum(
+            runif(n_patients, min = 0, max = x) > event_time &
+              df_terminal$Status == 1
+          ) /
+            n_patients -
+            event_rate
+        },
+        interval = c(0, max(event_time) * 1000)
+      )$root,
       error = function(e) {
         NULL
       }
@@ -136,11 +148,13 @@ random_censoring <- function(data_to_convert,
     n_times <- n_times + 1
   }
 
-  if(is.null(upper_bound_censoring))
+  if (is.null(upper_bound_censoring)) {
     stop("Try to decrease the desired `event_rate` and rerun")
+  }
 
-  if (verbose)
+  if (verbose) {
     print(paste0("Upper bound of random censoring is ", upper_bound_censoring))
+  }
 
   n_recurrent_per_patient <- as.vector(table(data_to_convert$Id))
 
@@ -150,7 +164,10 @@ random_censoring <- function(data_to_convert,
   # print(sum(censor_time_per_patient > event_time & df_terminal$Status == 1)/n_patients)
   tt <- data_to_convert %>%
     dplyr::mutate(
-      `censoring_time` = rep(censor_time_per_patient, times = n_recurrent_per_patient),
+      `censoring_time` = rep(
+        censor_time_per_patient,
+        times = n_recurrent_per_patient
+      ),
       `censored` = `Time` > `censoring_time`,
       `newTime` = pmin(`Time`, `censoring_time`)
     ) %>%
@@ -159,31 +176,30 @@ random_censoring <- function(data_to_convert,
     dplyr::ungroup() %>%
     dplyr::filter(nthCensor == 1 | censored == FALSE)
 
-  Status <- purrr::map2(tt$Status,
-                        tt$censored,
-                        function(x, y) {
-                          if (y == TRUE) {
-                            return(0)
-                          } else {
-                            return(x)
-                          }
-                        })
+  Status <- purrr::map2(tt$Status, tt$censored, function(x, y) {
+    if (y == TRUE) {
+      return(0)
+    } else {
+      return(x)
+    }
+  })
 
   df_out <- data.frame(
     Id = tt$Id,
     X = tt$newTime,
     Status = unlist(Status),
-    tt %>% dplyr::select(
-      !c(
-        "Id",
-        "Time",
-        "Status",
-        "censored",
-        "newTime",
-        "nthCensor",
-        "censoring_time"
+    tt %>%
+      dplyr::select(
+        !c(
+          "Id",
+          "Time",
+          "Status",
+          "censored",
+          "newTime",
+          "nthCensor",
+          "censoring_time"
+        )
       )
-    )
   )
 
   return(df_out)

@@ -7,7 +7,7 @@
 vimp.Rforce(forest)
 }
 \arguments{
-\item{object}{An Rforce object}
+\item{forest}{An Rforce object}
 }
 \value{
 A matrix containing variable importance statistics for each variable in each tree of the forest,

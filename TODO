@@ -18,3 +18,15 @@ return list from C to R
     mtry = 6
     n_splits = 2
     seed = 926
+
+fit <- Rforce(
+  data    = df_censored,
+  formula = as.formula(Surv(Id, X, Status) ~ .),
+  n_intervals   = 5,
+  n_trees       = 50,
+  max_depth     = 10,
+  min_node_size = 20,
+  min_gain      = 0,
+  mtry          = 2,
+  n_splits      = 5
+)

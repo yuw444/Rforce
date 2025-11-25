@@ -23,8 +23,8 @@ predict.Rforce <- function(forest, designMatrix) {
 
 #' Variable importance function for Rforce object
 #' @export
-#' @param object An Rforce object
-#' @return A matrix containing variable importance statistics for each variable in each tree of the forest, 
+#' @param forest An Rforce object
+#' @return A matrix containing variable importance statistics for each variable in each tree of the forest,
 #' row correspond to trees and columns correspond to variables.
 
 vimp.Rforce <- function(forest) {
@@ -33,7 +33,6 @@ vimp.Rforce <- function(forest) {
   }
 
   return(forest$vimpStat)
-  
 }
 
 
@@ -78,8 +77,10 @@ loadRforce <- function(path) {
 
   forest_path <- list.dirs(path, full.names = TRUE, recursive = FALSE)
 
-  if(length(forest_path) != 1) {
-    stop("The specified path does not contain a valid Rforce directory structure.")
+  if (length(forest_path) != 1) {
+    stop(
+      "The specified path does not contain a valid Rforce directory structure."
+    )
   }
 
   forest$`_external_forest_C_Ptr` <- .Call(

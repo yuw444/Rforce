@@ -24,8 +24,9 @@
 #' )
 #' estimate_list$beta
 wcompo_est <- function(
-    data,
-    weight) {
+  data,
+  weight
+) {
   assertthat::assert_that(
     assertthat::see_if(
       !is.null(data$Id) & !is.null(data$X) & !is.null(data$Status)
@@ -33,7 +34,7 @@ wcompo_est <- function(
     msg = "`data` must have `Id`, `X` and `Status` column"
   )
   n_status <- length(unique(data$Status))
-  if(0 %in% unique(data$Status)){
+  if (0 %in% unique(data$Status)) {
     n_status <- n_status - 1
   }
   assertthat::assert_that(
@@ -78,7 +79,9 @@ wcompo_est <- function(
     } else {
       event.w1 <- event.w[-n.event]
       event.w2 <- event.w[n.event]
-      dN1[i, ] <- (match(fail, time.event.id) != n.event) * event.w1[1] + (match(fail, time.event.id) == n.event) * event.w2
+      dN1[i, ] <- (match(fail, time.event.id) != n.event) *
+        event.w1[1] +
+        (match(fail, time.event.id) == n.event) * event.w2
       dN1[i, is.na(dN1[i, ])] <- 0
     }
   }
@@ -130,23 +133,25 @@ wcompo_est <- function(
     ## calculate information next
     Gcweight2 <- matrix(kronecker(rep(1, p), Gcweight), n, m * p) # n x mp
     S2hat <- t(z) %*% (matrix(rep(zexpz, m), n, m * p) * Gcweight2) # (p x n) x (n x mp) = p x mp   t(z2expz)%*%(Gcweight)  #p*n x n*(m*p) = p* (m*p)
-    S2overS0hat <- S2hat / matrix(kronecker(S0hat, matrix(rep(1, p * p), p, p)), p, m * p) # p x mp
+    S2overS0hat <- S2hat /
+      matrix(kronecker(S0hat, matrix(rep(1, p * p), p, p)), p, m * p) # p x mp
 
     # Score function
     tempU <- NULL
     for (pp in 1:p) {
-      matrixU <- (matrix(rep(z[, pp], m), n, m) - matrix(rep(S1overS0hat[pp, ], n), n, m, byrow = T)) * dN
+      matrixU <- (matrix(rep(z[, pp], m), n, m) -
+        matrix(rep(S1overS0hat[pp, ], n), n, m, byrow = T)) *
+        dN
       tempU[pp] <- sum(matrixU)
     }
 
     dN.bar <- colSums(dN) # 1*m
     IpartIhat <- S2overS0hat %*% kronecker(dN.bar, diag(1, p, p)) # p*p
-    IpartIIhat <- (t(matrix(rep(dN.bar, p), m, p)) * S1overS0hat) %*% t(S1overS0hat) # p*p
-
+    IpartIIhat <- (t(matrix(rep(dN.bar, p), m, p)) * S1overS0hat) %*%
+      t(S1overS0hat) # p*p
 
     # Information matrix
     tempI <- IpartIhat - IpartIIhat
-
 
     ## newton Raphlson method
     iI <- solve(tempI)
@@ -166,5 +171,3 @@ wcompo_est <- function(
     )
   )
 }
-
-
