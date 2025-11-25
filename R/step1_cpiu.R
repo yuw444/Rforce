@@ -482,7 +482,8 @@ patients_to_cpius <- function(
         variableSummaryOrignal = lst_cov_summary,
         isDummy = FALSE,
         variableUsed = NULL,
-        variableIds = NULL
+        variableIds = NULL,
+        formula = NULL
       ),
       class = "CPIU"
     )

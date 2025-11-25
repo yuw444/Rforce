@@ -103,8 +103,6 @@ reproducible forests. Defaults to \code{926}.}
 An object of class \code{"Rforce"}, a list with elements including (but not
 limited to):
 \itemize{
-\item \code{data}, \code{formula} — the original data and model formula
-used to fit the forest (if available);
 \item \code{cpius} — the CPIU-wide list containing \code{design_matrix_Y},
 \code{auxiliary_features}, \code{variableIds}, \code{unitsOfCPIUs},
 and related meta-data;

@@ -115,8 +115,6 @@
 #' An object of class \code{"Rforce"}, a list with elements including (but not
 #' limited to):
 #' \itemize{
-#'   \item \code{data}, \code{formula} — the original data and model formula
-#'         used to fit the forest (if available);
 #'   \item \code{cpius} — the CPIU-wide list containing \code{design_matrix_Y},
 #'         \code{auxiliary_features}, \code{variableIds}, \code{unitsOfCPIUs},
 #'         and related meta-data;
@@ -306,6 +304,8 @@ Rforce <- function(
 
   validate(cpius)
 
+  cpius$formula <- formula
+
   if (!cpius$isDummy) {
     message("Dummy-encoding factor/character covariates...")
     cpius <- cpius_to_dummy(cpius)
@@ -374,8 +374,6 @@ Rforce <- function(
 
   # Extract struct values from the returned list
   rforce_obj <- list(
-    data = if (exists("data")) data else NULL,
-    formula = if (exists("formula")) formula else NULL,
     cpius = cpius,
     forestMatrix = temp_C_return[["forestMatrix"]],
     predicted = temp_C_return[["predicted"]],
