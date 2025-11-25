@@ -125,8 +125,7 @@ void PrintTreeDot(
 // A wrapper of PrintTreeDot() and write to file
 void WriteTreeDotFile(
     DecisionTreeNode *root,
-    char *filename,
-    unsigned int level);
+    char *filename);
 
 // gather vimp vector for a tree
 void VimpTree(
@@ -135,7 +134,7 @@ void VimpTree(
     double **vimpFreq);
 
 // print tree for debugging
-void PrintTree(DecisionTreeNode *root, unsigned int level);
+void PrintTree(DecisionTreeNode *root);
 
 // save and load tree
 void SaveTree(

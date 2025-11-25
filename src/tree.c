@@ -657,8 +657,7 @@ void PrintTreeDot(
 
 void WriteTreeDotFile(
     DecisionTreeNode *root,
-    char *filename,
-    unsigned int level)
+    char *filename)
 {
     FILE *file = fopen(filename, "w");
     if (file == NULL)
@@ -671,7 +670,7 @@ void WriteTreeDotFile(
     fprintf(file, "digraph {\n");
     fprintf(file, "//Tree ID: %ld\n", root->treeId);
     PrintTreeDot(file, root, 0);
-    fprintf(file, "}");
+    fprintf(file, "}\n");
 
     fclose(file);
 }
@@ -696,7 +695,7 @@ void VimpTree(
     VimpTree(root->rightChild, vimpStat, vimpFreq);
 }
 
-void PrintTree(DecisionTreeNode *root, unsigned int level)
+void PrintTree(DecisionTreeNode *root)
 {
     if (root == NULL)
     {
@@ -712,8 +711,8 @@ void PrintTree(DecisionTreeNode *root, unsigned int level)
         printf("Node %ld, flag is %d, output %.3f\n", root->nodeId, root->flag, root->output[0]);
     }
 
-    PrintTree(root->leftChild, level + 1);
-    PrintTree(root->rightChild, level + 1);
+    PrintTree(root->leftChild);
+    PrintTree(root->rightChild);
 }
 
 void SaveTree(

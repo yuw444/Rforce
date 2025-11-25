@@ -557,7 +557,7 @@ void SaveForest(DecisionTreeNode **forest,
         fclose(file);
 
         sprintf(pathDot, "%s/tree_%d.dot", outputFolderDot, i);
-        WriteTreeDotFile(forest[i], pathDot, 0);
+        WriteTreeDotFile(forest[i], pathDot);
     }
 
     free(pathTree);
