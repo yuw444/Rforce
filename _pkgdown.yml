@@ -8,5 +8,5 @@ navbar:
     right: [search, github]
   components:
     get-started:
-      text: "Get started"
+      text: "Get Started"
       href: articles/get-started.html
