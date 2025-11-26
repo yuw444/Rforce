@@ -212,7 +212,7 @@ printTree <- function(forest, treeIndex) {
   }
 
   if (!is.numeric(treeIndex) || length(treeIndex) != 1 ||
-      treeIndex < 1 || treeIndex > forest$numTrees) {
+      treeIndex < 1 || treeIndex > forest$nTrees) {
     stop("treeIndex must be a valid tree index within the forest.")
   }
 
@@ -221,8 +221,8 @@ printTree <- function(forest, treeIndex) {
   .Call(
     "R_PrintTree",
     forest$`_external_forest_C_Ptr`,
-    as.integer(treeIndex)
-
+    as.integer(treeIndex),
+    as.character(file_name)
   )
 
   message(paste("Tree structure saved to", file_name))

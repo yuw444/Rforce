@@ -72,6 +72,8 @@
     split_rule = "Rforce-QLR"
   )
 
+  printTree(temp_method1, treeIndex = 1)
+  
   str(temp_method1)
   temp <- Rforce(
     design_matrix_Y = design_matrix_Y,
