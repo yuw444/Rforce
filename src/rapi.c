@@ -319,7 +319,7 @@ SEXP R_PrintTree(
         Rf_error("Invalid tree index.");
     }
 
-    char *filename0 = CHAR(STRING_ELT(filename, 0));
+    char *filename0 = (char *) CHAR(STRING_ELT(filename, 0));
     WriteTreeDotFile(forest->forest[treeIndex0], filename0);
     
     return R_NilValue;
