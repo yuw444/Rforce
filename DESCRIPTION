@@ -26,7 +26,8 @@ Imports:
     survival,
     tidyr,
     magrittr,
-    fastDummies
+    fastDummies,
+    DiagrammeR
 Suggests: 
     knitr,
     rmarkdown,
