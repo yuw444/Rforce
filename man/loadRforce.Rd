@@ -2,13 +2,43 @@
 % Please edit documentation in R/utils.R
 \name{loadRforce}
 \alias{loadRforce}
-\title{loadRforce function for Rforce}
+\title{Load an Rforce Object from Disk}
 \usage{
 loadRforce(path)
 }
 \arguments{
-\item{path}{A character string giving the name of the path from which the object should be loaded}
+\item{path}{A character string specifying the directory containing the saved
+\code{Rforce} object. The directory must include \code{Rforce.rds} and a
+single forest data subdirectory created by \code{saveRforce()}.}
+}
+\value{
+A fully functional \code{Rforce} object with a reconstructed external
+forest pointer, ready for prediction, visualization, or further analysis.
 }
 \description{
-loadRforce function for Rforce
+\code{loadRforce()} restores a previously saved \code{Rforce} object from a
+specified directory. It reconstructs both the R-side object (stored as
+\code{Rforce.rds}) and the associated C++ forest structure via the
+\code{R_LoadRforce} routine, ensuring full functionality.
+}
+\details{
+The function performs the following tasks:
+\enumerate{
+\item Reads the \code{Rforce.rds} file to reconstruct the R-side object.
+\item Validates that the restored object inherits class \code{"Rforce"}.
+\item Locates the associated forest data directory.
+\item Calls the native routine \code{R_LoadRforce} to rebuild the C-allocated
+forest structure, restoring the external pointer at
+\code{_external_forest_C_Ptr}.
+}
+
+If the directory structure is invalid or the C pointer fails to load, an
+error is raised.
+}
+\examples{
+\dontrun{
+# Load a previously saved Rforce model
+rf <- loadRforce("path/to/saved/model")
+rf
+}
 }

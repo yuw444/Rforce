@@ -2,15 +2,52 @@
 % Please edit documentation in R/utils.R
 \name{saveRforce}
 \alias{saveRforce}
-\title{saveRDS function for Rforce}
+\title{Save an Rforce Object to Disk}
 \usage{
 saveRforce(forest, file, ...)
 }
 \arguments{
-\item{file}{A character string giving the name of the file where the object should be saved}
+\item{forest}{An object of class \code{"Rforce"} representing the fitted random
+survival forest.}
 
-\item{object}{An Rforce object}
+\item{file}{A character string specifying the directory path where the object
+should be saved. The directory will be created by the underlying C routine
+if it does not already exist.}
+
+\item{...}{Additional arguments passed to \code{saveRDS()}, such as
+\code{compress} or \code{version}.}
+}
+\value{
+Invisibly returns \code{NULL}. A message is not printed, but files are written
+to the specified directory.
 }
 \description{
-saveRDS function for Rforce
+\code{saveRforce()} saves a trained \code{Rforce} object to disk, including both
+the R-side metadata (e.g., model settings, variable importance, parameters) and
+the full C-based forest structure. The external C pointer is handled separately
+and excluded from the saved \code{.rds} file to ensure portability and session
+safety.
+}
+\details{
+The function performs the following actions:
+\enumerate{
+\item Calls the native routine \code{R_SaveRforce} to serialize and write the
+forest structure (all trees) to the specified directory.
+\item Removes the external C pointer (\code{_external_forest_C_Ptr}) from the
+R object to prevent session-specific pointer issues.
+\item Saves the remaining R-side object to \code{Rforce.rds} using
+\code{saveRDS()}.
+}
+
+The resulting directory structure is compatible with \code{loadRforce()}, which
+restores both the R object and its native forest pointer.
+}
+\examples{
+\dontrun{
+# Fit an Rforce model and then save it
+saveRforce(rf_model, file = "saved_model")
+}
+}
+\seealso{
+\code{\link{loadRforce}} to reload a saved Rforce object.
 }

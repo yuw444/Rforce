@@ -12,8 +12,6 @@ enum SplitFunctionIndex
     PoissonLikelihoodIndex = 2
 };
 
-
-
 size_t CountNodes(DecisionTreeNode *root)
 {
     if (root == NULL)
@@ -301,4 +299,28 @@ SEXP R_LoadRforce(
     R_RegisterCFinalizerEx(forestPtr, (R_CFinalizer_t)FreeSurvivalForest, TRUE);
 
     return forestPtr;
+}
+
+
+SEXP R_PrintTree(
+    SEXP forestPtr,
+    SEXP treeIndex,
+    SEXP filename) {
+    // convert the forest pointer to C pointer
+    RandomSurvivalForest *forest = (RandomSurvivalForest *)R_ExternalPtrAddr(forestPtr);
+    if (forest == NULL)
+    {
+        Rf_error("Invalid forest pointer.");
+    }
+
+    size_t treeIndex0 = (size_t)INTEGER(treeIndex)[0];
+    if (treeIndex0 >= forest->nTrees)
+    {
+        Rf_error("Invalid tree index.");
+    }
+
+    char *filename0 = CHAR(STRING_ELT(filename, 0));
+    WriteTreeDotFile(forest->forest[treeIndex0], filename0);
+    
+    return R_NilValue;
 }
