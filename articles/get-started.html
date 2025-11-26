@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>get-started • Rforce</title>
+<title>Get Started • Rforce</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="get-started">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Get Started">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -29,12 +29,12 @@
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
-<li class="active nav-item"><a class="nav-link" href="../articles/get-started.html">Get started</a></li>
+<li class="active nav-item"><a class="nav-link" href="../articles/get-started.html">Get Started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/get-started.html">get-started</a></li>
+<li><a class="dropdown-item" href="../articles/get-started.html">Get Started</a></li>
     <li><a class="dropdown-item" href="../articles/introduction-to-Rforce.html">introduction-to-Rforce</a></li>
   </ul>
 </li>
@@ -57,7 +57,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>get-started</h1>
+      <h1>Get Started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/yuw444/Rforce/blob/master/vignettes/get-started.Rmd" class="external-link"><code>vignettes/get-started.Rmd</code></a></small>
@@ -69,6 +69,22 @@
 <div class="section level2">
 <h2 id="generating-composite-endpoint-data">Generating Composite Endpoint Data<a class="anchor" aria-label="anchor" href="#generating-composite-endpoint-data"></a>
 </h2>
+<ul>
+<li>
+<code>Rforce</code> package provides a direct function to generate
+composite endpoints survival data with options
+<ul>
+<li>Constant baseline hazard</li>
+<li>Non-constant() baseline hazard</li>
+<li>Proportional hazard</li>
+<li>Non-proportional hazard</li>
+<li>see details for these options in
+<code>Articles/Generating Composite Endpoints Survival Data</code>
+</li>
+</ul>
+</li>
+<li>By default, we genereate a non-constant baseline hazard with</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
 <span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compo_sim.html">compo_sim</a></span><span class="op">(</span>n_patients <span class="op">=</span> <span class="fl">500</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
