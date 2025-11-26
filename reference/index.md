@@ -32,7 +32,7 @@
 - [`km_fit()`](https://yuw444.github.io/Rforce/reference/km_fit.md) :
   fit kaplan meier survival function
 - [`loadRforce()`](https://yuw444.github.io/Rforce/reference/loadRforce.md)
-  : loadRforce function for Rforce
+  : Load an Rforce Object from Disk
 - [`observed_risk_time()`](https://yuw444.github.io/Rforce/reference/observed_risk_time.md)
   : calculate observed risk time at the given interval
 - [`patients_to_cpius()`](https://yuw444.github.io/Rforce/reference/patients_to_cpius.md)
@@ -40,12 +40,14 @@
   per interval per patient
 - [`predict(`*`<Rforce>`*`)`](https://yuw444.github.io/Rforce/reference/predict.Rforce.md)
   : Predict function for Rforce
+- [`printTree()`](https://yuw444.github.io/Rforce/reference/printTree.md)
+  : Visualize a Single Tree from an Rforce Forest
 - [`pseudo_risk_time()`](https://yuw444.github.io/Rforce/reference/pseudo_risk_time.md)
   : calculate pseudo risk time at the given interval
 - [`random_censoring()`](https://yuw444.github.io/Rforce/reference/random_censoring.md)
   : apply random censoring in the given dataset
 - [`saveRforce()`](https://yuw444.github.io/Rforce/reference/saveRforce.md)
-  : saveRDS function for Rforce
+  : Save an Rforce Object to Disk
 - [`surv_sim()`](https://yuw444.github.io/Rforce/reference/surv_sim.md)
   : Survival data generation using either weibull or inverse CDF method
 - [`true_Y()`](https://yuw444.github.io/Rforce/reference/true_Y.md) :
