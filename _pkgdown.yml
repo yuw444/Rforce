@@ -2,3 +2,11 @@ url: https://yuw444.github.io/Rforce/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: [home, get-started, reference, articles]
+    right: [search, github]
+  components:
+    get-started:
+      text: "Get started"
+      href: articles/get-started.html
