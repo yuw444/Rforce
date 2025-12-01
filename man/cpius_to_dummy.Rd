@@ -4,12 +4,12 @@
 \alias{cpius_to_dummy}
 \title{Dummy-encode factor/character covariates in CPIU object}
 \usage{
-cpius_to_dummy(object, cols_to_dummy = NULL)
+cpius_to_dummy(object, cols_to_keep = NULL)
 }
 \arguments{
 \item{object}{A CPIU object.}
 
-\item{cols_to_dummy}{Optional vector of column names to dummy-encode. If NULL, all factor/character columns will be dummy-encoded.}
+\item{cols_to_keep}{Optional vector of column names to keep and consider for dummy encoding. If NULL, all columns will be considered for dummy-encoded.}
 }
 \value{
 A CPIU object with dummy-encoded covariates in the \code{designMatrixY}.

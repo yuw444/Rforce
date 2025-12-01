@@ -470,7 +470,7 @@ patients_to_cpius <- function(
   return(
     structure(
       list(
-        data = data_to_convert,
+        data = data_to_convert %>% dplyr::select(!c(`Events`)),
         unitsOfCPIUs = units_of_cpiu,
         nIntervals = size_cpius,
         eventTypes = list_status,

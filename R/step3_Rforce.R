@@ -264,8 +264,8 @@ Rforce <- function(
     colnames(data_response) <- c("Id", "X", "Status")
 
     data_to_convert <- cbind.data.frame(
-      data %>% dplyr::select(dplyr::all_of(rhs_vars)),
-      data_response
+      data_response,
+      data %>% dplyr::select(dplyr::all_of(rhs_vars))
     )
 
     # compute units_of_cpius if not supplied (default: deciles of follow-up time)

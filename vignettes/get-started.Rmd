@@ -8,18 +8,19 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Rforce
 
 **Composite Endpoint** data type that has gained momentum in the field, due to its fully consideration on the all observated events for each patients, in comparison to the **Competing Risk** setting that utilize only on the first observed event for each patient. 
 
-A parametric approach, like **Wcompo** @mao2016semiparametric, has proposed to addressed the inference challenge while imposing the proportional hazard assumption. Inspired by **Random Survival Forest** @Ishwaran2008 and **Counting Process Information Unit(CPIU)** @wongvibulsin_clinical_2019, we here porposed a non-parametric ensememble method, <u>*Random Froest for Composite Endpoints*(**Rforce**)</u>, to further relax the proportional hazard assumption. 
+A parametric approach, like **Wcompo**[@mao2016semiparametric], has proposed to addressed the inference challenge while imposing the proportional hazard assumption. Inspired by **Random Survival Forest** [@Ishwaran2008] and **Counting Process Information Unit(CPIU)** [@wongvibulsin_clinical_2019], we here porposed a non-parametric ensememble method, <u>*Random Froest for Composite Endpoints*(**Rforce**)</u>, to further relax the proportional hazard assumption. 
 
 Below, we like to demonstrate a simulated data example to show off the simplistic pipeline of **Rforce**.
 
@@ -33,10 +34,9 @@ Below, we like to demonstrate a simulated data example to show off the simplisti
   * see details for these options in `Articles/Generating Composite Endpoints/Survival Data`
 
 * By default, we generate a non-constant(Weibull) baseline hazard with proportional hazard assumption.
-```{r setup}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r}
 library(Rforce)
+library(dplyr)
 data_list <- compo_sim(n_patients = 500, verbose = FALSE)
 data_list$true_beta
 data_list$hazard_function
@@ -71,7 +71,17 @@ head(df)
 * `patients_to_cpius()` is customized for these purpose.
 
 ```{r}
-units_of_cpiu <- diff(c(0, quantile(df$X, 1 / 10 * 1:10)))
+n_intervals <- 10
+probs <- seq(0, 1, length.out = n_intervals + 1)
+observed_times <- df %>% dplyr::pull(X)
+break_points <- stats::quantile(
+  observed_times,
+  probs = probs,
+  na.rm = TRUE
+)
+break_points[1] <- 0.0 # ensure starting at 0
+break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending at max time
+units_of_cpius <- diff(break_points)
 cpiu_wide <- patients_to_cpius(
   data_to_convert = df,
   units_of_cpiu = units_of_cpiu
@@ -92,8 +102,10 @@ class(cpiu_wide)
 
 * Worthy to metion, **Rforce** don't evaluate the variable importance on individual levels of these categorical variable. Through the carefully design permutation framework, **Rforce** direct output the variable importance on the variable itself after the model fitting.
   
+* By default, all the columns in `designMatrix_Y` will be used in dummy encoding and random forest fitting; One can customize the original columns to be considered by modifying the parameter `cols_to_keep`.
+  
 ```{r}
-cpiu_wide <- cpius_to_dummy(cpiu_wide)
+cpiu_wide <- cpius_to_dummy(cpiu_wide, cols_to_keep = NULL)
 ```
 
 ## Step 3: Fit Random Forest Model
@@ -120,4 +132,18 @@ fit <- Rforce(
 )
 ```
 
-## 
+
+## 3-in-1 Equivalent Command
+
+* `Rforce` is also a bigger wrapper function for `Step 1 - 3`
+  
+```{r}
+fit <- Rforce(
+  data = df,
+  formula = Surv(Id, X, Status) ~ ., 
+  n_intervals = 10,
+  split_rule = "Rforce-QLR"
+)
+```
+
+## Reference
