@@ -1,5 +1,5 @@
 ---
-title: "Get Started"
+title: "get-started"
 output: rmarkdown::html_vignette
 bibliography: references.bib
 vignette: >
