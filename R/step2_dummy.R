@@ -8,11 +8,11 @@
 #' @importFrom dplyr select all_of
 #' @importFrom fastDummies dummy_cols
 #' @param object A CPIU object.
-#' @param cols_to_dummy Optional vector of column names to dummy-encode. If NULL, all factor/character columns will be dummy-encoded.
+#' @param cols_to_keep Optional vector of column names to keep and consider for dummy encoding. If NULL, all columns will be considered for dummy-encoded.
 #' @export
 #' @return A CPIU object with dummy-encoded covariates in the `designMatrixY`.
 
-cpius_to_dummy <- function(object, cols_to_dummy = NULL) {
+cpius_to_dummy <- function(object, cols_to_keep = NULL) {
     validate(object)
 
     df_designMatrix <- object$designMatrix_Y %>%
@@ -21,14 +21,14 @@ cpius_to_dummy <- function(object, cols_to_dummy = NULL) {
     df_Y <- object$designMatrix_Y %>%
         dplyr::select(tidyr::starts_with("nEvents"))
 
-    if (!is.null(cols_to_dummy)) {
+    if (!is.null(cols_to_keep)) {
         validate(
             df_designMatrix,
-            required_cols = cols_to_dummy
+            required_cols = cols_to_keep
         )
 
         df_designMatrix <- df_designMatrix %>%
-            dplyr::select(all_of(cols_to_dummy))
+            dplyr::select(all_of(cols_to_keep))
     }
 
     if (
