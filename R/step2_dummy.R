@@ -9,6 +9,7 @@
 #' @importFrom fastDummies dummy_cols
 #' @param object A CPIU object.
 #' @param cols_to_dummy Optional vector of column names to dummy-encode. If NULL, all factor/character columns will be dummy-encoded.
+#' @export
 #' @return A CPIU object with dummy-encoded covariates in the `designMatrixY`.
 
 cpius_to_dummy <- function(object, cols_to_dummy = NULL) {
