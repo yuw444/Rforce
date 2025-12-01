@@ -35,6 +35,7 @@ Below, we like to demonstrate a simulated data example to show off the simplisti
 * By default, we generate a non-constant(Weibull) baseline hazard with proportional hazard assumption.
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
+
 library(Rforce)
 data_list <- compo_sim(n_patients = 500, verbose = FALSE)
 data_list$true_beta
@@ -55,7 +56,7 @@ head(data_list$dataset)
 * In real world clinical trials, patients may be censored before experiencing terminal event.
 * `Rforce` package provides `random_censoring()` function to implement random censoring mechanism on the generated complete data.
 
-```{r setup}
+```{r}
 df <- random_censoring(
   data = data_list$dataset,
   event_rate = 0.5
@@ -69,7 +70,7 @@ head(df)
 * The interval of units `units_of_cpiu` is defined such that each interval contains approximately equal number of events, e.g. 10 intervals. 
 * `patients_to_cpius()` is customized for these purpose.
 
-```{r setup}
+```{r}
 units_of_cpiu <- diff(c(0, quantile(df$X, 1 / 10 * 1:10)))
 cpiu_wide <- patients_to_cpius(
   data_to_convert = df,
@@ -91,7 +92,7 @@ class(cpiu_wide)
 
 * Worthy to metion, **Rforce** don't evaluate the variable importance on individual levels of these categorical variable. Through the carefully design permutation framework, **Rforce** direct output the variable importance on the variable itself after the model fitting.
   
-```{r setup}
+```{r}
 cpiu_wide <- cpius_to_dummy(cpiu_wide)
 ```
 
@@ -112,7 +113,7 @@ cpiu_wide <- cpius_to_dummy(cpiu_wide)
   * `Rforce-GEEInter`
   * see details for the default in `Reference/Rforce()`.
 
-```{r setup}
+```{r}
 fit <- Rforce(
   cpius = cpiu_wide,
   split_rule = "Rforce-QLR"
