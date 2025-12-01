@@ -21,6 +21,10 @@ predict.Rforce <- function(forest, designMatrix) {
   )
 }
 
+vimp <- function(object, ...) {
+  UseMethod("vimp")
+}
+
 #' Variable importance function for Rforce object
 #' @export
 #' @param forest An Rforce object
@@ -32,7 +36,10 @@ vimp.Rforce <- function(forest) {
     stop("forest must be an Rforce object.")
   }
 
-  return(forest$vimpStat)
+  vec <- colMeans(forest$vimpStat)
+  vec <- (vec - min(vec)) / (max(vec) - min(vec))
+  names(vec) <- forest$cpius$variableUsed
+  return(vec)
 }
 
 

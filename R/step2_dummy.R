@@ -52,7 +52,7 @@ cpius_to_dummy <- function(object, cols_to_dummy = NULL) {
         variable_Ids_int <- match(variable_Ids_names, unique_vars) - 1
     } else {
         covariate_df <- df_designMatrix
-        variable_Ids_int <- as.integer(variable_Ids)
+        variable_Ids_int <- seq_len(ncol(covariate_df)) - 1
     }
 
     object$designMatrix_Y <- cbind.data.frame(
@@ -63,6 +63,13 @@ cpius_to_dummy <- function(object, cols_to_dummy = NULL) {
     object$variableUsed <- colnames(df_designMatrix)
     object$variableIds <- variable_Ids_int
     object$isDummy <- TRUE
+
+    object$formula <- as.formula(
+        paste(
+            "Surv(Id, X, Status) ~",
+            paste(colnames(object$designMatrix_Y %>% dplyr::select(-tidyr::starts_with("nEvents"))), collapse = " + ")
+        )
+    )
 
     return(object)
 }

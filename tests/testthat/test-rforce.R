@@ -8,6 +8,8 @@ library(dplyr)
 # library(sjmisc)
 library(Rforce)
 
+data_sim <- compo_sim()
+
 data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds") %>%
   filter(Id < 1000)
 units_of_cpius <- diff(c(0, quantile(data$X, 1 / 10 * 1:10)))

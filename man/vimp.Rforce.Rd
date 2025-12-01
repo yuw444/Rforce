@@ -4,7 +4,7 @@
 \alias{vimp.Rforce}
 \title{Variable importance function for Rforce object}
 \usage{
-vimp.Rforce(forest)
+\method{vimp}{Rforce}(forest)
 }
 \arguments{
 \item{forest}{An Rforce object}

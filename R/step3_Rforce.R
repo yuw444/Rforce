@@ -304,8 +304,6 @@ Rforce <- function(
 
   validate(cpius)
 
-  cpius$formula <- formula
-
   if (!cpius$isDummy) {
     message("Dummy-encoding factor/character covariates...")
     cpius <- cpius_to_dummy(cpius)

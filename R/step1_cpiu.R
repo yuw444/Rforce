@@ -276,7 +276,7 @@ patients_to_cpius <- function(
   df_cov <- data_to_convert %>%
     dplyr::select(-c(`Id`, `X`, `Status`))
 
-  lst_cov_summary <- lapply(data, function(col) {
+  lst_cov_summary <- lapply(df_cov, function(col) {
     if (is.factor(col) || is.character(col)) {
       return(
         list(
@@ -450,8 +450,10 @@ patients_to_cpius <- function(
         nPatients = n_patients,
         variableNameOrignal = colnames(df_cov),
         variableSummaryOrignal = lst_cov_summary,
+        isDummy = FALSE,
         variableUsed = NULL,
-        variableIds = NULL
+        variableIds = NULL,
+        formula = NULL
       ),
       class = "CPIU"
     ))
