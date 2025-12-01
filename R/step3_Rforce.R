@@ -251,6 +251,10 @@ Rforce <- function(
       )
     }
 
+    if(rhs_vars == ".") {
+      rhs_vars <- setdiff(colnames(data), lhs_vars)
+    }
+
     validate(data, required_cols = lhs_vars)
     validate(data, required_cols = rhs_vars)
 
