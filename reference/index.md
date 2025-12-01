@@ -60,7 +60,7 @@
   : validate CPIU object
 - [`validate(`*`<data.frame>`*`)`](https://yuw444.github.io/Rforce/reference/validate.data.frame.md)
   : validate data.frame object
-- [`vimp.Rforce()`](https://yuw444.github.io/Rforce/reference/vimp.Rforce.md)
+- [`vimp(`*`<Rforce>`*`)`](https://yuw444.github.io/Rforce/reference/vimp.Rforce.md)
   : Variable importance function for Rforce object
 - [`wcompo_est()`](https://yuw444.github.io/Rforce/reference/wcompo_est.md)
   : Fast implementation of Lu Mao's Wcompo method by Kim So Young

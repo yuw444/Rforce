@@ -5,7 +5,8 @@ Variable importance function for Rforce object
 ## Usage
 
 ``` r
-vimp.Rforce(forest)
+# S3 method for class 'Rforce'
+vimp(forest)
 ```
 
 ## Arguments

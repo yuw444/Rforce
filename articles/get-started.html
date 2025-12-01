@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Get Started • Rforce</title>
+<title>get-started • Rforce</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Get Started">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="get-started">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,7 +34,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/get-started.html">Get Started</a></li>
+<li><a class="dropdown-item" href="../articles/get-started.html">get-started</a></li>
     <li><a class="dropdown-item" href="../articles/introduction-to-Rforce.html">introduction-to-Rforce</a></li>
   </ul>
 </li>
@@ -57,7 +57,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Get Started</h1>
+      <h1>get-started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/yuw444/Rforce/blob/master/vignettes/get-started.Rmd" class="external-link"><code>vignettes/get-started.Rmd</code></a></small>
@@ -67,29 +67,260 @@
     
     
 <div class="section level2">
-<h2 id="generating-composite-endpoint-data">Generating Composite Endpoint Data<a class="anchor" aria-label="anchor" href="#generating-composite-endpoint-data"></a>
+<h2 id="rforce">Rforce<a class="anchor" aria-label="anchor" href="#rforce"></a>
 </h2>
+<p><strong>Composite Endpoint</strong> data type that has gained
+momentum in the field, due to its fully consideration on the all
+observated events for each patients, in comparison to the
+<strong>Competing Risk</strong> setting that utilize only on the first
+observed event for each patient.</p>
+<p>A parametric approach, like <strong>Wcompo</strong> <span class="citation">Mao and Lin (2016)</span>, has proposed to addressed
+the inference challenge while imposing the proportional hazard
+assumption. Inspired by <strong>Random Survival Forest</strong> <span class="citation">Ishwaran et al. (2008)</span> and <strong>Counting
+Process Information Unit(CPIU)</strong> <span class="citation">Wongvibulsin, Wu, and Zeger (2019)</span>, we here
+porposed a non-parametric ensememble method, <u><em>Random Froest for
+Composite Endpoints</em>(<strong>Rforce</strong>)</u>, to further relax
+the proportional hazard assumption.</p>
+<p>Below, we like to demonstrate a simulated data example to show off
+the simplistic pipeline of <strong>Rforce</strong>.</p>
+<div class="section level3">
+<h3 id="generating-composite-endpoint-data">Generating Composite Endpoint Data<a class="anchor" aria-label="anchor" href="#generating-composite-endpoint-data"></a>
+</h3>
 <ul>
 <li>
-<code>Rforce</code> package provides a direct function to generate
-composite endpoints survival data with options
+<code>Rforce</code> package provides functions to generate composite
+endpoints survival data with options
 <ul>
 <li>Constant baseline hazard</li>
 <li>Non-constant() baseline hazard</li>
 <li>Proportional hazard</li>
 <li>Non-proportional hazard</li>
 <li>see details for these options in
-<code>Articles/Generating Composite Endpoints Survival Data</code>
+<code>Articles/Generating Composite Endpoints/Survival Data</code>
 </li>
 </ul>
 </li>
-<li>By default, we genereate a non-constant baseline hazard with</li>
+<li>By default, we generate a non-constant(Weibull) baseline hazard with
+proportional hazard assumption.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
-<span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compo_sim.html">compo_sim</a></span><span class="op">(</span>n_patients <span class="op">=</span> <span class="fl">500</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>echo <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
+<span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compo_sim.html">compo_sim</a></span><span class="op">(</span>n_patients <span class="op">=</span> <span class="fl">500</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">data_list</span><span class="op">$</span><span class="va">true_beta</span></span>
+<span><span class="co">#&gt;  [1] 0.0 0.0 0.0 0.6 0.0 0.0 0.8 0.0 0.7 0.0</span></span>
+<span><span class="va">data_list</span><span class="op">$</span><span class="va">hazard_function</span></span>
+<span><span class="co">#&gt; function (x) </span></span>
+<span><span class="co">#&gt; {</span></span>
+<span><span class="co">#&gt;     exp(x %*% true_beta)</span></span>
+<span><span class="co">#&gt; }</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x5557a74d9638&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x5557a74dcdd8&gt;</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_list</span><span class="op">$</span><span class="va">dataset</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6</span></span>
+<span><span class="co">#&gt; 1  1 0.003487709      2       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 2  1 0.047510838      2       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 3  1 1.646181137      1       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 4  2 0.074786350      2       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt; 5  2 0.266915324      2       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt; 6  2 0.833510030      2       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt;   continuous7 continuous8 continuous9 continuous10</span></span>
+<span><span class="co">#&gt; 1   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 2   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 3   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 4   0.6814544   0.5258878   0.6166269   0.03045993</span></span>
+<span><span class="co">#&gt; 5   0.6814544   0.5258878   0.6166269   0.03045993</span></span>
+<span><span class="co">#&gt; 6   0.6814544   0.5258878   0.6166269   0.03045993</span></span></code></pre></div>
+<ul>
+<li>Each patient’s observation can span across multiple rows, each row
+representing one of event of interest, ordered by time of
+occurrence.</li>
+<li>For completeness, each patient has complete observations up to
+terminal(fatal) event.</li>
+<li>However, <code><a href="../reference/compo_sim.html">compo_sim()</a></code> only generates non time-varying
+covariates although the proposed methodology can handle time-varying
+covariates.</li>
+<li>Here, we generate 6 binary covariates and 4 continuous covariates by
+default.</li>
+<li>The hazard function consist of baseline hazard
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_0(t)</annotation></semantics></math>
+and parametric part
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐙</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\mathbf{Z})</annotation></semantics></math>,
+i.e.,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>λ</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐙</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda(t) = \lambda_0(t) g(\mathbf{Z})</annotation></semantics></math>
+where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>λ</mi><mn>0</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∼</mo><mi>W</mi><mi>e</mi><mi>i</mi><mi>b</mi><mi>u</mi><mi>l</mi><mi>l</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda_0(t) \sim Weibull(1, 1)</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>𝐙</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo>exp</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>β</mi><mi>𝐙</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">g(\mathbf{Z}) = \exp(\beta \mathbf{Z})</annotation></semantics></math>.</li>
+<li>Only two covariates have non-zero effects on the hazard function,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
+is indicated by <code>data_list$true_beta</code>.</li>
+</ul>
 </div>
-  </main>
+<div class="section level3">
+<h3 id="implementating-random-censoring">Implementating Random Censoring<a class="anchor" aria-label="anchor" href="#implementating-random-censoring"></a>
+</h3>
+<ul>
+<li>In real world clinical trials, patients may be censored before
+experiencing terminal event.</li>
+<li>
+<code>Rforce</code> package provides <code><a href="../reference/random_censoring.html">random_censoring()</a></code>
+function to implement random censoring mechanism on the generated
+complete data.</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/random_censoring.html">random_censoring</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">data_list</span><span class="op">$</span><span class="va">dataset</span>,</span>
+<span>  event_rate <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">df</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   Id           X Status binary1 binary2 binary3 binary4 binary5 binary6</span></span>
+<span><span class="co">#&gt; 1  1 0.003487709      2       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 2  1 0.047510838      2       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 3  1 1.646181137      1       0       1       0       0       1       0</span></span>
+<span><span class="co">#&gt; 4  2 0.074786350      2       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt; 5  2 0.266915324      2       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt; 6  2 0.539628591      0       0       0       1       0       1       0</span></span>
+<span><span class="co">#&gt;   continuous7 continuous8 continuous9 continuous10</span></span>
+<span><span class="co">#&gt; 1   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 2   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 3   0.4147548   0.6333024   0.4278975   0.86040861</span></span>
+<span><span class="co">#&gt; 4   0.6814544   0.5258878   0.6166269   0.03045993</span></span>
+<span><span class="co">#&gt; 5   0.6814544   0.5258878   0.6166269   0.03045993</span></span>
+<span><span class="co">#&gt; 6   0.6814544   0.5258878   0.6166269   0.03045993</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="step-1-converting-cpiu-wide-format">Step 1: Converting CPIU-wide Format<a class="anchor" aria-label="anchor" href="#step-1-converting-cpiu-wide-format"></a>
+</h3>
+<ul>
+<li>Evidently, the hazard function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\lambda(t)</annotation></semantics></math>
+is not a constant of time. Inspired by <strong>Counting Process
+Information Unit(CPIU)</strong>, we convert the observed data into
+<u>CPIU-wide</u> format to better capture the hazard pattern for the
+population.</li>
+<li>The interval of units <code>units_of_cpiu</code> is defined such
+that each interval contains approximately equal number of events,
+e.g. 10 intervals.</li>
+<li>
+<code><a href="../reference/patients_to_cpius.html">patients_to_cpius()</a></code> is customized for these
+purpose.</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">units_of_cpiu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">X</span>, <span class="fl">1</span> <span class="op">/</span> <span class="fl">10</span> <span class="op">*</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/patients_to_cpius.html">patients_to_cpius</a></span><span class="op">(</span></span>
+<span>  data_to_convert <span class="op">=</span> <span class="va">df</span>,</span>
+<span>  units_of_cpiu <span class="op">=</span> <span class="va">units_of_cpiu</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cpiu_wide</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] "data"                   "unitsOfCPIUs"           "nIntervals"            </span></span>
+<span><span class="co">#&gt;  [4] "eventTypes"             "eventWeights"           "pseudoRisk"            </span></span>
+<span><span class="co">#&gt;  [7] "wideFormat"             "designMatrix_Y"         "auxiliaryFeatures"     </span></span>
+<span><span class="co">#&gt; [10] "nPatients"              "variableNameOrignal"    "variableSummaryOrignal"</span></span>
+<span><span class="co">#&gt; [13] "isDummy"                "variableUsed"           "variableIds"           </span></span>
+<span><span class="co">#&gt; [16] "formula"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/class.html" class="external-link">class</a></span><span class="op">(</span><span class="va">cpiu_wide</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "CPIU"</span></span></code></pre></div>
+<ul>
+<li>
+<code>CPIU</code> is S3 class defined in <strong>Rforce</strong>
+package to better encapsulate <code>CPIU-wide</code> formatted data,
+along with the metadata.</li>
+<li>Two main <code>data.frame</code>’s are included,
+<ul>
+<li>
+<code>designMatrix_Y</code>: covariates + number of events in each
+defined interval</li>
+<li>
+<code>auxilaryFeatures</code>: <code>Id</code> +
+<code>pseudo risk time</code> in each defined interval + <code>X</code>
++ <code>Status</code>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="step-2-encoding-factorcategorical-variables">Step 2: Encoding Factor/Categorical Variables<a class="anchor" aria-label="anchor" href="#step-2-encoding-factorcategorical-variables"></a>
+</h3>
+<ul>
+<li><p>In real world, there may have factor or categorical variable in
+the data. Internally, <strong>Rforce</strong> encodes those variables
+into dummy variables, to avoid the collinearlity, the number of encoded
+dummy varaibles for each categorical <code>variable</code> always equal
+to <code>nlevels(variable) - 1</code>.</p></li>
+<li><p>Worthy to metion, <strong>Rforce</strong> don’t evaluate the
+variable importance on individual levels of these categorical variable.
+Through the carefully design permutation framework,
+<strong>Rforce</strong> direct output the variable importance on the
+variable itself after the model fitting.</p></li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cpius_to_dummy.html">cpius_to_dummy</a></span><span class="op">(</span><span class="va">cpiu_wide</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="step-3-fit-random-forest-model">Step 3: Fit Random Forest Model<a class="anchor" aria-label="anchor" href="#step-3-fit-random-forest-model"></a>
+</h3>
+<ul>
+<li>
+<code><a href="../reference/Rforce.html">Rforce()</a></code> does the final model fitting</li>
+<li>Internally, there are various of settings for the hyperparameters
+for growing random forest with some smart default. For example,
+<ul>
+<li><code>n_trees</code></li>
+<li><code>mtry</code></li>
+<li><code>n_splits</code></li>
+<li><code>min_gain</code></li>
+<li><code>min_node_size</code></li>
+<li><code>max_depth</code></li>
+<li>
+<code>seed</code>.</li>
+<li>see details for the default in <code>Reference/Rforce()</code>.</li>
+</ul>
+</li>
+<li>Same time, the default <code>split_rule</code> is using the proposed
+quasi-likelihood ratio <code>Rforce-QLR</code>, it is more computational
+efficient than other two proposed rules,
+<ul>
+<li><code>Rforce-GEE</code></li>
+<li><code>Rforce-GEEInter</code></li>
+<li>see details for the default in <code>Reference/Rforce()</code>.</li>
+</ul>
+</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Rforce.html">Rforce</a></span><span class="op">(</span></span>
+<span>  cpius <span class="op">=</span> <span class="va">cpiu_wide</span>,</span>
+<span>  split_rule <span class="op">=</span> <span class="st">"Rforce-QLR"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Fitting Rforce-QLR forest...</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 class="unnumbered" id="section"></h3>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-Ishwaran2008" class="csl-entry">
+Ishwaran, Hemant, Udaya B. Kogalur, Eugene H. Blackstone, and Michael S.
+Lauer. 2008. <span>“Random Survival Forests.”</span> <em>The Annals of
+Applied Statistics</em> 2 (3). <a href="https://doi.org/10.1214/08-aoas169" class="external-link">https://doi.org/10.1214/08-aoas169</a>.
+</div>
+<div id="ref-mao2016semiparametric" class="csl-entry">
+Mao, Lu, and DY Lin. 2016. <span>“Semiparametric Regression for the
+Weighted Composite Endpoint of Recurrent and Terminal Events.”</span>
+<em>Biostatistics</em> 17 (2): 390–403.
+</div>
+<div id="ref-wongvibulsin_clinical_2019" class="csl-entry">
+Wongvibulsin, Shannon, Katherine C. Wu, and Scott L. Zeger. 2019.
+<span>“Clinical Risk Prediction with Random Forests for Survival,
+Longitudinal, and Multivariate (<span>RF</span>-<span>SLAM</span>) Data
+Analysis.”</span> <em>BMC Medical Research Methodology</em> 20
+(December). <a href="https://doi.org/10.1186/s12874-019-0863-0" class="external-link">https://doi.org/10.1186/s12874-019-0863-0</a>.
+</div>
+</div>
+</div>
+</div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 
