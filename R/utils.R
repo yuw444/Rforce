@@ -30,7 +30,6 @@ vimp <- function(object, ...) {
 #' @param forest An Rforce object
 #' @return A matrix containing variable importance statistics for each variable in each tree of the forest,
 #' row correspond to trees and columns correspond to variables.
-
 vimp.Rforce <- function(forest) {
   if (!inherits(forest, "Rforce")) {
     stop("forest must be an Rforce object.")

@@ -30,3 +30,20 @@ fit <- Rforce(
   mtry          = 2,
   n_splits      = 5
 )
+
+
+Rforce train -d ./raw/Intervals_designMatrixY_wide.csv \
+  -a ./raw/Intervals_auxiliaryFeature_wide.csv \
+  -u ./raw/units_of_cpiu.csv \
+  -o ./rst \
+  -m 8 \
+  -n 10 \
+  -g 0.01 \
+  -t 5 \
+  -s 6 \
+  -k 99 \
+  -r 100 \
+  -e 926 \
+  --pseudorisk2 \
+  --phi2 \
+  --threads 10
