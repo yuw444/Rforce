@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
@@ -142,4 +143,54 @@ double *Permute(double *arrayIn, size_t n, unsigned int seed);
 double **ColsPermute(double **arrayIn, size_t nrows, size_t ncols, unsigned int *colsToPermute, size_t ncolsToPermute, unsigned int seed);
 
 void MkdirRecursive(const char *path);
+
+/*****************Thread Safe pseudo random number generator(PRNG)*************************/
+/* local xoshiro256++ state */
+typedef struct {
+    uint64_t s[4];
+} xoshiro256pp_state;
+
+/* rotate left */
+static inline uint64_t rotl64(uint64_t x, int k) {
+    return (x << k) | (x >> (64 - k));
+}
+
+/* splitmix64 for seeding */
+static inline uint64_t splitmix64_next(uint64_t *x) {
+    uint64_t z = (*x += UINT64_C(0x9e3779b97f4a7c15));
+    z = (z ^ (z >> 30)) * UINT64_C(0xbf58476d1ce4e5b9);
+    z = (z ^ (z >> 27)) * UINT64_C(0x94d049bb133111eb);
+    return z ^ (z >> 31);
+}
+
+/* initialize state from a 64-bit seed */
+static inline void xoshiro256pp_seed(xoshiro256pp_state *st, uint64_t seed) {
+    uint64_t x = seed;
+    for (int i = 0; i < 4; ++i) {
+        st->s[i] = splitmix64_next(&x);
+    }
+}
+
+/* one step */
+static inline uint64_t xoshiro256pp_next(xoshiro256pp_state *st) {
+    const uint64_t result = rotl64(st->s[0] + st->s[3], 23) + st->s[0];
+
+    const uint64_t t = st->s[1] << 17;
+
+    st->s[2] ^= st->s[0];
+    st->s[3] ^= st->s[1];
+    st->s[1] ^= st->s[2];
+    st->s[0] ^= st->s[3];
+
+    st->s[2] ^= t;
+    st->s[3] = rotl64(st->s[3], 45);
+
+    return result;
+}
+
+/* uniform index in [0, n) */
+static inline size_t xoshiro256pp_uniform_index(xoshiro256pp_state *st, size_t n) {
+    return (size_t)(xoshiro256pp_next(st) % n);
+}
+
 #endif

@@ -217,46 +217,51 @@ int *SampleInt(int *arrayIn, size_t n, size_t nSample, unsigned int replace, uns
     printf("Memory allocation failed\n");
     exit(1);
   }
-  srand(seed);
+
+  /* local RNG state seeded from the seed argument */
+  xoshiro256pp_state rng;
+  xoshiro256pp_seed(&rng, (uint64_t)seed);
 
   if (replace == 0)
   {
     if (nSample > n)
     {
-
       free(sampleOut);
       PRINT_LOCATION();
-      printf("Sample size must be smaller than population size when sampling without replacement in `SampleInt()`.");
+      printf("Sample size must be smaller than population size when sampling without replacement in `SampleInt()`.\n");
       exit(1);
     }
 
     int *arrayInCopy = calloc(n, sizeof(int));
     if (arrayInCopy == NULL)
     {
+      free(sampleOut);
       PRINT_LOCATION();
       printf("Memory allocation failed\n");
       exit(1);
     }
     memcpy(arrayInCopy, arrayIn, n * sizeof(int));
 
-    for (int i = 0; i < nSample; i++)
+    size_t m = n;
+    for (size_t i = 0; i < nSample; i++)
     {
-      int index = rand() % n;
+      size_t index = xoshiro256pp_uniform_index(&rng, m);
       sampleOut[i] = arrayInCopy[index];
-      if (index != (n - 1))
+      if (index != (m - 1))
       {
-        arrayInCopy[index] = arrayInCopy[n - 1];
+        arrayInCopy[index] = arrayInCopy[m - 1];
       }
-      n--;
+      m--;
     }
 
     free(arrayInCopy);
   }
   else
   {
-    for (int i = 0; i < nSample; i++)
+    for (size_t i = 0; i < nSample; i++)
     {
-      sampleOut[i] = arrayIn[rand() % n];
+      size_t index = xoshiro256pp_uniform_index(&rng, n);
+      sampleOut[i] = arrayIn[index];
     }
   }
 
@@ -272,46 +277,49 @@ double *SampleDouble(double *arrayIn, size_t n, size_t nSample, unsigned int rep
     printf("Memory allocation failed\n");
     exit(1);
   }
-  srand(seed);
+
+  xoshiro256pp_state rng;
+  xoshiro256pp_seed(&rng, (uint64_t)seed);
 
   if (replace == 0)
   {
     if (nSample > n)
     {
-
       free(sampleOut);
       PRINT_LOCATION();
       printf("Sample size must be smaller than population size when sampling without replacement in `SampleDouble()`.\n");
-      return NULL;
+      exit(1);
     }
 
     double *arrayInCopy = calloc(n, sizeof(double));
     if (arrayInCopy == NULL)
     {
+      free(sampleOut);
       PRINT_LOCATION();
       printf("Memory allocation failed\n");
       exit(1);
     }
     memcpy(arrayInCopy, arrayIn, n * sizeof(double));
 
-    for (int i = 0; i < nSample; i++)
+    size_t m = n;
+    for (size_t i = 0; i < nSample; i++)
     {
-      int index = rand() % n;
+      size_t index = xoshiro256pp_uniform_index(&rng, m);
       sampleOut[i] = arrayInCopy[index];
-      if (index != (n - 1))
+      if (index != (m - 1))
       {
-        arrayInCopy[index] = arrayInCopy[n - 1];
+        arrayInCopy[index] = arrayInCopy[m - 1];
       }
-      n--;
+      m--;
     }
 
     free(arrayInCopy);
   }
   else
   {
-    for (int i = 0; i < nSample; i++)
+    for (size_t i = 0; i < nSample; i++)
     {
-      int index = rand() % n;
+      size_t index = xoshiro256pp_uniform_index(&rng, n);
       sampleOut[i] = arrayIn[index];
     }
   }
@@ -993,14 +1001,19 @@ double *Permute(double *arrayIn, size_t n, unsigned int seed)
     exit(1);
   }
   memcpy(arrayOut, arrayIn, n * sizeof(double));
-  srand(seed);
+
+  // Local RNG instead of srand/rand
+  xoshiro256pp_state rng;
+  xoshiro256pp_seed(&rng, (uint64_t)seed);
+
   for (size_t i = 0; i < n; i++)
   {
-    size_t j = rand() % n;
+    size_t j = xoshiro256pp_uniform_index(&rng, n);
     double temp = arrayOut[i];
     arrayOut[i] = arrayOut[j];
     arrayOut[j] = temp;
   }
+
   return arrayOut;
 }
 
@@ -1023,33 +1036,39 @@ double **ColsPermute(double **arrayIn, size_t nrows, size_t ncols, unsigned int 
   return arrayOut;
 }
 
-void MkdirRecursive(const char *path) {
-    char temp[256];
-    char *pos = NULL;
-    size_t len;
+void MkdirRecursive(const char *path)
+{
+  char temp[256];
+  char *pos = NULL;
+  size_t len;
 
-    // Copy the path to a temporary buffer
-    strncpy(temp, path, sizeof(temp));
-    len = strlen(temp);
+  // Copy the path to a temporary buffer
+  strncpy(temp, path, sizeof(temp));
+  len = strlen(temp);
 
-    if (temp[len - 1] == '/') {
-        temp[len - 1] = '\0';
-    }
+  if (temp[len - 1] == '/')
+  {
+    temp[len - 1] = '\0';
+  }
 
-    // Iterate through the path and create directories
-    for (pos = temp + 1; *pos; pos++) {
-        if (*pos == '/') {
-            *pos = '\0';
-            if (mkdir(temp, 0700) != 0 && errno != EEXIST) {
-                perror("mkdir");
-                return;
-            }
-            *pos = '/';
-        }
-    }
-
-    // Create the final directory
-    if (mkdir(temp, 0700) != 0 && errno != EEXIST) {
+  // Iterate through the path and create directories
+  for (pos = temp + 1; *pos; pos++)
+  {
+    if (*pos == '/')
+    {
+      *pos = '\0';
+      if (mkdir(temp, 0700) != 0 && errno != EEXIST)
+      {
         perror("mkdir");
+        return;
+      }
+      *pos = '/';
     }
+  }
+
+  // Create the final directory
+  if (mkdir(temp, 0700) != 0 && errno != EEXIST)
+  {
+    perror("mkdir");
+  }
 }

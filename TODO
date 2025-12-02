@@ -46,4 +46,4 @@ Rforce train -d ./raw/Intervals_designMatrixY_wide.csv \
   -e 926 \
   --pseudorisk2 \
   --phi2 \
-  --threads 10
+  --threads 1
