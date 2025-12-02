@@ -17,6 +17,7 @@ Rforce(
   min_gain = NULL,
   min_node_size = NULL,
   max_depth = 8,
+  n_threads = 4,
   seed = 926
 )
 }
@@ -95,6 +96,9 @@ is chosen internally based on the sample size.}
 \item{max_depth}{Integer; maximum depth of each tree. Use \code{NULL} or a
 large value to allow essentially full growth, subject to \code{min_node_size}
 and \code{min_gain}. The default is \code{8}.}
+
+\item{n_threads}{Integer; number of threads to use for OpenMP parallel computation,
+if supported by the system. The default is \code{4}.}
 
 \item{seed}{Integer random seed used to initialize the C back end for
 reproducible forests. Defaults to \code{926}.}

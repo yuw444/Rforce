@@ -18,6 +18,7 @@ extern SEXP R_Rforce(
     SEXP minGain,
     SEXP mtry,
     SEXP nsplits,
+    SEXP nThreads,
     SEXP seed);
 
 extern SEXP R_ForestPredict(SEXP forestPtr, SEXP designMatrix);
@@ -26,7 +27,7 @@ extern SEXP R_LoadRforce(SEXP path);
 extern SEXP R_PrintTree(SEXP forestPtr, SEXP treeIndex, SEXP filename);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"R_Rforce", (DL_FUNC) &R_Rforce, 13},
+  {"R_Rforce", (DL_FUNC) &R_Rforce, 14},
   {"R_ForestPredict", (DL_FUNC) &R_ForestPredict, 2},
   {"R_SaveRforce", (DL_FUNC) &R_SaveRforce, 2},
   {"R_LoadRforce", (DL_FUNC) &R_LoadRforce, 1},

@@ -74,8 +74,13 @@ SEXP R_Rforce(
     SEXP minGain,
     SEXP mtry,
     SEXP nsplits,
+    SEXP nThreads,
     SEXP seed)
 {
+
+    // set up the number of threads
+    size_t n_threads = (size_t)INTEGER(nThreads)[0];
+    omp_set_num_threads(n_threads);
 
     // convert R matrix to double**
     double **designMatrixY0 = RMatrixToDoublePtr(designMatrixY);
