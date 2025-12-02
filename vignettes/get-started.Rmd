@@ -67,7 +67,7 @@ head(df)
 ## Step 1: Converting CPIU-wide Format
 
 * Evidently, the hazard function $\lambda(t)$ is not a constant of time. Inspired by **Counting Process Information Unit(CPIU)**, we convert the observed data into <u>CPIU-wide</u> format to better capture the hazard pattern for the population.
-* The interval of units `units_of_cpiu` is defined such that each interval contains approximately equal number of events, e.g. 10 intervals. 
+* The interval of units `intervals` is defined such that each interval contains approximately equal number of events, e.g. 10 intervals. 
 * `patients_to_cpius()` is customized for these purpose.
 
 ```{r}
@@ -80,7 +80,7 @@ break_points <- stats::quantile(
   na.rm = TRUE
 )
 break_points[1] <- 0.0 # ensure starting at 0
-break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending at max time
+break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending beyond the max time
 intervals <- diff(break_points)
 cpiu_wide <- patients_to_cpius(
   data_to_convert = df,
@@ -121,28 +121,23 @@ cpiu_wide <- cpius_to_dummy(cpiu_wide, cols_to_keep = NULL)
   * `seed`.
   * see details for the default in `Reference/Rforce()`.
 * Same time, the default `split_rule` is using the proposed quasi-likelihood ratio `Rforce-QLR`, it is more computational efficient than other two proposed rules, 
-  * `Rforce-GEE`
-  * `Rforce-GEEInter`
+  * `Rforce-GEE`,
+  * `Rforce-GEEInter`,
   * see details for the default in `Reference/Rforce()`.
 
 ```{r}
 fit <- Rforce(
   cpius = cpiu_wide,
-  split_rule = "Rforce-QLR",
-  n_trees = 1
-)
-
-fitt <- Rforce(
-  cpius = cpiu_wide,
-  split_rule = "Rforce-QLR",
-  n_trees = 1
+  split_rule = "Rforce-QLR"
 )
 ```
 
 
 ## 3-in-1 Equivalent Command
 
-* `Rforce` is also a bigger wrapper function for `Step 1 - 3`
+* `Rforce()` is also a bigger wrapper function for `Step 1 - 3`.
+* `Rforce()`'s result can be reproduced using internal `seed`.
+* Meanwhile, `Rforce` result also can be saved and loaded through the designated mechanisms `saveRforce()` and `loadRforce()`.
   
 ```{r}
 fit1 <- Rforce(
@@ -150,7 +145,8 @@ fit1 <- Rforce(
   formula = Surv(Id, X, Status) ~ ., 
   n_intervals = 10,
   split_rule = "Rforce-QLR",
-  n_trees = 200
+  n_trees = 200, 
+  seed = 926
 )
 
 fit2 <- Rforce(
@@ -158,13 +154,17 @@ fit2 <- Rforce(
   formula = Surv(Id, X, Status) ~ ., 
   n_intervals = 10,
   split_rule = "Rforce-QLR",
-  n_trees = 200
+  n_trees = 200, 
+  seed = 927
 )
-all.equal(fit1, fit2)
-saveRforce(fit1, "output/fit1/")
-saveRforce(fit2, "output/fit2/")
 
-fit1 <- loadRforce("/home/yu89975/r-dev/Rforce/output/fit1/")
+saveRforce(fit1, "./output/fit1/")
+saveRforce(fit2, "./output/fit2/")
+
+fit3 <- loadRforce("./output/fit1/")
+all.equal(fit1, fit2)
+all.equal(fit1, fit3)
+
 ```
 
 ## Reference
