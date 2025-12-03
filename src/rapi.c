@@ -60,6 +60,24 @@ void SaveTreeArray(
     }
 }
 
+// Finalizer must have type void (*)(SEXP)
+static void forest_finalizer(SEXP ext)
+{
+    // Get the C pointer stored in the external pointer
+    RandomSurvivalForest *forest = (RandomSurvivalForest *)R_ExternalPtrAddr(ext);
+    if (forest == NULL)
+    {
+        // Already cleared or never set; nothing to do
+        return;
+    }
+
+    // Free the underlying C object
+    FreeSurvivalForest(forest);
+
+    // Clear the external pointer so we can't double-free
+    R_ClearExternalPtr(ext);
+}
+
 SEXP R_Rforce(
     SEXP splitFunctionIndex,
     SEXP interaction,
@@ -119,7 +137,7 @@ SEXP R_Rforce(
     _treePhi is a 2D array of size nTrees * nUnits, a global variable split.h::34
     it is updated automatically in forest.c
     has to be allocated before calling the RandomForest function
-    **************************/ 
+    **************************/
     _treePhi = Allocate2DArray(nTrees0, nUnits);
 
     switch (splitFunctionIndex0)
@@ -129,7 +147,7 @@ SEXP R_Rforce(
         leafOutputFunction = LeafOutputInterval;
         lenOutput = nUnits;
         _pseudoRisk2 = 1L;
-        _phi2 = 1L; 
+        _phi2 = 1L;
         _longformat = 0L;
         _gee = 0L;
         break;
@@ -157,7 +175,7 @@ SEXP R_Rforce(
     }
 
     // whether to account for interaction in gee split rule
-    _interaction = (INTEGER(interaction)[0] == 1) ? 1: 0;
+    _interaction = (INTEGER(interaction)[0] == 1) ? 1 : 0;
     ncolsDesign = ncolsDesign - lenOutput;
 
     // call the function
@@ -206,7 +224,7 @@ SEXP R_Rforce(
     // return the forest to R
     // create an external pointer to the forest
     SEXP forestPtr = PROTECT(R_MakeExternalPtr(forest, R_NilValue, R_NilValue));
-    R_RegisterCFinalizerEx(forestPtr, (R_CFinalizer_t)FreeSurvivalForest, TRUE);
+    R_RegisterCFinalizerEx(forestPtr, forest_finalizer, TRUE);
     // bag matrix: nTrees * nrow
     SEXP bagMatrix = IntPtrToRMatrix(forest->bagMatrix, nTrees0, nrow);
     // tree_phi: nTrees * lenOutput
@@ -220,7 +238,7 @@ SEXP R_Rforce(
     // oobPredicted: nrow * lenOutput
     SEXP oobPredicted = DoublePtrToRMatrix(forest->oobPredicted, nrow, lenOutput);
     // likelihoodsum: 1 * nTrees
-    
+
     // free the memory
     // FreeSurvivalForest(forest);
     free(nNodes);
@@ -251,7 +269,6 @@ SEXP R_Rforce(
     return list;
 }
 
-
 SEXP R_ForestPredict(
     SEXP forestPtr,
     SEXP designMatrix)
@@ -280,19 +297,16 @@ SEXP R_ForestPredict(
     return predictedR;
 }
 
-
 SEXP R_SaveRforce(
     SEXP forestPtr,
     SEXP path)
 {
     SaveSurvivalForest(
         (RandomSurvivalForest *)R_ExternalPtrAddr(forestPtr),
-        CHAR(STRING_ELT(path, 0))
-    );
+        CHAR(STRING_ELT(path, 0)));
 
     return R_NilValue;
 }
-
 
 SEXP R_LoadRforce(
     SEXP path)
@@ -306,11 +320,11 @@ SEXP R_LoadRforce(
     return forestPtr;
 }
 
-
 SEXP R_PrintTree(
     SEXP forestPtr,
     SEXP treeIndex,
-    SEXP filename) {
+    SEXP filename)
+{
     // convert the forest pointer to C pointer
     RandomSurvivalForest *forest = (RandomSurvivalForest *)R_ExternalPtrAddr(forestPtr);
     if (forest == NULL)
@@ -324,8 +338,8 @@ SEXP R_PrintTree(
         Rf_error("Invalid tree index.");
     }
 
-    char *filename0 = (char *) CHAR(STRING_ELT(filename, 0));
+    char *filename0 = (char *)CHAR(STRING_ELT(filename, 0));
     WriteTreeDotFile(forest->forest[treeIndex0], filename0);
-    
+
     return R_NilValue;
 }
