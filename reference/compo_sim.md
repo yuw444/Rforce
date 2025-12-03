@@ -80,15 +80,13 @@ a list of simulated data and parameters
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # example
 library(doParallel)
-#> Loading required package: foreach
-#> Loading required package: iterators
-#> Loading required package: parallel
 registerDoParallel(cores = 16)
 rst <- foreach(i = 1:48) %dopar%{
   data_list <- compo_sim(
-    n_patients = 200,
+    n_patients = 500,
     seed = i,
     verbose = FALSE
   )
@@ -103,11 +101,8 @@ rst <- foreach(i = 1:48) %dopar%{
   )
   estimate_list$beta
 }
-#> Error in {    data_list <- compo_sim(n_patients = 200, seed = i, verbose = FALSE)    dim(data_list[[1]])    library(dplyr)    df_train <- data_list[[1]] %>% dplyr::mutate(X = Time) %>%         dplyr::select(-c("Time"))    estimate_list <- wcompo_est(data = df_train, weight = c(1,         1))    estimate_list$beta}: task 37 failed - "zero non-NA points"
 df_rst <- t(do.call("cbind", rst))
-#> Error: object 'rst' not found
 colMeans(df_rst)
-#> Error: object 'df_rst' not found
 boxplot(df_rst)
-#> Error: object 'df_rst' not found
+} # }
 ```

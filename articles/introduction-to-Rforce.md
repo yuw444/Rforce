@@ -3,32 +3,40 @@
 ``` r
 library(Rforce)
 library(doParallel)
-#> Loading required package: foreach
-#> Loading required package: iterators
-#> Loading required package: parallel
+library(dplyr)
 registerDoParallel(cores = 10)
-rst <- foreach(i = 1:50) %dopar%{
+```
+
+``` r
+n_sims <- if (interactive()) 20 else 5
+n_patients <- if (interactive()) 500 else 200
+
+rst <- foreach(i = 1:n_sims) %dopar%{
   data_list <- compo_sim(
-    n_patients = 500,
+    n_patients = n_patients,
     seed = i,
+    true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
     verbose = FALSE
   )
-  dim(data_list[[1]])
-  library(dplyr)
   df_train <- data_list[[1]] %>%
     dplyr::mutate(X = Time) %>%
     dplyr::select(-c("Time"))
+
   estimate_list <- wcompo_est(
     data = df_train,
     weight = c(1, 1)
   )
   estimate_list$beta
 }
+```
+
+``` r
 df_rst <- t(do.call("cbind", rst))
 colMeans(df_rst)
-#>  [1]  9.647290e-04 -4.256601e-03 -7.894755e-03  5.941230e-01 -3.709555e-05
-#>  [6]  1.744629e-02  7.873844e-01 -9.023901e-03  6.645270e-01 -1.914386e-02
+#>  [1]  0.02425514 -0.01624627  0.07268047  0.61358282  0.04531289 -0.01801206
+#>  [7]  0.77200064  0.11502782  0.63473937  0.14195386
 boxplot(df_rst)
 ```
 
-![](introduction-to-Rforce_files/figure-html/setup-1.png)
+![The beta estimates from
+simulations](introduction-to-Rforce_files/figure-html/unnamed-chunk-3-1.png)

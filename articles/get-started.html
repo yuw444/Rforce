@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>get-started • Rforce</title>
+<title>Get Started • Rforce</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="get-started">
+<script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Get Started">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -34,7 +34,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/get-started.html">get-started</a></li>
+<li><a class="dropdown-item" href="../articles/get-started.html">Get Started</a></li>
     <li><a class="dropdown-item" href="../articles/introduction-to-Rforce.html">introduction-to-Rforce</a></li>
   </ul>
 </li>
@@ -57,7 +57,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>get-started</h1>
+      <h1>Get Started</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/yuw444/Rforce/blob/master/vignettes/get-started.Rmd" class="external-link"><code>vignettes/get-started.Rmd</code></a></small>
@@ -74,10 +74,10 @@ momentum in the field, due to its fully consideration on the all
 observated events for each patients, in comparison to the
 <strong>Competing Risk</strong> setting that utilize only on the first
 observed event for each patient.</p>
-<p>A parametric approach, like <strong>Wcompo</strong> <span class="citation">Mao and Lin (2016)</span>, has proposed to addressed
+<p>A parametric approach, like <strong>Wcompo</strong><span class="citation">(Mao and Lin 2016)</span>, has proposed to addressed
 the inference challenge while imposing the proportional hazard
-assumption. Inspired by <strong>Random Survival Forest</strong> <span class="citation">Ishwaran et al. (2008)</span> and <strong>Counting
-Process Information Unit(CPIU)</strong> <span class="citation">Wongvibulsin, Wu, and Zeger (2019)</span>, we here
+assumption. Inspired by <strong>Random Survival Forest</strong> <span class="citation">(Ishwaran et al. 2008)</span> and <strong>Counting
+Process Information Unit(CPIU)</strong> <span class="citation">(Wongvibulsin, Wu, and Zeger 2019)</span>, we here
 porposed a non-parametric ensememble method, <u><em>Random Froest for
 Composite Endpoints</em>(<strong>Rforce</strong>)</u>, to further relax
 the proportional hazard assumption.</p>
@@ -104,9 +104,16 @@ endpoints survival data with options
 proportional hazard assumption.</li>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">knitr</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/knitr/man/opts_chunk.html" class="external-link">opts_chunk</a></span><span class="op">$</span><span class="fu">set</span><span class="op">(</span>echo <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     filter, lag</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="va">data_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compo_sim.html">compo_sim</a></span><span class="op">(</span>n_patients <span class="op">=</span> <span class="fl">500</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">data_list</span><span class="op">$</span><span class="va">true_beta</span></span>
 <span><span class="co">#&gt;  [1] 0.0 0.0 0.0 0.6 0.0 0.0 0.8 0.0 0.7 0.0</span></span>
@@ -115,8 +122,8 @@ proportional hazard assumption.</li>
 <span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt;     exp(x %*% true_beta)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x5557a74d9638&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x5557a74dcdd8&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x56175e1c6fa8&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x56175e1cc668&gt;</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_list</span><span class="op">$</span><span class="va">dataset</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6</span></span>
 <span><span class="co">#&gt; 1  1 0.003487709      2       0       1       0       0       1       0</span></span>
@@ -200,18 +207,28 @@ is not a constant of time. Inspired by <strong>Counting Process
 Information Unit(CPIU)</strong>, we convert the observed data into
 <u>CPIU-wide</u> format to better capture the hazard pattern for the
 population.</li>
-<li>The interval of units <code>units_of_cpiu</code> is defined such
-that each interval contains approximately equal number of events,
-e.g. 10 intervals.</li>
+<li>The interval of units <code>intervals</code> is defined such that
+each interval contains approximately equal number of events, e.g. 10
+intervals.</li>
 <li>
 <code><a href="../reference/patients_to_cpius.html">patients_to_cpius()</a></code> is customized for these
 purpose.</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">units_of_cpiu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">df</span><span class="op">$</span><span class="va">X</span>, <span class="fl">1</span> <span class="op">/</span> <span class="fl">10</span> <span class="op">*</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">n_intervals</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="va">n_intervals</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">observed_times</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
+<span><span class="va">break_points</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span></span>
+<span>  <span class="va">observed_times</span>,</span>
+<span>  probs <span class="op">=</span> <span class="va">probs</span>,</span>
+<span>  na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">break_points</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.0</span> <span class="co"># ensure starting at 0</span></span>
+<span><span class="va">break_points</span><span class="op">[</span><span class="va">n_intervals</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">observed_times</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.001</span> <span class="co"># ensure ending beyond the max time</span></span>
+<span><span class="va">intervals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diff.html" class="external-link">diff</a></span><span class="op">(</span><span class="va">break_points</span><span class="op">)</span></span>
 <span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/patients_to_cpius.html">patients_to_cpius</a></span><span class="op">(</span></span>
 <span>  data_to_convert <span class="op">=</span> <span class="va">df</span>,</span>
-<span>  units_of_cpiu <span class="op">=</span> <span class="va">units_of_cpiu</span></span>
+<span>  units_of_cpiu <span class="op">=</span> <span class="va">intervals</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">cpiu_wide</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "data"                   "unitsOfCPIUs"           "nIntervals"            </span></span>
@@ -255,9 +272,13 @@ variable importance on individual levels of these categorical variable.
 Through the carefully design permutation framework,
 <strong>Rforce</strong> direct output the variable importance on the
 variable itself after the model fitting.</p></li>
+<li><p>By default, all the columns in <code>designMatrix_Y</code> will
+be used in dummy encoding and random forest fitting; One can customize
+the original columns to be considered by modifying the parameter
+<code>cols_to_keep</code>.</p></li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cpius_to_dummy.html">cpius_to_dummy</a></span><span class="op">(</span><span class="va">cpiu_wide</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cpius_to_dummy.html">cpius_to_dummy</a></span><span class="op">(</span><span class="va">cpiu_wide</span>, cols_to_keep <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="step-3-fit-random-forest-model">Step 3: Fit Random Forest Model<a class="anchor" aria-label="anchor" href="#step-3-fit-random-forest-model"></a>
@@ -283,8 +304,10 @@ for growing random forest with some smart default. For example,
 quasi-likelihood ratio <code>Rforce-QLR</code>, it is more computational
 efficient than other two proposed rules,
 <ul>
-<li><code>Rforce-GEE</code></li>
-<li><code>Rforce-GEEInter</code></li>
+<li>
+<code>Rforce-GEE</code>,</li>
+<li>
+<code>Rforce-GEEInter</code>,</li>
 <li>see details for the default in <code>Reference/Rforce()</code>.</li>
 </ul>
 </li>
@@ -297,7 +320,76 @@ efficient than other two proposed rules,
 <span><span class="co">#&gt; Fitting Rforce-QLR forest...</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 class="unnumbered" id="section"></h3>
+<h3 id="in-1-equivalent-command">3-in-1 Equivalent Command<a class="anchor" aria-label="anchor" href="#in-1-equivalent-command"></a>
+</h3>
+<ul>
+<li>
+<code><a href="../reference/Rforce.html">Rforce()</a></code> is also a bigger wrapper function for
+<code>Step 1 - 3</code>.</li>
+<li>
+<code><a href="../reference/Rforce.html">Rforce()</a></code>’s result can be reproduced using internal
+<code>seed</code>.</li>
+<li>Meanwhile, <code>Rforce</code> result also can be saved and loaded
+through the designated mechanisms <code><a href="../reference/saveRforce.html">saveRforce()</a></code> and
+<code><a href="../reference/loadRforce.html">loadRforce()</a></code>.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Rforce.html">Rforce</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">df</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">Id</span>, <span class="va">X</span>, <span class="va">Status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, </span>
+<span>  n_intervals <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  split_rule <span class="op">=</span> <span class="st">"Rforce-QLR"</span>,</span>
+<span>  n_trees <span class="op">=</span> <span class="fl">200</span>, </span>
+<span>  seed <span class="op">=</span> <span class="fl">926</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Converting data to design matrix and auxiliary features...</span></span>
+<span><span class="co">#&gt; Fitting Rforce-QLR forest...</span></span>
+<span></span>
+<span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Rforce.html">Rforce</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">df</span>,</span>
+<span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">Id</span>, <span class="va">X</span>, <span class="va">Status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, </span>
+<span>  n_intervals <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  split_rule <span class="op">=</span> <span class="st">"Rforce-QLR"</span>,</span>
+<span>  n_trees <span class="op">=</span> <span class="fl">200</span>, </span>
+<span>  seed <span class="op">=</span> <span class="fl">927</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Converting data to design matrix and auxiliary features...</span></span>
+<span><span class="co">#&gt; Fitting Rforce-QLR forest...</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/saveRforce.html">saveRforce</a></span><span class="op">(</span><span class="va">fit1</span>, <span class="st">"./output/fit1/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/saveRforce.html">saveRforce</a></span><span class="op">(</span><span class="va">fit2</span>, <span class="st">"./output/fit2/"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/loadRforce.html">loadRforce</a></span><span class="op">(</span><span class="st">"./output/fit1/"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">fit1</span>, <span class="va">fit2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "Component \"forestMatrix\": Attributes: &lt; Component \"dim\": Mean relative difference: 0.00999001 &gt;"</span></span>
+<span><span class="co">#&gt; [2] "Component \"forestMatrix\": Numeric: lengths (108108, 107028) differ"                               </span></span>
+<span><span class="co">#&gt; [3] "Component \"predicted\": Mean relative difference: 0.003605287"                                     </span></span>
+<span><span class="co">#&gt; [4] "Component \"oobPredicted\": Mean relative difference: 0.004326195"                                  </span></span>
+<span><span class="co">#&gt; [5] "Component \"vimpStat\": Mean relative difference: 1.437804"                                         </span></span>
+<span><span class="co">#&gt; [6] "Component \"bagMatrix\": Mean relative difference: 1.335842"                                        </span></span>
+<span><span class="co">#&gt; [7] "Component \"treePhi\": Mean relative difference: 0.1005522"                                         </span></span>
+<span><span class="co">#&gt; [8] "Component \"seed\": Mean relative difference: 0.001079914"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">fit1</span>, <span class="va">fit3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="section"></h3>
+</div>
+<div class="section level3">
+<h3 id="variable-importance">Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="predict">Predict<a class="anchor" aria-label="anchor" href="#predict"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 id="print-tree">Print Tree<a class="anchor" aria-label="anchor" href="#print-tree"></a>
+</h3>
+</div>
+<div class="section level3">
+<h3 class="unnumbered" id="reference">Reference<a class="anchor" aria-label="anchor" href="#reference"></a>
+</h3>
 <div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
 <div id="ref-Ishwaran2008" class="csl-entry">
 Ishwaran, Hemant, Udaya B. Kogalur, Eugene H. Blackstone, and Michael S.

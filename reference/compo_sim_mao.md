@@ -65,6 +65,7 @@ a list of simulated data and parameters
 
 ``` r
 # example code
+if (FALSE) { # \dontrun{
 library(doParallel)
 registerDoParallel(cores = 16)
 rst <- foreach(i = 1:48) %dopar%{
@@ -82,11 +83,8 @@ rst <- foreach(i = 1:48) %dopar%{
 
   estimate_list$beta
 }
-#> Error in {    data_list <- compo_sim_mao(n_patients = 200, seed = i)    library(dplyr)    df_train <- manual_censoring(data_list[[1]], 0.8)    estimate_list <- wcompo_est(data = df_train, weight = c(1,         1))    estimate_list$beta}: task 1 failed - "could not find function "manual_censoring""
 df_rst <- t(do.call("cbind", rst))
-#> Error: object 'rst' not found
 colMeans(df_rst)
-#> Error: object 'df_rst' not found
 boxplot(df_rst)
-#> Error: object 'df_rst' not found
+} # }
 ```

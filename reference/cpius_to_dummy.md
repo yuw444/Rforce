@@ -7,7 +7,7 @@ removes the reference level for each factor to avoid multicollinearity.
 ## Usage
 
 ``` r
-cpius_to_dummy(object, cols_to_dummy = NULL)
+cpius_to_dummy(object, cols_to_keep = NULL)
 ```
 
 ## Arguments
@@ -16,10 +16,10 @@ cpius_to_dummy(object, cols_to_dummy = NULL)
 
   A CPIU object.
 
-- cols_to_dummy:
+- cols_to_keep:
 
-  Optional vector of column names to dummy-encode. If NULL, all
-  factor/character columns will be dummy-encoded.
+  Optional vector of column names to keep and consider for dummy
+  encoding. If NULL, all columns will be considered for dummy-encoded.
 
 ## Value
 

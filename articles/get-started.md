@@ -1,4 +1,4 @@
-# get-started
+# Get Started
 
 ## Rforce
 
@@ -7,11 +7,11 @@ due to its fully consideration on the all observated events for each
 patients, in comparison to the **Competing Risk** setting that utilize
 only on the first observed event for each patient.
 
-A parametric approach, like **Wcompo** Mao and Lin (2016), has proposed
+A parametric approach, like **Wcompo**(Mao and Lin 2016), has proposed
 to addressed the inference challenge while imposing the proportional
-hazard assumption. Inspired by **Random Survival Forest** Ishwaran et
-al. (2008) and **Counting Process Information Unit(CPIU)** Wongvibulsin,
-Wu, and Zeger (2019), we here porposed a non-parametric ensememble
+hazard assumption. Inspired by **Random Survival Forest** (Ishwaran et
+al. 2008) and **Counting Process Information Unit(CPIU)** (Wongvibulsin,
+Wu, and Zeger 2019), we here porposed a non-parametric ensememble
 method, **Random Froest for Composite Endpoints*(**Rforce**)*, to
 further relax the proportional hazard assumption.
 
@@ -32,9 +32,16 @@ simplistic pipeline of **Rforce**.
   proportional hazard assumption.
 
 ``` r
-knitr::opts_chunk$set(echo = TRUE)
-
 library(Rforce)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 data_list <- compo_sim(n_patients = 500, verbose = FALSE)
 data_list$true_beta
 #>  [1] 0.0 0.0 0.0 0.6 0.0 0.0 0.8 0.0 0.7 0.0
@@ -43,8 +50,8 @@ data_list$hazard_function
 #> {
 #>     exp(x %*% true_beta)
 #> }
-#> <bytecode: 0x5557a74d9638>
-#> <environment: 0x5557a74dcdd8>
+#> <bytecode: 0x56175e1c6fa8>
+#> <environment: 0x56175e1cc668>
 head(data_list$dataset)
 #>   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6
 #> 1  1 0.003487709      2       0       1       0       0       1       0
@@ -117,17 +124,26 @@ head(df)
   Inspired by **Counting Process Information Unit(CPIU)**, we convert
   the observed data into *CPIU-wide* format to better capture the hazard
   pattern for the population.
-- The interval of units `units_of_cpiu` is defined such that each
-  interval contains approximately equal number of events, e.g. 10
-  intervals.
+- The interval of units `intervals` is defined such that each interval
+  contains approximately equal number of events, e.g. 10 intervals.
 - [`patients_to_cpius()`](https://yuw444.github.io/Rforce/reference/patients_to_cpius.md)
   is customized for these purpose.
 
 ``` r
-units_of_cpiu <- diff(c(0, quantile(df$X, 1 / 10 * 1:10)))
+n_intervals <- 10
+probs <- seq(0, 1, length.out = n_intervals + 1)
+observed_times <- df %>% dplyr::pull(X)
+break_points <- stats::quantile(
+  observed_times,
+  probs = probs,
+  na.rm = TRUE
+)
+break_points[1] <- 0.0 # ensure starting at 0
+break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending beyond the max time
+intervals <- diff(break_points)
 cpiu_wide <- patients_to_cpius(
   data_to_convert = df,
-  units_of_cpiu = units_of_cpiu
+  units_of_cpiu = intervals
 )
 names(cpiu_wide)
 #>  [1] "data"                   "unitsOfCPIUs"           "nIntervals"            
@@ -161,8 +177,12 @@ class(cpiu_wide)
   design permutation framework, **Rforce** direct output the variable
   importance on the variable itself after the model fitting.
 
+- By default, all the columns in `designMatrix_Y` will be used in dummy
+  encoding and random forest fitting; One can customize the original
+  columns to be considered by modifying the parameter `cols_to_keep`.
+
 ``` r
-cpiu_wide <- cpius_to_dummy(cpiu_wide)
+cpiu_wide <- cpius_to_dummy(cpiu_wide, cols_to_keep = NULL)
 ```
 
 ### Step 3: Fit Random Forest Model
@@ -182,8 +202,8 @@ cpiu_wide <- cpius_to_dummy(cpiu_wide)
 - Same time, the default `split_rule` is using the proposed
   quasi-likelihood ratio `Rforce-QLR`, it is more computational
   efficient than other two proposed rules,
-  - `Rforce-GEE`
-  - `Rforce-GEEInter`
+  - `Rforce-GEE`,
+  - `Rforce-GEEInter`,
   - see details for the default in `Reference/Rforce()`.
 
 ``` r
@@ -194,7 +214,67 @@ fit <- Rforce(
 #> Fitting Rforce-QLR forest...
 ```
 
+### 3-in-1 Equivalent Command
+
+- [`Rforce()`](https://yuw444.github.io/Rforce/reference/Rforce.md) is
+  also a bigger wrapper function for `Step 1 - 3`.
+- [`Rforce()`](https://yuw444.github.io/Rforce/reference/Rforce.md)’s
+  result can be reproduced using internal `seed`.
+- Meanwhile, `Rforce` result also can be saved and loaded through the
+  designated mechanisms
+  [`saveRforce()`](https://yuw444.github.io/Rforce/reference/saveRforce.md)
+  and
+  [`loadRforce()`](https://yuw444.github.io/Rforce/reference/loadRforce.md).
+
+``` r
+fit1 <- Rforce(
+  data = df,
+  formula = Surv(Id, X, Status) ~ ., 
+  n_intervals = 10,
+  split_rule = "Rforce-QLR",
+  n_trees = 200, 
+  seed = 926
+)
+#> Converting data to design matrix and auxiliary features...
+#> Fitting Rforce-QLR forest...
+
+fit2 <- Rforce(
+  data = df,
+  formula = Surv(Id, X, Status) ~ ., 
+  n_intervals = 10,
+  split_rule = "Rforce-QLR",
+  n_trees = 200, 
+  seed = 927
+)
+#> Converting data to design matrix and auxiliary features...
+#> Fitting Rforce-QLR forest...
+
+saveRforce(fit1, "./output/fit1/")
+saveRforce(fit2, "./output/fit2/")
+
+fit3 <- loadRforce("./output/fit1/")
+all.equal(fit1, fit2)
+#> [1] "Component \"forestMatrix\": Attributes: < Component \"dim\": Mean relative difference: 0.00999001 >"
+#> [2] "Component \"forestMatrix\": Numeric: lengths (108108, 107028) differ"                               
+#> [3] "Component \"predicted\": Mean relative difference: 0.003605287"                                     
+#> [4] "Component \"oobPredicted\": Mean relative difference: 0.004326195"                                  
+#> [5] "Component \"vimpStat\": Mean relative difference: 1.437804"                                         
+#> [6] "Component \"bagMatrix\": Mean relative difference: 1.335842"                                        
+#> [7] "Component \"treePhi\": Mean relative difference: 0.1005522"                                         
+#> [8] "Component \"seed\": Mean relative difference: 0.001079914"
+all.equal(fit1, fit3)
+#> [1] TRUE
+```
+
 ### 
+
+### Variable Importance
+
+### Predict
+
+### Print Tree
+
+### Reference
 
 Ishwaran, Hemant, Udaya B. Kogalur, Eugene H. Blackstone, and Michael S.
 Lauer. 2008. “Random Survival Forests.” *The Annals of Applied
