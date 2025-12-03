@@ -600,6 +600,7 @@ void FreeTree(DecisionTreeNode *tree)
     FreeTree(tree->leftChild);
     FreeTree(tree->rightChild);
     free(tree);
+    tree = NULL;
 }
 
 double *TreePredict(

@@ -501,9 +501,15 @@ void VimpForest(
 
 void FreeSurvivalForest(RandomSurvivalForest *forest)
 {
+    if (forest == NULL)
+    {
+        return;
+    }
     for (int i = 0; i < forest->nTrees; i++)
     {
-        FreeTree(forest->forest[i]);
+        if(forest->forest[i] != NULL)
+            FreeTree(forest->forest[i]);
+        forest->forest[i] = NULL;
     }
     free(forest->forest);
     Free2DArray(forest->predicted, forest->nrowsDesign);
@@ -517,6 +523,7 @@ void FreeSurvivalForest(RandomSurvivalForest *forest)
     if (forest->unitsOfCPIU != NULL)
         free(forest->unitsOfCPIU);
     free(forest);
+    forest = NULL;
 }
 
 void SaveForest(DecisionTreeNode **forest,
