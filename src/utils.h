@@ -21,7 +21,7 @@
 
 #define BUFFER 1024 * 1024
 
-#define PRINT_LOCATION() printf("\nFile: %s:%d : ", __FILE__, __LINE__ - 3)
+#define PRINT_LOCATION() fprintf(stderr, "[Rforce C] ERROR at %s:%d in %s()\n", __FILE__, __LINE__, __func__)
 // #define FREE(p) if(*p != NULL) {free(*p); *p = NULL;}
 
 // Macro to check for NA

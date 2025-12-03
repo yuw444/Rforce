@@ -1,5 +1,5 @@
 ---
-title: "get-started"
+title: "Get Started"
 output: rmarkdown::html_vignette
 bibliography: references.bib
 vignette: >
@@ -166,5 +166,13 @@ all.equal(fit1, fit2)
 all.equal(fit1, fit3)
 
 ```
+## 
+
+## Variable Importance
+
+## Predict
+
+## Print Tree
+
 
 ## Reference

@@ -51,12 +51,13 @@ a list of simulated data and parameters
 composite event generator for simulation by non-homogeneous Poisson process
 }
 \examples{
+\dontrun{
 # example
 library(doParallel)
 registerDoParallel(cores = 16)
 rst <- foreach(i = 1:48) \%dopar\%{
   data_list <- compo_sim(
-    n_patients = 200,
+    n_patients = 500,
     seed = i,
     verbose = FALSE
   )
@@ -74,4 +75,5 @@ rst <- foreach(i = 1:48) \%dopar\%{
 df_rst <- t(do.call("cbind", rst))
 colMeans(df_rst)
 boxplot(df_rst)
+}
 }

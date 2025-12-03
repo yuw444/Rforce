@@ -151,6 +151,7 @@
 #' \code{\link{loadRforce}}.
 #'
 #' @examples
+#' \donttest{
 #' ## Example using simulated data
 #' library(Rforce)
 #'
@@ -176,7 +177,7 @@
 #' )
 #'
 #' fit
-#'
+#'}
 #' @export
 
 Rforce <- function(
@@ -374,7 +375,7 @@ Rforce <- function(
     as.numeric(min_gain),
     as.integer(mtry),
     as.integer(n_splits),
-    as.integer(n_threads),
+    ifelse(length(Sys.getenv("OMP_NUM_THREADS")) == 0, as.integer(Sys.getenv("OMP_NUM_THREADS")), as.integer(n_threads)),
     as.integer(seed)
   )
 

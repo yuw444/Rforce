@@ -7,34 +7,54 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r, setup, include = FALSE}
+library(Rforce)
+library(doParallel)
+library(dplyr)
+
+# Avoid threading when building vignettes / in non-interactive R (pkgdown/callr/R CMD check)
+if (!interactive()) {
+  foreach::registerDoSEQ()
+  Sys.setenv(OMP_NUM_THREADS = "1")
+}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  dev.args = list(type = "cairo"),  # avoid X11 requirement
   comment = "#>"
 )
 ```
 
-```{r setup}
+```{r, echo = TRUE, eval = interactive()}
 library(Rforce)
 library(doParallel)
+library(dplyr)
 registerDoParallel(cores = 10)
-rst <- foreach(i = 1:50) %dopar%{
+```
+
+```{r, echo = TRUE}
+n_sims <- if (interactive()) 20 else 5
+n_patients <- if (interactive()) 500 else 200
+
+rst <- foreach(i = 1:n_sims) %dopar%{
   data_list <- compo_sim(
-    n_patients = 500,
+    n_patients = n_patients,
     seed = i,
+    true_beta = c(0, 0, 0, 0.6, 0, 0, 0.8, 0, 0.7, 0),
     verbose = FALSE
   )
-  dim(data_list[[1]])
-  library(dplyr)
   df_train <- data_list[[1]] %>%
     dplyr::mutate(X = Time) %>%
     dplyr::select(-c("Time"))
+
   estimate_list <- wcompo_est(
     data = df_train,
     weight = c(1, 1)
   )
   estimate_list$beta
 }
+```
+
+```{r, echo = TRUE, fig.alt="The beta estimates from simulations"}
 df_rst <- t(do.call("cbind", rst))
 colMeans(df_rst)
 boxplot(df_rst)

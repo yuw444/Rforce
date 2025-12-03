@@ -15,12 +15,13 @@
 #' @param seed  seed for random number generation
 #' @param verbose  whether to print out summary of the number of recurrent events per patients
 #' @examples
+#' \dontrun{
 #' # example
 #' library(doParallel)
 #' registerDoParallel(cores = 16)
 #' rst <- foreach(i = 1:48) %dopar%{
 #'   data_list <- compo_sim(
-#'     n_patients = 200,
+#'     n_patients = 500,
 #'     seed = i,
 #'     verbose = FALSE
 #'   )
@@ -38,6 +39,7 @@
 #' df_rst <- t(do.call("cbind", rst))
 #' colMeans(df_rst)
 #' boxplot(df_rst)
+#' }
 compo_sim <- function(
   n_patients = 1000,
   n_vars = 10,
@@ -221,6 +223,7 @@ compo_sim <- function(
 #' @export
 #' @examples
 #' # example code
+#' \dontrun{
 #' library(doParallel)
 #' registerDoParallel(cores = 16)
 #' rst <- foreach(i = 1:48) %dopar%{
@@ -241,6 +244,7 @@ compo_sim <- function(
 #' df_rst <- t(do.call("cbind", rst))
 #' colMeans(df_rst)
 #' boxplot(df_rst)
+#' }
 compo_sim_mao <- function(
   n_patients = 1000,
   n_vars = 10,

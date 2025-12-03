@@ -43,6 +43,7 @@ composite event generator for simulation, this simulator is constructed based on
 }
 \examples{
 # example code
+\dontrun{
 library(doParallel)
 registerDoParallel(cores = 16)
 rst <- foreach(i = 1:48) \%dopar\%{
@@ -63,4 +64,5 @@ rst <- foreach(i = 1:48) \%dopar\%{
 df_rst <- t(do.call("cbind", rst))
 colMeans(df_rst)
 boxplot(df_rst)
+}
 }

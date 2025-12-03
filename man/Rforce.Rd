@@ -174,6 +174,7 @@ methods such as \code{print.Rforce()}, \code{summary.Rforce()}, and
 \code{predict.Rforce()}.
 }
 \examples{
+\donttest{
 ## Example using simulated data
 library(Rforce)
 
@@ -199,7 +200,7 @@ fit <- Rforce(
 )
 
 fit
-
+}
 }
 \seealso{
 \code{\link{compo_sim}},

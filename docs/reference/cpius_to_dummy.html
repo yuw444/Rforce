@@ -22,12 +22,16 @@ for each factor to avoid multicollinearity."><!-- mathjax --><script src="https:
     </button>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
-      <ul class="navbar-nav me-auto"><li class="active nav-item">
+      <ul class="navbar-nav me-auto"><li class="nav-item">
+  <a class="nav-link" href="../articles/get-started.html">Get Started</a>
+</li>
+<li class="active nav-item">
   <a class="nav-link" href="../reference/index.html">Reference</a>
 </li>
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-articles">Articles</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-articles">
+    <a class="dropdown-item" href="../articles/get-started.html">Get Started</a>
     <a class="dropdown-item" href="../articles/introduction-to-Rforce.html">introduction-to-Rforce</a>
   </div>
 </li>
@@ -60,7 +64,7 @@ for each factor to avoid multicollinearity.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cpius_to_dummy</span><span class="op">(</span><span class="va">object</span>, cols_to_dummy <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">cpius_to_dummy</span><span class="op">(</span><span class="va">object</span>, cols_to_keep <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -69,8 +73,8 @@ for each factor to avoid multicollinearity.</p>
 <dd><p>A CPIU object.</p></dd>
 
 
-<dt>cols_to_dummy</dt>
-<dd><p>Optional vector of column names to dummy-encode. If NULL, all factor/character columns will be dummy-encoded.</p></dd>
+<dt>cols_to_keep</dt>
+<dd><p>Optional vector of column names to keep and consider for dummy encoding. If NULL, all columns will be considered for dummy-encoded.</p></dd>
 
 </dl></div>
     <div class="section level2">

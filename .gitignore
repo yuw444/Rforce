@@ -8,6 +8,5 @@ build/
 output/
 paper/
 inst/doc
-/doc/
+doc/
 /Meta/
-docs
