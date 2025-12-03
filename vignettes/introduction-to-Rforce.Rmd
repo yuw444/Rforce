@@ -19,7 +19,6 @@ if (!interactive()) {
 }
 knitr::opts_chunk$set(
   collapse = TRUE,
-  dev.args = list(type = "cairo"),  # avoid X11 requirement
   comment = "#>"
 )
 ```
