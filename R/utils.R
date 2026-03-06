@@ -25,6 +25,7 @@ predict.Rforce <- function(forest, designMatrix = NULL) {
   )
 }
 
+#' @export
 vimp <- function(object) {
   UseMethod("vimp")
 }
