@@ -10,13 +10,13 @@
 Source:
 [`DESCRIPTION`](https://github.com/yuw444/Rforce/blob/master/DESCRIPTION)
 
-Wang Y (2025). *Rforce: Random Forests for Composite Endpoints*. R
+Wang Y (2026). *Rforce: Random Forests for Composite Endpoints*. R
 package version 0.0.0.9000, <https://github.com/yuw444/Rforce>.
 
     @Manual{,
       title = {Rforce: Random Forests for Composite Endpoints},
       author = {Yu Wang},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.0.0.9000},
       url = {https://github.com/yuw444/Rforce},
     }

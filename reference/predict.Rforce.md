@@ -6,7 +6,7 @@ Predict function for Rforce
 
 ``` r
 # S3 method for class 'Rforce'
-predict(forest, designMatrix)
+predict(forest, designMatrix = NULL)
 ```
 
 ## Arguments
