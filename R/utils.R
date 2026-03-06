@@ -5,9 +5,13 @@
 #' @param designMatrix A matrix of design features for prediction
 #' @return A list containing the predicted values
 #'
-predict.Rforce <- function(forest, designMatrix) {
+predict.Rforce <- function(forest, designMatrix = NULL) {
   if (!inherits(forest, "Rforce")) {
     stop("forest must be an Rforce object.")
+  }
+
+  if (is.null(designMatrix)) {
+    return(forest$predicted)
   }
 
   if (!is.data.frame(designMatrix) && !is.matrix(designMatrix)) {
@@ -21,7 +25,7 @@ predict.Rforce <- function(forest, designMatrix) {
   )
 }
 
-vimp <- function(object, ...) {
+vimp <- function(object) {
   UseMethod("vimp")
 }
 

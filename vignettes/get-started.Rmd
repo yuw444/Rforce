@@ -170,9 +170,19 @@ all.equal(fit1, fit3)
 
 ## Variable Importance
 
+```{r}
+vimp(fit)
+```
+
 ## Predict
+```{r}
+pred <- predict(fit)
+head(pred)
+```
 
 ## Print Tree
-
+```{r}
+printTree(fit, 1)
+```
 
 ## Reference

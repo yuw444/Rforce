@@ -4,7 +4,7 @@
 \alias{predict.Rforce}
 \title{Predict function for Rforce}
 \usage{
-\method{predict}{Rforce}(forest, designMatrix)
+\method{predict}{Rforce}(forest, designMatrix = NULL)
 }
 \arguments{
 \item{forest}{An Rforce forest object}
