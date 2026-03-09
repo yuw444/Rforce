@@ -18,7 +18,7 @@
 
 ### R API
 
-```{R}
+```r
 # install.packages("devtools")
 devtools::install_github("yuw444/Rforce")
 ```
