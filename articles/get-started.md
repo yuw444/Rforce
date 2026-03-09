@@ -18,6 +18,13 @@ further relax the proportional hazard assumption.
 Below, we like to demonstrate a simulated data example to show off the
 simplistic pipeline of **Rforce**.
 
+### R API Instatll
+
+``` r
+library(devtools)
+devtools::install_github("https://github.com/yuw444/Rforce/")
+```
+
 ### Generating Composite Endpoint Data
 
 - `Rforce` package provides functions to generate composite endpoints
@@ -50,8 +57,8 @@ data_list$hazard_function
 #> {
 #>     exp(x %*% true_beta)
 #> }
-#> <bytecode: 0x555911e540b0>
-#> <environment: 0x555911e59770>
+#> <bytecode: 0x5572f7c25970>
+#> <environment: 0x5572f7c252e0>
 head(data_list$dataset)
 #>   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6
 #> 1  1 0.003487709      2       0       1       0       0       1       0
@@ -303,7 +310,7 @@ head(pred)
 
 ``` r
 printTree(fit, 1)
-#> Tree structure saved to /tmp/Rtmp8LPd2V/file663a51db7a86.dot
+#> Tree structure saved to /tmp/RtmpaJpj1x/file1cc051db7a86.dot
 ```
 
 ### Reference

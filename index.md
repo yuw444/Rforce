@@ -1,32 +1,85 @@
 # Rforce
 
-We introduce random forests for composite endpoints(**Rforce**)
-consisting of non-fatal composite events and terminal events. It
-utilizes generalized estimating equations to build trees and handles the
-dependent censoring due to the terminal events with the concept of
-pseudo-at-risk duration.
+**Rforce** implements the methodology described in [Rforce: Random
+Forests for Composite
+Endpoints](https://onlinelibrary.wiley.com/doi/10.1002/sim.70413), which
+models composite endpoints consisting of **non-fatal events and terminal
+events**.
 
-## Installation
+The method builds random forests using **generalized estimating
+equations (GEE)** and handles dependent censoring caused by terminal
+events using the concept of **pseudo-at-risk duration**.
 
-You can build Rforce from source using CMake.
+This work received the **2024 Student Paper Competition Award** from the
+American Statistical Association (ASA), jointly from the [Section on
+Statistical Computing and Section on Statistical
+Graphics](https://community.amstat.org/jointscsg-section/awards/student-paper-competition).
 
-    git clone https://github.com/yuw444/Rforce.git
-    cd Rforce
-    mkdir build
-    cd build
-    cmake ..
-    make
+The paper is published in *Statistics in Medicine*:
 
-Note:
+- PMID: [41640374](https://pubmed.ncbi.nlm.nih.gov/41640374/)
+- DOI:
+  [10.1002/sim.70413](https://onlinelibrary.wiley.com/doi/10.1002/sim.70413)
 
-Make sure you have `CMake` version 3.16.0 or higher.
+The software provides both:
+
+- **R API**
+- **C API**
+
+Key features include:
+
+- High computational and memory efficiency
+- Parallel computation using [OpenMP](https://www.openmp.org/)
+- Reproducible results (see the reproducibility example
+  [here](https://yuw444.github.io/Rforce/articles/get-started.html#in-1-equivalent-command))
+
+------------------------------------------------------------------------
+
+# Installation
+
+## Dependencies
+
+- `cmake >= 3.16.0` – build system for the C API
+- `OpenMP` – parallel computing
+- `R >= 4.3.3` – R interface
+
+------------------------------------------------------------------------
+
+## Install R API
+
+``` r
+# install.packages("devtools")
+devtools::install_github("yuw444/Rforce")
+```
+
+### C API
+
+``` bash
+git clone https://github.com/yuw444/Rforce.git
+cd Rforce
+mkdir build
+cd build
+cmake ..
+make
+```
 
 A `CMakeLists.txt` file is provided in the repository.
 
+------------------------------------------------------------------------
+
 ## Usage
 
+### R Examples
+
+- Examples: [Get
+  Started](https://yuw444.github.io/Rforce/articles/get-started.html).
+
+------------------------------------------------------------------------
+
+### Shell Scripts
+
 ``` bash
-Rforce [subcommands] <options>
+./Rforce [subcommands] <options>
 ```
 
 ### Available Subcommands
@@ -38,7 +91,7 @@ Rforce [subcommands] <options>
 
 ------------------------------------------------------------------------
 
-## Subcommand Details
+## C API Subcommands
 
 ### Train
 
@@ -51,7 +104,7 @@ Rforce train <options>
 **Options:**
 
 | Option                      | Description                                                                                | Required/Optional | Default                                   |
-|:----------------------------|:-------------------------------------------------------------------------------------------|:------------------|:------------------------------------------|
+|-----------------------------|--------------------------------------------------------------------------------------------|-------------------|-------------------------------------------|
 | `-d, --designMatrixY=<str>` | Path to design matrix                                                                      | **Required**      |                                           |
 | `-a, --auxiliary=<str>`     | Path to auxiliary features                                                                 | **Required**      |                                           |
 | `-u, --unitsOfCPIU=<str>`   | Path to unitsOfCPIU file                                                                   | **Required**      |                                           |
@@ -97,7 +150,7 @@ Rforce predict <options>
 **Options:**
 
 | Option              | Description              | Required/Optional | Default                   |
-|:--------------------|:-------------------------|:------------------|:--------------------------|
+|---------------------|--------------------------|-------------------|---------------------------|
 | `-m, --model=<str>` | Path to trained model    | **Required**      |                           |
 | `-t, --test=<str>`  | Path to test data        | **Required**      |                           |
 | `-o, --out=<str>`   | Path to output directory | Optional          | Current working directory |
@@ -128,8 +181,8 @@ Rforce predict -m output_folder/model.rforce -t test_data.csv -o prediction_resu
   each split for more flexibility.
 - Parallel computation is supported via the `--threads` option.
 - GEE-based splitting with p-value adjustment is available.
-- An R API is currently actively developing which includes
-  - Classical survivial data generation
+- An R API is currently actively developing which includes:
+  - Classical survival data generation
   - Composite endpoint data generation
   - [`Wcompo`](https://cran.r-project.org/web/packages/Wcompo/index.html)
     methodology realization

@@ -85,6 +85,13 @@ the proportional hazard assumption.</p>
 <p>Below, we like to demonstrate a simulated data example to show off
 the simplistic pipeline of <strong>Rforce</strong>.</p>
 <div class="section level3">
+<h3 id="r-api-instatll">R API Instatll<a class="anchor" aria-label="anchor" href="#r-api-instatll"></a>
+</h3>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://devtools.r-lib.org/" class="external-link">devtools</a></span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"https://github.com/yuw444/Rforce/"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="generating-composite-endpoint-data">Generating Composite Endpoint Data<a class="anchor" aria-label="anchor" href="#generating-composite-endpoint-data"></a>
 </h3>
 <ul>
@@ -104,7 +111,7 @@ endpoints survival data with options
 <li>By default, we generate a non-constant(Weibull) baseline hazard with
 proportional hazard assumption.</li>
 </ul>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/yuw444/Rforce" class="external-link">Rforce</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -123,8 +130,8 @@ proportional hazard assumption.</li>
 <span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt;     exp(x %*% true_beta)</span></span>
 <span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; &lt;bytecode: 0x555911e540b0&gt;</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x555911e59770&gt;</span></span>
+<span><span class="co">#&gt; &lt;bytecode: 0x5572f7c25970&gt;</span></span>
+<span><span class="co">#&gt; &lt;environment: 0x5572f7c252e0&gt;</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">data_list</span><span class="op">$</span><span class="va">dataset</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6</span></span>
 <span><span class="co">#&gt; 1  1 0.003487709      2       0       1       0       0       1       0</span></span>
@@ -177,7 +184,7 @@ experiencing terminal event.</li>
 function to implement random censoring mechanism on the generated
 complete data.</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/random_censoring.html">random_censoring</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">data_list</span><span class="op">$</span><span class="va">dataset</span>,</span>
 <span>  event_rate <span class="op">=</span> <span class="fl">0.5</span></span>
@@ -215,7 +222,7 @@ intervals.</li>
 <code><a href="../reference/patients_to_cpius.html">patients_to_cpius()</a></code> is customized for these
 purpose.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">n_intervals</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="va">probs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, length.out <span class="op">=</span> <span class="va">n_intervals</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">observed_times</span> <span class="op">&lt;-</span> <span class="va">df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
@@ -278,7 +285,7 @@ be used in dummy encoding and random forest fitting; One can customize
 the original columns to be considered by modifying the parameter
 <code>cols_to_keep</code>.</p></li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cpiu_wide</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cpius_to_dummy.html">cpius_to_dummy</a></span><span class="op">(</span><span class="va">cpiu_wide</span>, cols_to_keep <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -313,7 +320,7 @@ efficient than other two proposed rules,
 </ul>
 </li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Rforce.html">Rforce</a></span><span class="op">(</span></span>
 <span>  cpius <span class="op">=</span> <span class="va">cpiu_wide</span>,</span>
 <span>  split_rule <span class="op">=</span> <span class="st">"Rforce-QLR"</span></span>
@@ -334,7 +341,7 @@ efficient than other two proposed rules,
 through the designated mechanisms <code><a href="../reference/saveRforce.html">saveRforce()</a></code> and
 <code><a href="../reference/loadRforce.html">loadRforce()</a></code>.</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Rforce.html">Rforce</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">df</span>,</span>
 <span>  formula <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/survival/man/Surv.html" class="external-link">Surv</a></span><span class="op">(</span><span class="va">Id</span>, <span class="va">X</span>, <span class="va">Status</span><span class="op">)</span> <span class="op">~</span> <span class="va">.</span>, </span>
@@ -379,7 +386,7 @@ through the designated mechanisms <code><a href="../reference/saveRforce.html">s
 <div class="section level3">
 <h3 id="variable-importance">Variable Importance<a class="anchor" aria-label="anchor" href="#variable-importance"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">vimp</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      binary1      binary2      binary3      binary4      binary5      binary6 </span></span>
 <span><span class="co">#&gt;  0.040946456  0.033170969  0.006243701  1.000000000  0.000000000  0.026226941 </span></span>
@@ -389,7 +396,7 @@ through the designated mechanisms <code><a href="../reference/saveRforce.html">s
 <div class="section level3">
 <h3 id="predict">Predict<a class="anchor" aria-label="anchor" href="#predict"></a>
 </h3>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html" class="external-link">predict</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">pred</span><span class="op">)</span></span>
 <span><span class="co">#&gt;          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]      [,8]</span></span>
@@ -410,9 +417,9 @@ through the designated mechanisms <code><a href="../reference/saveRforce.html">s
 <div class="section level3">
 <h3 id="print-tree">Print Tree<a class="anchor" aria-label="anchor" href="#print-tree"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/printTree.html">printTree</a></span><span class="op">(</span><span class="va">fit</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Tree structure saved to /tmp/Rtmp8LPd2V/file663a51db7a86.dot</span></span></code></pre></div>
+<span><span class="co">#&gt; Tree structure saved to /tmp/RtmpaJpj1x/file1cc051db7a86.dot</span></span></code></pre></div>
 <div class="grViz html-widget html-fill-item" id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:700px;height:432.632880098888px;"></div>
 <script type="application/json" data-for="htmlwidget-ac96cb3ee4656e2e9ec3">{"x":{"diagram":"digraph {\n//Tree ID: 1\n\tnode0 [label = \"X8 <= 0.21 \n L(98)R(402); 0.011 \n S(P30.01;L-355.20;R-2237.79)\"] \n\tnode0 -> node1\n\tnode0 -> node16\n\tnode1 [label = \"X6 <= 0.76 \n L(73)R(25); 0.050 \n S(P17.60;L-236.23;R-101.38)\"] \n\tnode1 -> node2\n\tnode1 -> node13\n\tnode2 [label = \"X0 <= 0.00 \n L(34)R(39); 0.089 \n S(P21.06;L-74.50;R-140.67)\"] \n\tnode2 -> node3\n\tnode2 -> node8\n\tnode3 [label = \"X4 <= 0.00 \n L(12)R(22); 0.127 \n S(P9.47;L-31.98;R-33.05)\"] \n\tnode3 -> node4\n\tnode3 -> node5\n\tnode4 [shape = record label=\"0.06 ...\"]\n\tnode5 [label = \"X6 <= 0.35 \n L(11)R(11); 0.177 \n S(P5.84;L-13.70;R-13.50)\"] \n\tnode5 -> node6\n\tnode5 -> node7\n\tnode6 [shape = record label=\"0.89 ...\"]\n\tnode7 [shape = record label=\"0.07 ...\"]\n\tnode8 [label = \"X7 <= 0.56 \n L(17)R(22); 0.103 \n S(P14.52;L-70.15;R-55.99)\"] \n\tnode8 -> node9\n\tnode8 -> node10\n\tnode9 [shape = record label=\"2.64 ...\"]\n\tnode10 [label = \"X6 <= 0.52 \n L(11)R(11); 0.081 \n S(P4.55;L-23.91;R-27.53)\"] \n\tnode10 -> node11\n\tnode10 -> node12\n\tnode11 [shape = record label=\"2.87 ...\"]\n\tnode12 [shape = record label=\"2.18 ...\"]\n\tnode13 [label = \"X9 <= 0.55 \n L(14)R(11); 0.047 \n S(P4.78;L-51.18;R-45.42)\"] \n\tnode13 -> node14\n\tnode13 -> node15\n\tnode14 [shape = record label=\"0.82 ...\"]\n\tnode15 [shape = record label=\"2.14 ...\"]\n\tnode16 [label = \"X3 <= 0.00 \n L(201)R(201); 0.021 \n S(P47.13;L-885.04;R-1305.62)\"] \n\tnode16 -> node17\n\tnode16 -> node42\n\tnode17 [label = \"X2 <= 0.00 \n L(106)R(95); 0.015 \n S(P13.59;L-495.20;R-376.25)\"] \n\tnode17 -> node18\n\tnode17 -> node31\n\tnode18 [label = \"X1 <= 0.00 \n L(63)R(43); 0.019 \n S(P9.43;L-269.81;R-215.97)\"] \n\tnode18 -> node19\n\tnode18 -> node26\n\tnode19 [label = \"X6 <= 0.52 \n L(37)R(26); 0.054 \n S(P14.51;L-96.78;R-158.52)\"] \n\tnode19 -> node20\n\tnode19 -> node23\n\tnode20 [label = \"X8 <= 0.64 \n L(21)R(16); 0.133 \n S(P12.89;L-31.00;R-52.89)\"] \n\tnode20 -> node21\n\tnode20 -> node22\n\tnode21 [shape = record label=\"0.03 ...\"]\n\tnode22 [shape = record label=\"2.32 ...\"]\n\tnode23 [label = \"X9 <= 0.53 \n L(13)R(13); 0.087 \n S(P13.72;L-68.65;R-76.15)\"] \n\tnode23 -> node24\n\tnode23 -> node25\n\tnode24 [shape = record label=\"1.73 ...\"]\n\tnode25 [shape = record label=\"3.49 ...\"]\n\tnode26 [label = \"X9 <= 0.28 \n L(14)R(29); 0.057 \n S(P12.22;L-78.83;R-124.92)\"] \n\tnode26 -> node27\n\tnode26 -> node28\n\tnode27 [shape = record label=\"1.62 ...\"]\n\tnode28 [label = \"X8 <= 0.60 \n L(13)R(16); 0.058 \n S(P7.24;L-49.72;R-67.96)\"] \n\tnode28 -> node29\n\tnode28 -> node30\n\tnode29 [shape = record label=\"6.73 ...\"]\n\tnode30 [shape = record label=\"5.60 ...\"]\n\tnode31 [label = \"X9 <= 0.34 \n L(28)R(67); 0.041 \n S(P15.28;L-118.28;R-242.68)\"] \n\tnode31 -> node32\n\tnode31 -> node35\n\tnode32 [label = \"X8 <= 0.46 \n L(13)R(15); 0.104 \n S(P12.25;L-40.95;R-65.07)\"] \n\tnode32 -> node33\n\tnode32 -> node34\n\tnode33 [shape = record label=\"1.68 ...\"]\n\tnode34 [shape = record label=\"0.05 ...\"]\n\tnode35 [label = \"X9 <= 0.79 \n L(49)R(18); 0.051 \n S(P12.42;L-160.36;R-69.90)\"] \n\tnode35 -> node36\n\tnode35 -> node41\n\tnode36 [label = \"X9 <= 0.61 \n L(32)R(17); 0.088 \n S(P14.17;L-108.72;R-37.47)\"] \n\tnode36 -> node37\n\tnode36 -> node40\n\tnode37 [label = \"X0 <= 0.00 \n L(12)R(20); 0.089 \n S(P9.66;L-25.15;R-73.91)\"] \n\tnode37 -> node38\n\tnode37 -> node39\n\tnode38 [shape = record label=\"1.76 ...\"]\n\tnode39 [shape = record label=\"3.34 ...\"]\n\tnode40 [shape = record label=\"5.76 ...\"]\n\tnode41 [shape = record label=\"1.87 ...\"]\n\tnode42 [shape = record label=\"4.17 ...\"]\n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
