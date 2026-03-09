@@ -74,25 +74,79 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="rforce">Rforce<a class="anchor" aria-label="anchor" href="#rforce"></a>
 </h1></div>
-<p>We introduce random forests for composite endpoints(<strong>Rforce</strong>) consisting of non-fatal composite events and terminal events. It utilizes generalized estimating equations to build trees and handles the dependent censoring due to the terminal events with the concept of pseudo-at-risk duration.</p>
+<p><strong>Rforce</strong> implements the methodology described in <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.70413" class="external-link">Rforce: Random Forests for Composite Endpoints</a>, which models composite endpoints consisting of <strong>non-fatal events and terminal events</strong>.</p>
+<p>The method builds random forests using <strong>generalized estimating equations (GEE)</strong> and handles dependent censoring caused by terminal events using the concept of <strong>pseudo-at-risk duration</strong>.</p>
+<p>This work received the <strong>2024 Student Paper Competition Award</strong> from the American Statistical Association (ASA), jointly from the <a href="https://community.amstat.org/jointscsg-section/awards/student-paper-competition" class="external-link">Section on Statistical Computing and Section on Statistical Graphics</a>.</p>
+<p>The paper is published in <em>Statistics in Medicine</em>:</p>
+<ul>
+<li>PMID: <a href="https://pubmed.ncbi.nlm.nih.gov/41640374/" class="external-link">41640374</a>
+</li>
+<li>DOI: <a href="https://onlinelibrary.wiley.com/doi/10.1002/sim.70413" class="external-link">10.1002/sim.70413</a>
+</li>
+</ul>
+<p>The software provides both:</p>
+<ul>
+<li><strong>R API</strong></li>
+<li><strong>C API</strong></li>
+</ul>
+<p>Key features include:</p>
+<ul>
+<li>High computational and memory efficiency</li>
+<li>Parallel computation using <a href="https://www.openmp.org/" class="external-link">OpenMP</a>
+</li>
+<li>Reproducible results (see the reproducibility example <a href="https://yuw444.github.io/Rforce/articles/get-started.html#in-1-equivalent-command">here</a>)</li>
+</ul>
+<hr>
+</div>
+<div class="section level1">
+<h1 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h1>
 <div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+<h2 id="dependencies">Dependencies<a class="anchor" aria-label="anchor" href="#dependencies"></a>
 </h2>
-<p>You can build Rforce from source using CMake.</p>
-<pre><code>git clone https://github.com/yuw444/Rforce.git
-cd Rforce
-mkdir build
-cd build
-cmake ..
-make</code></pre>
-<p>Note:</p>
-<p>Make sure you have <code>CMake</code> version 3.16.0 or higher.</p>
+<ul>
+<li>
+<code>cmake &gt;= 3.16.0</code> – build system for the C API</li>
+<li>
+<code>OpenMP</code> – parallel computing</li>
+<li>
+<code>R &gt;= 4.3.3</code> – R interface</li>
+</ul>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="install-r-api">Install R API<a class="anchor" aria-label="anchor" href="#install-r-api"></a>
+</h2>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"yuw444/Rforce"</span><span class="op">)</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="c-api">C API<a class="anchor" aria-label="anchor" href="#c-api"></a>
+</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/yuw444/Rforce.git</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> Rforce</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> build</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> build</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cmake</span> ..</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">make</span></span></code></pre></div>
 <p>A <code>CMakeLists.txt</code> file is provided in the repository.</p>
+<hr>
+</div>
 </div>
 <div class="section level2">
 <h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> [subcommands] <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="r-examples">R Examples<a class="anchor" aria-label="anchor" href="#r-examples"></a>
+</h3>
+<ul><li>Examples: <a href="https://yuw444.github.io/Rforce/articles/get-started.html">Get Started</a>.</li></ul>
+<hr>
+</div>
+<div class="section level3">
+<h3 id="shell-scripts">Shell Scripts<a class="anchor" aria-label="anchor" href="#shell-scripts"></a>
+</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">./Rforce</span> [subcommands] <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
+</div>
 <div class="section level3">
 <h3 id="available-subcommands">Available Subcommands<a class="anchor" aria-label="anchor" href="#available-subcommands"></a>
 </h3>
@@ -108,213 +162,213 @@ make</code></pre>
 </div>
 </div>
 <div class="section level2">
-<h2 id="subcommand-details">Subcommand Details<a class="anchor" aria-label="anchor" href="#subcommand-details"></a>
+<h2 id="c-api-subcommands">C API Subcommands<a class="anchor" aria-label="anchor" href="#c-api-subcommands"></a>
 </h2>
 <div class="section level3">
 <h3 id="train">Train<a class="anchor" aria-label="anchor" href="#train"></a>
 </h3>
 <p>Train a composite endpoint forest model.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> train <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> train <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table class="table">
 <colgroup>
-<col width="42%">
-<col width="18%">
+<col width="24%">
+<col width="33%">
+<col width="15%">
 <col width="26%">
-<col width="12%">
 </colgroup>
 <thead><tr class="header">
-<th align="left">Option</th>
-<th align="left">Description</th>
-<th align="left">Required/Optional</th>
-<th align="left">Default</th>
+<th>Option</th>
+<th>Description</th>
+<th>Required/Optional</th>
+<th>Default</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code>-d, --designMatrixY=&lt;str&gt;</code></td>
-<td align="left">Path to design matrix</td>
-<td align="left"><strong>Required</strong></td>
-<td align="left"></td>
+<td><code>-d, --designMatrixY=&lt;str&gt;</code></td>
+<td>Path to design matrix</td>
+<td><strong>Required</strong></td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-a, --auxiliary=&lt;str&gt;</code></td>
-<td align="left">Path to auxiliary features</td>
-<td align="left"><strong>Required</strong></td>
-<td align="left"></td>
+<td><code>-a, --auxiliary=&lt;str&gt;</code></td>
+<td>Path to auxiliary features</td>
+<td><strong>Required</strong></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-u, --unitsOfCPIU=&lt;str&gt;</code></td>
-<td align="left">Path to unitsOfCPIU file</td>
-<td align="left"><strong>Required</strong></td>
-<td align="left"></td>
+<td><code>-u, --unitsOfCPIU=&lt;str&gt;</code></td>
+<td>Path to unitsOfCPIU file</td>
+<td><strong>Required</strong></td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-o, --out=&lt;str&gt;</code></td>
-<td align="left">Path to output directory</td>
-<td align="left">Optional</td>
-<td align="left">Current working directory</td>
+<td><code>-o, --out=&lt;str&gt;</code></td>
+<td>Path to output directory</td>
+<td>Optional</td>
+<td>Current working directory</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-v, --verbose=&lt;int&gt;</code></td>
-<td align="left">Verbosity level (0–3)</td>
-<td align="left">Optional</td>
-<td align="left">0</td>
+<td><code>-v, --verbose=&lt;int&gt;</code></td>
+<td>Verbosity level (0–3)</td>
+<td>Optional</td>
+<td>0</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-m, --maxDepth=&lt;int&gt;</code></td>
-<td align="left">Maximum tree depth</td>
-<td align="left">Optional</td>
-<td align="left">10</td>
+<td><code>-m, --maxDepth=&lt;int&gt;</code></td>
+<td>Maximum tree depth</td>
+<td>Optional</td>
+<td>10</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-n, --minNodeSize=&lt;int&gt;</code></td>
-<td align="left">Minimum node size</td>
-<td align="left">Optional</td>
-<td align="left">2 × len(unitsOfCPIU) - 1</td>
+<td><code>-n, --minNodeSize=&lt;int&gt;</code></td>
+<td>Minimum node size</td>
+<td>Optional</td>
+<td>2 × len(unitsOfCPIU) - 1</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-g, --gain=&lt;float&gt;</code></td>
-<td align="left">Minimum gain for split</td>
-<td align="left">Optional</td>
-<td align="left">0.0 (likelihood-based) or 1.3 (GEE-based)</td>
+<td><code>-g, --gain=&lt;float&gt;</code></td>
+<td>Minimum gain for split</td>
+<td>Optional</td>
+<td>0.0 (likelihood-based) or 1.3 (GEE-based)</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-t, --mtry=&lt;int&gt;</code></td>
-<td align="left">Number of variables to try during splitting</td>
-<td align="left">Optional</td>
-<td align="left">√(number of variables)</td>
+<td><code>-t, --mtry=&lt;int&gt;</code></td>
+<td>Number of variables to try during splitting</td>
+<td>Optional</td>
+<td>√(number of variables)</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-s, --nsplits=&lt;int&gt;</code></td>
-<td align="left">Number of splits to try per variable</td>
-<td align="left">Optional</td>
-<td align="left">10</td>
+<td><code>-s, --nsplits=&lt;int&gt;</code></td>
+<td>Number of splits to try per variable</td>
+<td>Optional</td>
+<td>10</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-r, --nTrees=&lt;int&gt;</code></td>
-<td align="left">Number of trees</td>
-<td align="left">Optional</td>
-<td align="left">200</td>
+<td><code>-r, --nTrees=&lt;int&gt;</code></td>
+<td>Number of trees</td>
+<td>Optional</td>
+<td>200</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-e, --seed=&lt;int&gt;</code></td>
-<td align="left">Random seed</td>
-<td align="left">Optional</td>
-<td align="left">926</td>
+<td><code>-e, --seed=&lt;int&gt;</code></td>
+<td>Random seed</td>
+<td>Optional</td>
+<td>926</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-p, --nPerms=&lt;int&gt;</code></td>
-<td align="left">Number of permutations for variable importance</td>
-<td align="left">Optional</td>
-<td align="left">10</td>
+<td><code>-p, --nPerms=&lt;int&gt;</code></td>
+<td>Number of permutations for variable importance</td>
+<td>Optional</td>
+<td>10</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-u, --nVars=&lt;int&gt;</code></td>
-<td align="left">Number of variables in the design matrix</td>
-<td align="left">Optional</td>
-<td align="left">Number of columns</td>
+<td><code>-u, --nVars=&lt;int&gt;</code></td>
+<td>Number of variables in the design matrix</td>
+<td>Optional</td>
+<td>Number of columns</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-i, --pathVarIds=&lt;str&gt;</code></td>
-<td align="left">Variable IDs (categorical variables supported via repeated IDs)</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-i, --pathVarIds=&lt;str&gt;</code></td>
+<td>Variable IDs (categorical variables supported via repeated IDs)</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-x, --iDot</code></td>
-<td align="left">Output tree DOT files</td>
-<td align="left">Optional</td>
-<td align="left">False</td>
+<td><code>-x, --iDot</code></td>
+<td>Output tree DOT files</td>
+<td>Optional</td>
+<td>False</td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-k, --k=&lt;int&gt;</code></td>
-<td align="left">Bayesian estimator parameter for leaf output</td>
-<td align="left">Optional</td>
-<td align="left">4</td>
+<td><code>-k, --k=&lt;int&gt;</code></td>
+<td>Bayesian estimator parameter for leaf output</td>
+<td>Optional</td>
+<td>4</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-L, --long</code></td>
-<td align="left">Use multiple rows per patient (RF-SLAM style)</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-L, --long</code></td>
+<td>Use multiple rows per patient (RF-SLAM style)</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-N, --nopseudo</code></td>
-<td align="left">Do not estimate pseudo risk time</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-N, --nopseudo</code></td>
+<td>Do not estimate pseudo risk time</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-P, --pseudorisk1</code></td>
-<td align="left">Use original pseudo-risk time (population level)</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-P, --pseudorisk1</code></td>
+<td>Use original pseudo-risk time (population level)</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-B, --pseudorisk2</code></td>
-<td align="left">Recalculate pseudo-risk time at each tree (default)</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-B, --pseudorisk2</code></td>
+<td>Recalculate pseudo-risk time at each tree (default)</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-D, --dynamicrisk</code></td>
-<td align="left">Dynamically estimate pseudo-risk time at each split</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-D, --dynamicrisk</code></td>
+<td>Dynamically estimate pseudo-risk time at each split</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-F, --nophi</code></td>
-<td align="left">Fix φ = 1, do not estimate φ</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-F, --nophi</code></td>
+<td>Fix φ = 1, do not estimate φ</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-P, --phi1</code></td>
-<td align="left">Estimate φ at population level</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-P, --phi1</code></td>
+<td>Estimate φ at population level</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-H, --phi2</code></td>
-<td align="left">Estimate φ at tree level (default)</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-H, --phi2</code></td>
+<td>Estimate φ at tree level (default)</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-Y, --dynamicphi</code></td>
-<td align="left">Dynamically estimate φ at each split</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-Y, --dynamicphi</code></td>
+<td>Dynamically estimate φ at each split</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-G, --gee</code></td>
-<td align="left">Use GEE approach</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-G, --gee</code></td>
+<td>Use GEE approach</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-A, --padjust=&lt;str&gt;</code></td>
-<td align="left">p-value adjustment method (<code>bonferroni</code>, <code>holm</code>, <code>hochberg</code>, <code>hommel</code>, <code>BH</code>, <code>BY</code>, <code>none</code>)</td>
-<td align="left">Optional</td>
-<td align="left"><code>BH</code></td>
+<td><code>-A, --padjust=&lt;str&gt;</code></td>
+<td>p-value adjustment method (<code>bonferroni</code>, <code>holm</code>, <code>hochberg</code>, <code>hommel</code>, <code>BH</code>, <code>BY</code>, <code>none</code>)</td>
+<td>Optional</td>
+<td><code>BH</code></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-I, --interaction</code></td>
-<td align="left">Add interaction terms for GEE</td>
-<td align="left">Optional</td>
-<td align="left">NULL</td>
+<td><code>-I, --interaction</code></td>
+<td>Add interaction terms for GEE</td>
+<td>Optional</td>
+<td>NULL</td>
 </tr>
 <tr class="even">
-<td align="left"><code>-S, --asym</code></td>
-<td align="left">Use asymptotic approach</td>
-<td align="left">Optional</td>
-<td align="left"></td>
+<td><code>-S, --asym</code></td>
+<td>Use asymptotic approach</td>
+<td>Optional</td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-T, --threads=&lt;int&gt;</code></td>
-<td align="left">Number of parallel computing threads</td>
-<td align="left">Optional</td>
-<td align="left">8</td>
+<td><code>-T, --threads=&lt;int&gt;</code></td>
+<td>Number of parallel computing threads</td>
+<td>Optional</td>
+<td>8</td>
 </tr>
 </tbody>
 </table>
@@ -324,33 +378,33 @@ make</code></pre>
 <h3 id="predict">Predict<a class="anchor" aria-label="anchor" href="#predict"></a>
 </h3>
 <p>Predict using a trained model and test data.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> predict <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> predict <span class="op">&lt;</span>options<span class="op">&gt;</span></span></code></pre></div>
 <p><strong>Options:</strong></p>
 <table class="table">
 <thead><tr class="header">
-<th align="left">Option</th>
-<th align="left">Description</th>
-<th align="left">Required/Optional</th>
-<th align="left">Default</th>
+<th>Option</th>
+<th>Description</th>
+<th>Required/Optional</th>
+<th>Default</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left"><code>-m, --model=&lt;str&gt;</code></td>
-<td align="left">Path to trained model</td>
-<td align="left"><strong>Required</strong></td>
-<td align="left"></td>
+<td><code>-m, --model=&lt;str&gt;</code></td>
+<td>Path to trained model</td>
+<td><strong>Required</strong></td>
+<td></td>
 </tr>
 <tr class="even">
-<td align="left"><code>-t, --test=&lt;str&gt;</code></td>
-<td align="left">Path to test data</td>
-<td align="left"><strong>Required</strong></td>
-<td align="left"></td>
+<td><code>-t, --test=&lt;str&gt;</code></td>
+<td>Path to test data</td>
+<td><strong>Required</strong></td>
+<td></td>
 </tr>
 <tr class="odd">
-<td align="left"><code>-o, --out=&lt;str&gt;</code></td>
-<td align="left">Path to output directory</td>
-<td align="left">Optional</td>
-<td align="left">Current working directory</td>
+<td><code>-o, --out=&lt;str&gt;</code></td>
+<td>Path to output directory</td>
+<td>Optional</td>
+<td>Current working directory</td>
 </tr>
 </tbody>
 </table>
@@ -361,9 +415,9 @@ make</code></pre>
 <h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
 </h2>
 <p>Train a model:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> train <span class="at">-d</span> design_matrix.csv <span class="at">-a</span> auxiliary_features.csv <span class="at">-u</span> unitsOfCPIU.txt <span class="at">-o</span> output_folder <span class="at">-v</span> 1</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> train <span class="at">-d</span> design_matrix.csv <span class="at">-a</span> auxiliary_features.csv <span class="at">-u</span> unitsOfCPIU.txt <span class="at">-o</span> output_folder <span class="at">-v</span> 1</span></code></pre></div>
 <p>Predict with a trained model:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> predict <span class="at">-m</span> output_folder/model.rforce <span class="at">-t</span> test_data.csv <span class="at">-o</span> prediction_results/</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Rforce</span> predict <span class="at">-m</span> output_folder/model.rforce <span class="at">-t</span> test_data.csv <span class="at">-o</span> prediction_results/</span></code></pre></div>
 <hr>
 </div>
 <div class="section level2">
@@ -374,8 +428,8 @@ make</code></pre>
 <li>Dynamic options (<code>--dynamicrisk</code>, <code>--dynamicphi</code>) allow estimates at each split for more flexibility.</li>
 <li>Parallel computation is supported via the <code>--threads</code> option.</li>
 <li>GEE-based splitting with p-value adjustment is available.</li>
-<li>An R API is currently actively developing which includes<ul>
-<li>Classical survivial data generation</li>
+<li>An R API is currently actively developing which includes:<ul>
+<li>Classical survival data generation</li>
 <li>Composite endpoint data generation</li>
 <li>
 <a href="https://cran.r-project.org/web/packages/Wcompo/index.html" class="external-link"><code>Wcompo</code></a> methodology realization</li>
@@ -386,6 +440,7 @@ make</code></pre>
 </ul>
 </div>
 </div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
