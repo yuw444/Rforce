@@ -15,8 +15,8 @@ add_subdirectory(tests)
 
 add_test(NAME test_utils COMMAND test_utils)
 
-include_directories(./criterion/include /home/yu89975/local/include /hpc/apps/R/4.3.3/lib64/R/include)
-link_directories(./criterion/lib /home/yu89975/local/lib /hpc/apps/R/4.3.3/lib64/R/lib)
+include_directories(/home/yu89975/local/include /hpc/apps/R/4.3.3/lib64/R/include)
+link_directories(/home/yu89975/local/lib /hpc/apps/R/4.3.3/lib64/R/lib)
 
 set(SOURCES
     ./src/argparse.c

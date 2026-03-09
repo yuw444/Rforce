@@ -24,6 +24,12 @@ A parametric approach, like **Wcompo**[@mao2016semiparametric], has proposed to 
 
 Below, we like to demonstrate a simulated data example to show off the simplistic pipeline of **Rforce**.
 
+## R API Instatll
+```
+library(devtools)
+devtools::install_github("https://github.com/yuw444/Rforce/")
+```
+
 ## Generating Composite Endpoint Data
 
 * `Rforce` package provides functions to generate composite endpoints survival data with options

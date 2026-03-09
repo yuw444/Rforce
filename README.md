@@ -1,10 +1,29 @@
 # Rforce
 
-We introduce random forests for composite endpoints(**Rforce**) consisting of non-fatal composite events and terminal events. It utilizes generalized estimating equations to build trees and handles the dependent censoring due to the terminal events with the concept of pseudo-at-risk duration.
+* We here to introduce [Rforce:Random Forests for Composite Endpoints](https://onlinelibrary.wiley.com/doi/10.1002/sim.70413), consisting of non-fatal composite events and terminal events. It utilizes generalized estimating equations(GEE) to build trees and handles the dependent censoring due to the terminal events with the concept of pseudo-at-risk duration. 
 
+* This work has been awared as one of 4 receipents in American statistical Association [2024 Student Paper Competition](https://community.amstat.org/jointscsg-section/awards/student-paper-competition) (Section on Statistical Computing and Section on Statistical Graphics). It is now publised in Statistics in Medicine, PMID: [41640374](https://pubmed.ncbi.nlm.nih.gov/41640374/) DOI: [10.1002/sim.70413](https://onlinelibrary.wiley.com/doi/10.1002/sim.70413).
+
+* It not only gives the methodological soundness, but also offers both `R API` and `C API`, provides both computing and memory efficiency, enables parallel mechanism through [OpenMP](https://www.openmp.org/) while ensure the [reproducibility](https://yuw444.github.io/Rforce/articles/get-started.html#in-1-equivalent-command). 
+
+
+---
 ## Installation
 
-You can build Rforce from source using CMake.
+### Dependecy
+
+* `cmake>=3.16.0`: compile tool for `C API`
+* `OpenMP`: enable the parallel mechanism
+* `R>=4.3.3`: enable interaction with `R`
+
+### R API
+
+```{R}
+# install.packages("devtools")
+devtools::install_github("yuw444/Rforce")
+```
+
+### C API
 
 ```
 git clone https://github.com/yuw444/Rforce.git
@@ -15,16 +34,20 @@ cmake ..
 make
 ```
 
-Note:
+A `CMakeLists.txt` file is provided in the repository
 
-Make sure you have `CMake` version 3.16.0 or higher.
-
-A `CMakeLists.txt` file is provided in the repository.
-
+---
 ## Usage
 
+### R Examples
+
+* Examples: [Get Started](https://yuw444.github.io/Rforce/articles/get-started.html). 
+
+---
+### Shell Scripts
+
 ```bash
-Rforce [subcommands] <options>
+./Rforce [subcommands] <options>
 ```
 
 ### Available Subcommands
@@ -35,7 +58,7 @@ Rforce [subcommands] <options>
 
 ---
 
-## Subcommand Details
+## C API Subcommands
 
 ### Train
 
