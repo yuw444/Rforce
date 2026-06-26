@@ -1,6 +1,7 @@
 # introduction-to-Rforce
 
 ``` r
+
 library(Rforce)
 library(doParallel)
 library(dplyr)
@@ -8,6 +9,7 @@ registerDoParallel(cores = 10)
 ```
 
 ``` r
+
 n_sims <- if (interactive()) 20 else 5
 n_patients <- if (interactive()) 500 else 200
 
@@ -31,6 +33,7 @@ rst <- foreach(i = 1:n_sims) %dopar%{
 ```
 
 ``` r
+
 df_rst <- t(do.call("cbind", rst))
 colMeans(df_rst)
 #>  [1]  0.02425514 -0.01624627  0.07268047  0.61358282  0.04531289 -0.01801206

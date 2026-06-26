@@ -10,10 +10,10 @@ only on the first observed event for each patient.
 A parametric approach, like **Wcompo**(Mao and Lin 2016), has proposed
 to addressed the inference challenge while imposing the proportional
 hazard assumption. Inspired by **Random Survival Forest** (Ishwaran et
-al. 2008) and **Counting Process Information Unit(CPIU)** (Wongvibulsin,
-Wu, and Zeger 2019), we here porposed a non-parametric ensememble
-method, **Random Froest for Composite Endpoints*(**Rforce**)*, to
-further relax the proportional hazard assumption.
+al. 2008) and **Counting Process Information Unit(CPIU)** (Wongvibulsin
+et al. 2019), we here porposed a non-parametric ensememble method,
+**Random Froest for Composite Endpoints*(**Rforce**)*, to further relax
+the proportional hazard assumption.
 
 Below, we like to demonstrate a simulated data example to show off the
 simplistic pipeline of **Rforce**.
@@ -21,6 +21,7 @@ simplistic pipeline of **Rforce**.
 ### R API Instatll
 
 ``` r
+
 library(devtools)
 devtools::install_github("https://github.com/yuw444/Rforce/")
 ```
@@ -39,6 +40,7 @@ devtools::install_github("https://github.com/yuw444/Rforce/")
   proportional hazard assumption.
 
 ``` r
+
 library(Rforce)
 library(dplyr)
 #> 
@@ -57,8 +59,8 @@ data_list$hazard_function
 #> {
 #>     exp(x %*% true_beta)
 #> }
-#> <bytecode: 0x5572f7c25970>
-#> <environment: 0x5572f7c252e0>
+#> <bytecode: 0x5560097b05e0>
+#> <environment: 0x5560097aff50>
 head(data_list$dataset)
 #>   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6
 #> 1  1 0.003487709      2       0       1       0       0       1       0
@@ -86,13 +88,15 @@ head(data_list$dataset)
   methodology can handle time-varying covariates.
 - Here, we generate 6 binary covariates and 4 continuous covariates by
   default.
-- The hazard function consist of baseline hazard $\lambda_{0}(t)$ and
-  parametric part $g(\mathbf{Z})$, i.e.,
-  $$\lambda(t) = \lambda_{0}(t)g(\mathbf{Z})$$ where
-  $\lambda_{0}(t) \sim Weibull(1,1)$ and
-  $g(\mathbf{Z}) = \exp(\beta\mathbf{Z})$.
+- The hazard function consist of baseline hazard $`\lambda_0(t)`$ and
+  parametric part $`g(\mathbf{Z})`$, i.e.,
+  ``` math
+  \lambda(t) = \lambda_0(t) g(\mathbf{Z})
+  ```
+  where $`\lambda_0(t) \sim Weibull(1, 1)`$ and
+  $`g(\mathbf{Z}) = \exp(\beta \mathbf{Z})`$.
 - Only two covariates have non-zero effects on the hazard function,
-  $\beta$ is indicated by `data_list$true_beta`.
+  $`\beta`$ is indicated by `data_list$true_beta`.
 
 ### Implementating Random Censoring
 
@@ -104,6 +108,7 @@ head(data_list$dataset)
   complete data.
 
 ``` r
+
 df <- random_censoring(
   data = data_list$dataset,
   event_rate = 0.5
@@ -127,16 +132,17 @@ head(df)
 
 ### Step 1: Converting CPIU-wide Format
 
-- Evidently, the hazard function $\lambda(t)$ is not a constant of time.
-  Inspired by **Counting Process Information Unit(CPIU)**, we convert
-  the observed data into *CPIU-wide* format to better capture the hazard
-  pattern for the population.
+- Evidently, the hazard function $`\lambda(t)`$ is not a constant of
+  time. Inspired by **Counting Process Information Unit(CPIU)**, we
+  convert the observed data into *CPIU-wide* format to better capture
+  the hazard pattern for the population.
 - The interval of units `intervals` is defined such that each interval
   contains approximately equal number of events, e.g. 10 intervals.
 - [`patients_to_cpius()`](https://yuw444.github.io/Rforce/reference/patients_to_cpius.md)
   is customized for these purpose.
 
 ``` r
+
 n_intervals <- 10
 probs <- seq(0, 1, length.out = n_intervals + 1)
 observed_times <- df %>% dplyr::pull(X)
@@ -189,6 +195,7 @@ class(cpiu_wide)
   columns to be considered by modifying the parameter `cols_to_keep`.
 
 ``` r
+
 cpiu_wide <- cpius_to_dummy(cpiu_wide, cols_to_keep = NULL)
 ```
 
@@ -214,6 +221,7 @@ cpiu_wide <- cpius_to_dummy(cpiu_wide, cols_to_keep = NULL)
   - see details for the default in `Reference/Rforce()`.
 
 ``` r
+
 fit <- Rforce(
   cpius = cpiu_wide,
   split_rule = "Rforce-QLR"
@@ -234,6 +242,7 @@ fit <- Rforce(
   [`loadRforce()`](https://yuw444.github.io/Rforce/reference/loadRforce.md).
 
 ``` r
+
 fit1 <- Rforce(
   data = df,
   formula = Surv(Id, X, Status) ~ ., 
@@ -278,6 +287,7 @@ all.equal(fit1, fit3)
 ### Variable Importance
 
 ``` r
+
 vimp(fit)
 #>      binary1      binary2      binary3      binary4      binary5      binary6 
 #>  0.040946456  0.033170969  0.006243701  1.000000000  0.000000000  0.026226941 
@@ -288,6 +298,7 @@ vimp(fit)
 ### Predict
 
 ``` r
+
 pred <- predict(fit)
 head(pred)
 #>          [,1]     [,2]     [,3]     [,4]     [,5]     [,6]     [,7]      [,8]
@@ -309,8 +320,9 @@ head(pred)
 ### Print Tree
 
 ``` r
+
 printTree(fit, 1)
-#> Tree structure saved to /tmp/RtmpaJpj1x/file1cc051db7a86.dot
+#> Tree structure saved to /tmp/RtmpUBBInj/file57b751db7a86.dot
 ```
 
 ### Reference
