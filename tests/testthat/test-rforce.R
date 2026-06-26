@@ -1,122 +1,141 @@
-# test_that("rforce works", {
-# Developing help function
-.libPaths(rev(.libPaths()))
-Sys.setenv(PATH = paste0(Sys.getenv("PATH"), ":/hpc/apps/pandoc/2.11.4/bin"))
-library(devtools)
-document()
-library(dplyr)
-# library(sjmisc)
-library(Rforce)
+test_that("Rforce fits with formula API and returns correct structure", {
+  data_list <- compo_sim(n_patients = 100, seed = 42, verbose = FALSE)
+  df_train <- random_censoring(data_list$dataset, 0.8)
 
-data_sim <- compo_sim()
+  covariate_cols <- setdiff(colnames(df_train), c("Id", "X", "Status"))
+  formula <- as.formula(paste(
+    "Surv(Id, X, Status) ~",
+    paste(covariate_cols, collapse = " + ")
+  ))
 
-data <- readRDS(file = "/home/yu89975/r-dev/Rforce/data/test_data.rds") %>%
-  filter(Id < 1000)
-units_of_cpius <- diff(c(0, quantile(data$X, 1 / 10 * 1:10)))
-# table(data$Status)
+  forest <- Rforce(
+    data = df_train,
+    formula = formula,
+    n_intervals = 5,
+    n_trees = 10,
+    mtry = 3,
+    n_splits = 3,
+    max_depth = 3,
+    min_node_size = 5,
+    min_gain = 0,
+    split_rule = "Rforce-QLR",
+    seed = 926
+  )
 
-data_to_dummy <- data %>%
-  dplyr::select(-c(X, Status, Id))
-
-lst <- sapply(data_to_dummy, function(x) {
-  if (is.factor(x)) {
-    sjmisc::to_dummy(x)[, -1]
-  } else {
-    x
-  }
+  expect_s3_class(forest, "Rforce")
+  expect_equal(forest$nTrees, 10)
+  expect_equal(nrow(forest$predicted), nrow(forest$cpius$designMatrix_Y))
+  expect_equal(ncol(forest$predicted), 5)
 })
 
-formula <- as.formula(
-  paste(
+test_that("predict.Rforce returns matrix of correct dimensions", {
+  data_list <- compo_sim(n_patients = 100, seed = 42, verbose = FALSE)
+  df_train <- random_censoring(data_list$dataset, 0.8)
+
+  covariate_cols <- setdiff(colnames(df_train), c("Id", "X", "Status"))
+  formula <- as.formula(paste(
     "Surv(Id, X, Status) ~",
-    paste(colnames(data %>% dplyr::select(-c(X, Status, Id))), collapse = " + ")
+    paste(covariate_cols, collapse = " + ")
+  ))
+
+  forest <- Rforce(
+    data = df_train,
+    formula = formula,
+    n_intervals = 5,
+    n_trees = 10,
+    mtry = 3,
+    n_splits = 3,
+    max_depth = 3,
+    min_node_size = 5,
+    min_gain = 0,
+    split_rule = "Rforce-QLR",
+    seed = 926
   )
-)
 
-data_to_convert <- cbind.data.frame(
-  do.call("cbind.data.frame", lst),
-  data %>% select(c("Id", "X", "Status"))
-)
+  # in-bag predictions (no new data)
+  pred_inbag <- predict(forest)
+  expect_true(is.matrix(pred_inbag) || is.data.frame(pred_inbag))
 
-# variable_Ids <- colnames(do.call("cbind.data.frame", lst))
+  # predict on design matrix
+  design_mat <- as.matrix(forest$cpius$designMatrix_Y[
+    1:5,
+    !startsWith(colnames(forest$cpius$designMatrix_Y), "nEvents")
+  ])
+  pred_new <- predict(forest, design_mat)
+  expect_equal(nrow(pred_new), 5)
+  expect_equal(ncol(pred_new), 5)
+  expect_true(all(pred_new >= 0))
+})
 
-# variable_Ids <- gsub("\\.x_\\d+", "", variable_Ids[])
+test_that("vimp.Rforce returns a named numeric vector", {
+  data_list <- compo_sim(n_patients = 100, seed = 42, verbose = FALSE)
+  df_train <- random_censoring(data_list$dataset, 0.8)
 
-# unique_vars <- unique(variable_Ids)
+  covariate_cols <- setdiff(colnames(df_train), c("Id", "X", "Status"))
+  formula <- as.formula(paste(
+    "Surv(Id, X, Status) ~",
+    paste(covariate_cols, collapse = " + ")
+  ))
 
-# variable_Ids <- match(variable_Ids, unique_vars) - 1
+  forest <- Rforce(
+    data = df_train,
+    formula = formula,
+    n_intervals = 5,
+    n_trees = 10,
+    mtry = 3,
+    n_splits = 3,
+    max_depth = 3,
+    min_node_size = 5,
+    min_gain = 0,
+    split_rule = "Rforce-QLR",
+    seed = 926
+  )
 
-lst_cpiu_wide <- patients_to_cpius(
-  data_to_convert = data,
-  units_of_cpiu = units_of_cpius,
-  weights_by_status = c(0, 1, 1, 1, 1),
-  pseudo_risk = TRUE,
-  wide_format = TRUE
-)
+  imp <- vimp(forest)
+  expect_true(is.numeric(imp))
+  expect_true(!is.null(names(imp)))
+  expect_equal(length(imp), length(covariate_cols))
+  expect_true(all(imp >= 0 & imp <= 1))
+})
 
-object <- lst_cpiu_wide
-temp <- cpius_to_dummy(lst_cpiu_wide)
+test_that("saveRforce and loadRforce round-trip preserves predictions", {
+  data_list <- compo_sim(n_patients = 100, seed = 42, verbose = FALSE)
+  df_train <- random_censoring(data_list$dataset, 0.8)
 
-design_matrix_Y <- as.matrix(lst_cpiu_wide$designMatrix_Y)
-auxiliary_features <- as.matrix(lst_cpiu_wide$auxiliaryFeatures)
+  covariate_cols <- setdiff(colnames(df_train), c("Id", "X", "Status"))
+  formula <- as.formula(paste(
+    "Surv(Id, X, Status) ~",
+    paste(covariate_cols, collapse = " + ")
+  ))
 
-# design_matrix_Y[is.na(design_matrix_Y)] <- 999999.0
+  forest <- Rforce(
+    data = df_train,
+    formula = formula,
+    n_intervals = 5,
+    n_trees = 10,
+    mtry = 3,
+    n_splits = 3,
+    max_depth = 3,
+    min_node_size = 5,
+    min_gain = 0,
+    split_rule = "Rforce-QLR",
+    seed = 926
+  )
 
-temp_method1 <- Rforce(
-  data = data,
-  formula = formula,
-  n_intervals = 10,
-  n_trees = 10,
-  mtry = 6,
-  n_splits = 2,
-  max_depth = 5,
-  min_node_size = 10,
-  min_gain = 0,
-  split_rule = "Rforce-QLR"
-)
+  out_dir <- tempfile(pattern = "rforce_test_")
+  dir.create(out_dir)
+  on.exit(unlink(out_dir, recursive = TRUE), add = TRUE)
+  saveRforce(forest, out_dir)
 
-printTree(temp_method1, treeIndex = 1)
+  forest2 <- loadRforce(out_dir)
+  expect_s3_class(forest2, "Rforce")
+  expect_equal(forest2$nTrees, forest$nTrees)
 
-str(temp_method1)
-temp <- Rforce(
-  design_matrix_Y = design_matrix_Y,
-  auxiliary_features = auxiliary_features,
-  variable_Ids = variable_Ids,
-  units_of_cpius = units_of_cpius,
-  split_rule = "Rforce-QLR",
-  n_trees = 10,
-  mtry = 3,
-  n_splits = 2,
-  seed = 926
-)
-
-lst_cpiu_long <- patients_to_cpius(
-  data_to_convert = data_to_convert,
-  units_of_cpiu = units_of_cpius,
-  weights_by_status = c(0, 1, 1, 1, 1),
-  pseudo_risk = FALSE,
-  wide_format = FALSE
-)
-
-temp_rfslam <- Rforce(
-  design_matrix_Y = as.matrix(lst_cpiu_long$designMatrix_Y),
-  auxiliary_features = as.matrix(lst_cpiu_long$auxiliaryFeatures),
-  variable_Ids = variable_Ids,
-  units_of_cpius = units_of_cpius,
-  split_rule = "RF-SLAM",
-  n_trees = 10,
-  mtry = 3,
-  n_splits = 2,
-  seed = 926
-)
-
-predict(temp, design_matrix_Y[1:2, ])
-str(temp)
-saveRforce(temp, "./output/")
-#
-temp2 <- loadRforce("./output/")
-
-saveRforce(temp2, "./output/")
-temp3 <- loadRforce("./output/")
-
-predict(temp3, design_matrix_Y[1:2, ])
+  design_mat <- as.matrix(forest$cpius$designMatrix_Y[
+    1:3,
+    !startsWith(colnames(forest$cpius$designMatrix_Y), "nEvents")
+  ])
+  pred1 <- predict(forest, design_mat)
+  pred2 <- predict(forest2, design_mat)
+  expect_equal(pred1, pred2, tolerance = 1e-3)
+})

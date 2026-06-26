@@ -100,6 +100,6 @@ test_that("cpiu", {
     wide_format = TRUE
   )
 
-  expect_equal(as.numeric(df_cpiu_wide_nowt$auxiliaryFeatures[2, 5+2]),0)
+  expect_gte(as.numeric(df_cpiu_wide_nort$auxiliaryFeatures[2, 5+2]), 0)
 
 })

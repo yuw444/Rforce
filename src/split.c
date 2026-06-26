@@ -107,11 +107,24 @@ DecisionTreeData *SplitDataset(
     }
   }
 
-  // realloc the memory for actual size
-  designMatrixYLeft = (double **)realloc(designMatrixYLeft, nLeft * sizeof(double *));
-  designMatrixYRight = (double **)realloc(designMatrixYRight, nRight * sizeof(double *));
-  auxiliaryFeaturesLeft = (double **)realloc(auxiliaryFeaturesLeft, nLeft * sizeof(double *));
-  auxiliaryFeaturesRight = (double **)realloc(auxiliaryFeaturesRight, nRight * sizeof(double *));
+  // realloc the memory for actual size (use temp to avoid losing pointer on failure)
+  // Note: realloc(ptr, 0) == NULL is valid on Linux (acts like free); only treat NULL as
+  // OOM when the requested size is non-zero.
+  {
+    double **tmp;
+    tmp = (double **)realloc(designMatrixYLeft, nLeft * sizeof(double *));
+    if (tmp == NULL && nLeft > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+    designMatrixYLeft = tmp;
+    tmp = (double **)realloc(designMatrixYRight, nRight * sizeof(double *));
+    if (tmp == NULL && nRight > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+    designMatrixYRight = tmp;
+    tmp = (double **)realloc(auxiliaryFeaturesLeft, nLeft * sizeof(double *));
+    if (tmp == NULL && nLeft > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+    auxiliaryFeaturesLeft = tmp;
+    tmp = (double **)realloc(auxiliaryFeaturesRight, nRight * sizeof(double *));
+    if (tmp == NULL && nRight > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+    auxiliaryFeaturesRight = tmp;
+  }
 
   // create a struct to store the data for two daughter nodes
   DecisionTreeData *dataSplits = (DecisionTreeData *)malloc(2 * sizeof(DecisionTreeData));
@@ -198,8 +211,15 @@ DecisionTreeData *BootStrapSample(double **designMatrixY,
         }
     }
 
-    designMatrixYOOB = realloc(designMatrixYOOB, kOOB * sizeof(double *));
-    auxiliaryFeaturesOOB = realloc(auxiliaryFeaturesOOB, kOOB * sizeof(double *));
+    {
+        double **tmp;
+        tmp = (double **)realloc(designMatrixYOOB, kOOB * sizeof(double *));
+        if (tmp == NULL && kOOB > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+        designMatrixYOOB = tmp;
+        tmp = (double **)realloc(auxiliaryFeaturesOOB, kOOB * sizeof(double *));
+        if (tmp == NULL && kOOB > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+        auxiliaryFeaturesOOB = tmp;
+    }
 
     DecisionTreeData *bootStrapDataSet = malloc(2 * sizeof(DecisionTreeData));
 
@@ -1522,9 +1542,13 @@ SplitPoints *FindBestSplit(
   bestSplit->splitValue = bestSplitValue;
   bestSplit->splitStat = bestSplitStat;
 
-  pValues = realloc(pValues, totalValidSplits * sizeof(double));
+  {
+    double *tmp = (double *)realloc(pValues, totalValidSplits * sizeof(double));
+    if (tmp == NULL && totalValidSplits > 0) { PRINT_LOCATION(); printf("Memory reallocation failed\n"); exit(1); }
+    pValues = tmp;
+  }
 
-  if (_gee == 1 && totalValidSplits > 1 && strcmp(_padjust, "none") != 0)
+  if (_gee == 1 && totalValidSplits > 1 && _padjust != NULL && strcmp(_padjust, "none") != 0)
   {
     double *pValueAdj = PAdjust(pValues, totalValidSplits, _padjust);
     if (pValueAdj != NULL)
