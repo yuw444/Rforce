@@ -255,7 +255,7 @@ Rforce <- function(
       )
     }
 
-    if(rhs_vars == ".") {
+    if(identical(rhs_vars, ".")) {
       rhs_vars <- setdiff(colnames(data), lhs_vars)
     }
 

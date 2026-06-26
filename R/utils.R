@@ -18,6 +18,15 @@ predict.Rforce <- function(forest, designMatrix = NULL) {
     stop("designMatrix must be a data frame or matrix.")
   }
 
+  # number of covariate (X) columns used at training time
+  expected_cols <- sum(!startsWith(colnames(forest$cpius$designMatrix_Y), "nEvents"))
+  if (ncol(designMatrix) != expected_cols) {
+    stop(paste0(
+      "designMatrix has ", ncol(designMatrix), " columns but the forest expects ",
+      expected_cols, " covariate columns."
+    ))
+  }
+
   .Call(
     "R_ForestPredict",
     forest$`_external_forest_C_Ptr`,

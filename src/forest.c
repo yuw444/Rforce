@@ -533,8 +533,8 @@ void SaveForest(DecisionTreeNode **forest,
 {
     char outputFolderTree[300];
     char outputFolderDot[300];
-    sprintf(outputFolderTree, "%s/%s", path, "trees");
-    sprintf(outputFolderDot, "%s/%s", path, "dots");
+    if (snprintf(outputFolderTree, sizeof(outputFolderTree), "%s/%s", path, "trees") >= (int)sizeof(outputFolderTree)) { printf("Error: output path too long\n"); exit(1); }
+    if (snprintf(outputFolderDot, sizeof(outputFolderDot), "%s/%s", path, "dots") >= (int)sizeof(outputFolderDot)) { printf("Error: output path too long\n"); exit(1); }
 
     if (access(outputFolderTree, F_OK) == -1)
     {
@@ -558,12 +558,12 @@ void SaveForest(DecisionTreeNode **forest,
 
     for (int i = 0; i < nTrees; i++)
     {
-        sprintf(pathTree, "%s/tree_%d.tdb", outputFolderTree, i);
+        if (snprintf(pathTree, 300, "%s/tree_%d.tdb", outputFolderTree, i) >= 300) { printf("Error: output path too long\n"); exit(1); }
         FILE *file = fopen(pathTree, "wb");
         SaveTree(forest[i], file);
         fclose(file);
 
-        sprintf(pathDot, "%s/tree_%d.dot", outputFolderDot, i);
+        if (snprintf(pathDot, 300, "%s/tree_%d.dot", outputFolderDot, i) >= 300) { printf("Error: output path too long\n"); exit(1); }
         WriteTreeDotFile(forest[i], pathDot);
     }
 
@@ -596,7 +596,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
 
     // save forest parameters
     char *pathParameters = malloc(300 * sizeof(char));
-    sprintf(pathParameters, "%s/%s", pathForest, "parameters.tdb");
+    if (snprintf(pathParameters, 300, "%s/%s", pathForest, "parameters.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
     FILE *fileParameters = fopen(pathParameters, "wb");
 
     fprintf(fileParameters, "%ld,%ld,%ld,%ld\n", forest->nrowsDesign, forest->ncolsDesign, forest->nVars, forest->nTrees);
@@ -641,10 +641,10 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
     char *pathLikelihoodSum = malloc(300 * sizeof(char));
     char *pathvimpPermuted = malloc(300 * sizeof(char));
 
-    sprintf(pathPredicted, "%s/%s", pathForest, "predicted.tdb");
-    sprintf(pathPredictedOob, "%s/%s", pathForest, "predicted_oob.tdb");
-    sprintf(pathLikelihoodSum, "%s/%s", pathForest, "likelihoodSum.tdb");
-    sprintf(pathvimpPermuted, "%s/%s", pathForest, "vimpPermuted.tdb");
+    if (snprintf(pathPredicted, 300, "%s/%s", pathForest, "predicted.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
+    if (snprintf(pathPredictedOob, 300, "%s/%s", pathForest, "predicted_oob.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
+    if (snprintf(pathLikelihoodSum, 300, "%s/%s", pathForest, "likelihoodSum.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
+    if (snprintf(pathvimpPermuted, 300, "%s/%s", pathForest, "vimpPermuted.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
 
     FILE *filePredicted = fopen(pathPredicted, "wb");
     FILE *filePredictedOob = fopen(pathPredictedOob, "wb");
@@ -668,7 +668,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
 
     // save vimp
     char *pathVimp = malloc(300 * sizeof(char));
-    sprintf(pathVimp, "%s/%s", pathForest, "vimp.tdb");
+    if (snprintf(pathVimp, 300, "%s/%s", pathForest, "vimp.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
     FILE *fileVimp = fopen(pathVimp, "wb");
 
     WriteCSV(&forest->vimpStat, fileVimp, 1, forest->ncolsDesign);
@@ -679,7 +679,7 @@ void SaveSurvivalForest(RandomSurvivalForest *forest,
 
     // save bag matrix
     char *pathBagMatrix = malloc(300 * sizeof(char));
-    sprintf(pathBagMatrix, "%s/%s", pathForest, "bagMatrix.tdb");
+    if (snprintf(pathBagMatrix, 300, "%s/%s", pathForest, "bagMatrix.tdb") >= 300) { printf("Error: output path too long\n"); exit(1); }
     FILE *fileBagMatrix = fopen(pathBagMatrix, "wb");
 
     WriteCSVInt(forest->bagMatrix, fileBagMatrix, forest->nTrees, forest->nrowsDesign);
@@ -704,8 +704,9 @@ DecisionTreeNode **LoadForest(const char *path,
 
     for (int i = 0; i < nTrees; i++)
     {
-        sprintf(pathTree, "%s/trees/tree_%d.tdb", path, i);
+        if (snprintf(pathTree, 300, "%s/trees/tree_%d.tdb", path, i) >= 300) { printf("Error: input path too long\n"); free(pathTree); free(forest); return NULL; }
         FILE *file = fopen(pathTree, "rb");
+        if (file == NULL) { printf("Error: Cannot open tree file %s\n", pathTree); free(pathTree); free(forest); return NULL; }
         forest[i] = LoadTree(file);
         fclose(file);
     }
@@ -722,7 +723,7 @@ RandomSurvivalForest *LoadSurvivalForest(const char *path)
     // load forest parameters
     char *pathParameters = malloc(300 * sizeof(char));
 
-    sprintf(pathParameters, "%s/%s", path, "parameters.tdb");
+    if (snprintf(pathParameters, 300, "%s/%s", path, "parameters.tdb") >= 300) { printf("Error: input path too long\n"); free(pathParameters); free(forest); return NULL; }
     FILE *fileParameters = fopen(pathParameters, "rb");
 
     if (fileParameters == NULL)
@@ -780,10 +781,10 @@ RandomSurvivalForest *LoadSurvivalForest(const char *path)
     char *pathLikelihoodSum = malloc(300 * sizeof(char));
     char *pathvimpPermuted = malloc(300 * sizeof(char));
 
-    sprintf(pathPredicted, "%s/%s", path, "predicted.tdb");
-    sprintf(pathPredictedOob, "%s/%s", path, "predicted_oob.tdb");
-    sprintf(pathLikelihoodSum, "%s/%s", path, "likelihoodSum.tdb");
-    sprintf(pathvimpPermuted, "%s/%s", path, "vimpPermuted.tdb");
+    if (snprintf(pathPredicted, 300, "%s/%s", path, "predicted.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
+    if (snprintf(pathPredictedOob, 300, "%s/%s", path, "predicted_oob.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
+    if (snprintf(pathLikelihoodSum, 300, "%s/%s", path, "likelihoodSum.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
+    if (snprintf(pathvimpPermuted, 300, "%s/%s", path, "vimpPermuted.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
 
     double **predicted = Allocate2DArray(forest->nrowsDesign, forest->lenOutput);
     double **predictedOob = Allocate2DArray(forest->nrowsDesign, forest->lenOutput);
@@ -811,7 +812,7 @@ RandomSurvivalForest *LoadSurvivalForest(const char *path)
 
     // load vimp
     char *pathVimp = malloc(300 * sizeof(char));
-    sprintf(pathVimp, "%s/%s", path, "vimp.tdb");
+    if (snprintf(pathVimp, 300, "%s/%s", path, "vimp.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
 
     double **vimp = Allocate2DArray(2, forest->ncolsDesign);
     ReadCSV(pathVimp, &vimp, 0);
@@ -823,7 +824,7 @@ RandomSurvivalForest *LoadSurvivalForest(const char *path)
 
     // load bag matrix
     char *pathBagMatrix = malloc(300 * sizeof(char));
-    sprintf(pathBagMatrix, "%s/%s", path, "bagMatrix.tdb");
+    if (snprintf(pathBagMatrix, 300, "%s/%s", path, "bagMatrix.tdb") >= 300) { printf("Error: input path too long\n"); exit(1); }
 
     int **bagMatrix = Allocate2DArrayInt(forest->nTrees, forest->nrowsDesign);
     // printf("nTrees: %ld, nrowsDesign: %ld\n", forest->nTrees, forest->nrowsDesign);
