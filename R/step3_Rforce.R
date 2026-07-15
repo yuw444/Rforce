@@ -30,6 +30,11 @@
 #'   CPIU-wide representation when \code{cpius} is not supplied. Defaults to
 #'   \code{10}. The default break points are based on empirical quantiles of the
 #'   follow-up time.
+#' @param units_of_cpius Optional numeric vector of CPIU interval widths.
+#'   If supplied, it will be used directly to construct the CPIU-wide
+#'   representation. If \code{NULL}, the default is to compute break points
+#'   based on empirical quantiles of the follow-up time in \code{data} using
+#'   \code{n_intervals}.
 #' @param weights_by_status Optional numeric vector of non-negative weights, one
 #'   per unique event status in the original patient-level data (including
 #'   censoring). If supplied, its length must match the number of unique values
@@ -184,6 +189,7 @@ Rforce <- function(
   data = NULL,
   formula = NULL, # e.g. Surv(Id, X, Status) ~ covariate1 + covariate2
   n_intervals = 10,
+  units_of_cpius = NULL,
   weights_by_status = NULL,
   cpius = NULL,
   split_rule = c("Rforce-QLR", "Rforce-GEE", "Rforce-GEEIntr", "RF-SLAM"),
@@ -238,9 +244,13 @@ Rforce <- function(
   ## If user provided raw data + formula, build design_matrix_Y and auxiliary_features here
   if (is.null(cpius)) {
     # require data, formula and n_intervals to be provided when not passing precomputed matrices
-    if (is.null(data) || is.null(formula) || is.null(n_intervals)) {
+    if (
+      is.null(data) ||
+        is.null(formula) ||
+        (is.null(n_intervals) && is.null(units_of_cpiu))
+    ) {
       stop(
-        "If design_matrix_Y or auxiliary_features are not provided you must supply 'data', 'formula' and 'n_intervals' (e.g. Surv(id, time, status) ~ covariates)."
+        "If design_matrix_Y or auxiliary_features are not provided you must supply 'data', 'formula' and either 'n_intervals' or 'units_of_cpiu'."
       )
     }
 
@@ -255,7 +265,7 @@ Rforce <- function(
       )
     }
 
-    if(identical(rhs_vars, ".")) {
+    if (identical(rhs_vars, ".")) {
       rhs_vars <- setdiff(colnames(data), lhs_vars)
     }
 
@@ -273,17 +283,18 @@ Rforce <- function(
     )
 
     # compute units_of_cpius if not supplied (default: deciles of follow-up time)
-    probs <- seq(0, 1, length.out = n_intervals + 1)
-    observed_times <- data_response %>% dplyr::pull(X)
-    break_points <- stats::quantile(
-      observed_times,
-      probs = probs,
-      na.rm = TRUE
-    )
-    break_points[1] <- 0.0 # ensure starting at 0
-    break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending at max time
-    units_of_cpius <- diff(break_points) # compute widths of intervals
-
+    if (is.null(units_of_cpius)) {
+      probs <- seq(0, 1, length.out = n_intervals + 1)
+      observed_times <- data_response %>% dplyr::pull(X)
+      break_points <- stats::quantile(
+        observed_times,
+        probs = probs,
+        na.rm = TRUE
+      )
+      break_points[1] <- 0.0 # ensure starting at 0
+      break_points[n_intervals + 1] <- max(observed_times, na.rm = TRUE) * 1.001 # ensure ending at max time
+      units_of_cpius <- diff(break_points) # compute widths of intervals
+    }
     list_status <- sort(unique(data_to_convert %>% dplyr::pull(Status)))
     if (!is.null(weights_by_status)) {
       assertthat::assert_that(
@@ -327,7 +338,10 @@ Rforce <- function(
   }
 
   if (is.null(min_node_size)) {
-    min_node_size <- max(10, floor(0.01 * length(unique(cpius$design_matrix_Y[, 1]))))
+    min_node_size <- max(
+      10,
+      floor(0.01 * length(unique(cpius$design_matrix_Y[, 1])))
+    )
   }
 
   if (is.null(min_gain)) {
@@ -339,7 +353,7 @@ Rforce <- function(
   }
 
   if (is.null(max_depth)) {
-    max_depth <- 8 
+    max_depth <- 8
   }
 
   if (split_rule_index == 2) {
@@ -375,7 +389,11 @@ Rforce <- function(
     as.numeric(min_gain),
     as.integer(mtry),
     as.integer(n_splits),
-    ifelse(length(Sys.getenv("OMP_NUM_THREADS")) == 0, as.integer(Sys.getenv("OMP_NUM_THREADS")), as.integer(n_threads)),
+    ifelse(
+      length(Sys.getenv("OMP_NUM_THREADS")) == 0,
+      as.integer(Sys.getenv("OMP_NUM_THREADS")),
+      as.integer(n_threads)
+    ),
     as.integer(seed)
   )
 
