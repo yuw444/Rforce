@@ -59,8 +59,8 @@ data_list$hazard_function
 #> {
 #>     exp(x %*% true_beta)
 #> }
-#> <bytecode: 0x5560097b05e0>
-#> <environment: 0x5560097aff50>
+#> <bytecode: 0x561e7d5c19d8>
+#> <environment: 0x561e7d5c1348>
 head(data_list$dataset)
 #>   Id        Time Status binary1 binary2 binary3 binary4 binary5 binary6
 #> 1  1 0.003487709      2       0       1       0       0       1       0
@@ -322,7 +322,7 @@ head(pred)
 ``` r
 
 printTree(fit, 1)
-#> Tree structure saved to /tmp/RtmpUBBInj/file57b751db7a86.dot
+#> Tree structure saved to /tmp/RtmpzMDoNY/file581551db7a86.dot
 ```
 
 ### Reference
