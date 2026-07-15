@@ -77,8 +77,8 @@ RandomSurvivalForest *RandomForest(
 
             for (int i = 0; i < lenOutput; i++)
             {
-                globalLambda[i] = globalYs[i] / globalRts[i];
-                temp = Var(globalYYs[i], lenYY[i]) / globalLambda[i];
+                globalLambda[i] = (globalRts[i] > 0) ? globalYs[i] / globalRts[i] : 0;
+                temp = (globalLambda[i] > 0) ? Var(globalYYs[i], lenYY[i]) / globalLambda[i] : 1.0f;
                 for (int j = 0; j < nTrees; j++)
                 {
                     _treePhi[j][i] = temp;
@@ -127,8 +127,8 @@ RandomSurvivalForest *RandomForest(
 
             for (int m = 0; m < lenOutput; m++)
             {
-                globalLambda[m] = globalYs[m] / globalRts[m];
-                _treePhi[i][m] = Var(globalYYs[m], lenYY[m]) / globalLambda[m];
+                globalLambda[m] = (globalRts[m] > 0) ? globalYs[m] / globalRts[m] : 0;
+                _treePhi[i][m] = (globalLambda[m] > 0) ? Var(globalYYs[m], lenYY[m]) / globalLambda[m] : 1.0f;
             }
 
             free(globalLambda);
